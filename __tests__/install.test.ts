@@ -233,7 +233,21 @@ describe('installRunner', () => {
             installRunner(new Version(1, 0, 0), ['release'], 'token', 'target')
         ).rejects.toThrow('All runner install strategies failed');
 
-        expect(printError).toHaveBeenCalledWith("Runner strategy 'release' failed");
+        expect(printError).toHaveBeenCalledWith("Last runner strategy 'release' failed");
+    });
+
+    it('when a strategy fails and another remains then logs info', async () => {
+        (io.which as jest.Mock).mockReset();
+        (io.which as jest.Mock).mockResolvedValue('');
+        jest.replaceProperty(process, 'env', {});
+        (findBinary as jest.Mock).mockResolvedValue(null);
+
+        await expect(
+            installRunner(new Version(1, 0, 0), ['binstall', 'release'], 'token', 'target')
+        ).rejects.toThrow('All runner install strategies failed');
+
+        expect(printInfo).toHaveBeenCalledWith("Runner strategy 'binstall' was tried");
+        expect(printError).toHaveBeenCalledWith("Last runner strategy 'release' failed");
     });
 });
 
@@ -300,7 +314,8 @@ describe('installRunnerFromRelease', () => {
         );
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith('Could not find gungraun-runner binary in archive');
+        expect(printInfo).toHaveBeenCalledWith('Could not find gungraun-runner binary in archive');
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when no install directory then returns false', async () => {
@@ -316,9 +331,10 @@ describe('installRunnerFromRelease', () => {
         );
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Unable to find a installation directory for gungraun-runner'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when install dir does not exist then creates it', async () => {
@@ -346,9 +362,10 @@ describe('installRunnerFromRelease', () => {
         );
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Failed to install gungraun-runner from release: network error'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 });
 
@@ -395,9 +412,10 @@ describe('installRunnerFromSource', () => {
         const result = await installRunnerFromSource(new Version(1, 2, 3));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Failed to install gungraun-runner from source: compile error'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 });
 
@@ -464,9 +482,10 @@ describe('installRunnerWithBinstall', () => {
         const result = await installRunnerWithBinstall(new Version(1, 2, 3));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Failed to install gungraun-runner with cargo-binstall: binstall failed'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when binstall succeeds then logs version', async () => {
@@ -532,6 +551,25 @@ describe('installValgrind', () => {
         await expect(
             installValgrind(new Version(3, 20, 0), ['system'], false, 'token')
         ).rejects.toThrow('All valgrind installation strategies failed');
+
+        expect(printError).toHaveBeenCalledWith("Last Valgrind strategy 'system' failed");
+    });
+
+    it('when a strategy fails and another remains then logs info', async () => {
+        jest.replaceProperty(process, 'env', {});
+        (detectPlatform as jest.Mock).mockResolvedValue({
+            id: 'unknown',
+            versionId: null,
+            platform: 'unknown-unknown',
+            packageManager: null
+        });
+
+        await expect(
+            installValgrind(new Version(3, 20, 0), ['system', 'source'], false, 'token')
+        ).rejects.toThrow('All valgrind installation strategies failed');
+
+        expect(printInfo).toHaveBeenCalledWith("Valgrind strategy 'system' was tried");
+        expect(printError).toHaveBeenCalledWith("Last Valgrind strategy 'source' failed");
     });
 
     it('when builder succeeds then logs installed version', async () => {
@@ -674,9 +712,10 @@ describe('installValgrindFromBuilder', () => {
         const result = await installValgrindFromBuilder(new Version(3, 20, 0), 'token');
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             expect.stringContaining('No Valgrind builder release found')
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when exception thrown then returns false', async () => {
@@ -691,9 +730,10 @@ describe('installValgrindFromBuilder', () => {
         );
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Failed to install Valgrind from release: download failed'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when successful then moves extracted files to root', async () => {
@@ -736,9 +776,10 @@ describe('installValgrindWithPackageManager', () => {
         const result = await installValgrindWithPackageManager(new Version(3, 20, 0));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Cannot install Valgrind: No package manager detected for this platform'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when version is auto then skips version check and installs', async () => {
@@ -790,9 +831,10 @@ describe('installValgrindWithPackageManager', () => {
         const result = await installValgrindWithPackageManager(new Version(3, 20, 0));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             "The package version doesn't match the requested version"
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when package version not found then returns false', async () => {
@@ -809,9 +851,10 @@ describe('installValgrindWithPackageManager', () => {
         const result = await installValgrindWithPackageManager(new Version(3, 20, 0));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             expect.stringContaining('Unable to retrieve version information')
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when version check throws then returns false', async () => {
@@ -828,9 +871,10 @@ describe('installValgrindWithPackageManager', () => {
         const result = await installValgrindWithPackageManager(new Version(3, 20, 0));
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             expect.stringContaining('Error retrieving package version')
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 });
 
@@ -846,9 +890,10 @@ describe('installValgrindBuildDeps', () => {
         const result = await installValgrindBuildDeps();
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Cannot install build dependencies: unsupported package manager'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when packages installed then returns true', async () => {
@@ -881,7 +926,8 @@ describe('installValgrindBuildDeps', () => {
         const result = await installValgrindBuildDeps();
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith('Failed to install build dependencies: apt error');
+        expect(printInfo).toHaveBeenCalledWith('Failed to install build dependencies: apt error');
+        expect(printError).not.toHaveBeenCalled();
     });
 });
 
@@ -943,7 +989,8 @@ describe('installValgrindFromSource', () => {
         const result = await installValgrindFromSource(new Version(3, 20, 0), true);
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith('Failed to install build dependencies');
+        expect(printInfo).toHaveBeenCalledWith('Failed to install build dependencies');
+        expect(printError).not.toHaveBeenCalled();
     });
 
     it('when successful then makes valgrind', async () => {
@@ -1105,8 +1152,9 @@ describe('installValgrindFromSource', () => {
         const result = await installValgrindFromSource(new Version(3, 20, 0), false);
 
         expect(result).toBe(false);
-        expect(printError).toHaveBeenCalledWith(
+        expect(printInfo).toHaveBeenCalledWith(
             'Failed to install Valgrind from source: make failed'
         );
+        expect(printError).not.toHaveBeenCalled();
     });
 });

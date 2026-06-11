@@ -282,7 +282,7 @@ describe('logInstalledVersion', () => {
             silent: true,
             ignoreReturnCode: true
         });
-        expect(core.info).toHaveBeenCalledWith('label installed: binary 1.2.3');
+        expect(core.info).toHaveBeenCalledWith(`${utils.LOG_PREFIX} label installed: binary 1.2.3`);
     });
 
     it("defaults to 'version unknown' when stdout is empty", async () => {
@@ -290,7 +290,9 @@ describe('logInstalledVersion', () => {
 
         await utils.logInstalledVersion('binary', 'label');
 
-        expect(core.info).toHaveBeenCalledWith('label installed: version unknown');
+        expect(core.info).toHaveBeenCalledWith(
+            `${utils.LOG_PREFIX} label installed: version unknown`
+        );
     });
 });
 
@@ -319,21 +321,21 @@ describe('normalizePath', () => {
 describe('printError', () => {
     it('delegates to core.error', () => {
         utils.printError('some error');
-        expect(core.error).toHaveBeenCalledWith('some error');
+        expect(core.error).toHaveBeenCalledWith(`${utils.LOG_PREFIX} some error`);
     });
 });
 
 describe('printInfo', () => {
     it('delegates to core.info', () => {
         utils.printInfo('some info');
-        expect(core.info).toHaveBeenCalledWith('some info');
+        expect(core.info).toHaveBeenCalledWith(`${utils.LOG_PREFIX} some info`);
     });
 });
 
 describe('printWarning', () => {
     it('delegates to core.warning', () => {
         utils.printWarning('some warning');
-        expect(core.warning).toHaveBeenCalledWith('some warning');
+        expect(core.warning).toHaveBeenCalledWith(`${utils.LOG_PREFIX} some warning`);
     });
 });
 

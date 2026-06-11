@@ -17,7 +17,20 @@ and this project adheres to
 
 ## [Unreleased]
 
-## [1.0.2] - 2025-04-29
+## [1.1.0] - 2026-06-11
+
+### Changed
+
+- ([#33]): Avoid GitHub error annotations for recoverable strategy-level
+  failures. Emit a GitHub error annotation only when the last runner or Valgrind
+  install strategy fails.
+- ([#33]): Prefix action log messages with `setup-gungraun:` for info, warning,
+  and error output.
+- Update dependencies
+
+[#33]: https://github.com/gungraun/setup-gungraun/pull/33
+
+## [1.0.2] - 2026-04-29
 
 ### Added
 
@@ -37,7 +50,7 @@ and this project adheres to
 
 - Addressed security warnings from repo code scanning
 
-## [1.0.1] - 2025-04-21
+## [1.0.1] - 2026-04-21
 
 ### Changed
 
@@ -49,7 +62,7 @@ and this project adheres to
 - Fix a dependency vulnerability undici <=6.23.0 with severity: high by updating
   @actions/github to v8
 
-## [1.0.0] - 2025-04-21
+## [1.0.0] - 2026-04-21
 
 ### Added
 

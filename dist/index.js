@@ -35158,7 +35158,8 @@ be able to use the memcheck tool. Other tools will likely still work`);
 }
 /** Installs the gungraun-runner by trying each strategy in order until one succeeds. */
 async function installRunner(version, strategies, githubToken, target) {
-    for (const strategy of strategies) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
         switch (strategy) {
             case 'binstall': {
                 const result = await installRunnerWithBinstall(version, target);
@@ -35192,7 +35193,12 @@ async function installRunner(version, strategies, githubToken, target) {
                 throw new Error(`Invalid strategy '${strategy}'`);
             }
         }
-        (0, utils_1.printError)(`Runner strategy '${strategy}' failed`);
+        if (index === strategies.length - 1) {
+            (0, utils_1.printError)(`Last runner strategy '${strategy}' failed`);
+        }
+        else {
+            (0, utils_1.printInfo)(`Runner strategy '${strategy}' was tried`);
+        }
     }
     throw new Error('All runner install strategies failed');
 }
@@ -35204,12 +35210,12 @@ async function installRunnerFromRelease(version, githubToken, target) {
             const extractDir = await (0, download_1.downloadAndExtractRunner)(resolvedVersion, target, githubToken);
             const runnerPath = await (0, utils_1.findBinary)(extractDir, 'gungraun-runner');
             if (!runnerPath) {
-                (0, utils_1.printError)('Could not find gungraun-runner binary in archive');
+                (0, utils_1.printInfo)('Could not find gungraun-runner binary in archive');
                 return false;
             }
             const result = getRunnerInstallDir();
             if (!result) {
-                (0, utils_1.printError)('Unable to find a installation directory for gungraun-runner');
+                (0, utils_1.printInfo)('Unable to find a installation directory for gungraun-runner');
                 return false;
             }
             const { dir: installDir, needsExport } = result;
@@ -35226,7 +35232,7 @@ async function installRunnerFromRelease(version, githubToken, target) {
             return true;
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install gungraun-runner from release: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install gungraun-runner from release: ${error.message}`);
             return false;
         }
     });
@@ -35246,7 +35252,7 @@ async function installRunnerFromSource(version, target) {
             return true;
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install gungraun-runner from source: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install gungraun-runner from source: ${error.message}`);
             return false;
         }
     });
@@ -35272,14 +35278,15 @@ async function installRunnerWithBinstall(version, target) {
             return true;
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install gungraun-runner with cargo-binstall: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install gungraun-runner with cargo-binstall: ${error.message}`);
             return false;
         }
     });
 }
 /** Installs valgrind by trying each strategy in order until one succeeds. */
 async function installValgrind(version, strategies, installBuildDeps = false, githubToken, valgrindUrl, valgrindShaUrl, configureArgs = [], makeEnvs = new Map()) {
-    for (const strategy of strategies) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
         switch (strategy) {
             case 'builder': {
                 const result = await installValgrindFromBuilder(version.isAuto() ? version_1.Version.latest() : version, githubToken, valgrindUrl, valgrindShaUrl);
@@ -35313,7 +35320,12 @@ async function installValgrind(version, strategies, installBuildDeps = false, gi
                 throw new Error(`Invalid strategy '${strategy}'`);
             }
         }
-        (0, utils_1.printError)(`Valgrind strategy '${strategy}' failed`);
+        if (index === strategies.length - 1) {
+            (0, utils_1.printError)(`Last Valgrind strategy '${strategy}' failed`);
+        }
+        else {
+            (0, utils_1.printInfo)(`Valgrind strategy '${strategy}' was tried`);
+        }
     }
     throw new Error('All valgrind installation strategies failed');
 }
@@ -35333,7 +35345,7 @@ async function installValgrindFromBuilder(version, githubToken, valgrindUrl, val
                 const arch = (0, detect_1.detectArch)(target);
                 const result = await (0, resolve_1.resolveValgrindBuilderAssetName)(version, arch, platform, githubToken);
                 if (!result) {
-                    (0, utils_1.printError)(`No Valgrind builder release found for Valgrind version ${version} \
+                    (0, utils_1.printInfo)(`No Valgrind builder release found for Valgrind version ${version} \
 (${arch}-${platform})`);
                     return false;
                 }
@@ -35352,7 +35364,7 @@ async function installValgrindFromBuilder(version, githubToken, valgrindUrl, val
             ]);
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install Valgrind from release: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install Valgrind from release: ${error.message}`);
             return false;
         }
         await installDebugSymbols();
@@ -35364,7 +35376,7 @@ async function installValgrindWithPackageManager(version) {
     return (0, utils_1.withGroup)('Installing valgrind via package manager', async () => {
         const { packageManager } = await (0, detect_1.detectPlatform)();
         if (!packageManager) {
-            (0, utils_1.printError)(`Cannot install Valgrind: No package manager detected for this platform`);
+            (0, utils_1.printInfo)(`Cannot install Valgrind: No package manager detected for this platform`);
             return false;
         }
         if (!version.isAuto()) {
@@ -35372,11 +35384,11 @@ async function installValgrindWithPackageManager(version) {
                 const latestVersion = await (0, resolve_1.resolveValgrindVersion)(version);
                 const packageVersion = await packageManager.accept(new platform_1.FetchLatestPackageVersion('valgrind'));
                 if (!packageVersion) {
-                    (0, utils_1.printError)(`Unable to retrieve version information with ${packageManager}.`);
+                    (0, utils_1.printInfo)(`Unable to retrieve version information with ${packageManager}.`);
                     return false;
                 }
                 else if (!latestVersion.equals(packageVersion)) {
-                    (0, utils_1.printError)(`The package version doesn't match the requested version`);
+                    (0, utils_1.printInfo)(`The package version doesn't match the requested version`);
                     return false;
                 }
                 else {
@@ -35384,7 +35396,7 @@ async function installValgrindWithPackageManager(version) {
                 }
             }
             catch (error) {
-                (0, utils_1.printError)(`Error retrieving package version with ${packageManager}: ${error.message}`);
+                (0, utils_1.printInfo)(`Error retrieving package version with ${packageManager}: ${error.message}`);
                 return false;
             }
         }
@@ -35393,7 +35405,7 @@ async function installValgrindWithPackageManager(version) {
             return true;
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install Valgrind with package manager: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install Valgrind with package manager: ${error.message}`);
             return false;
         }
     });
@@ -35402,7 +35414,7 @@ async function installValgrindWithPackageManager(version) {
 async function installValgrindBuildDeps() {
     const { packageManager } = await (0, detect_1.detectPlatform)();
     if (!packageManager) {
-        (0, utils_1.printError)(`Cannot install build dependencies: unsupported package manager`);
+        (0, utils_1.printInfo)(`Cannot install build dependencies: unsupported package manager`);
         return false;
     }
     try {
@@ -35412,7 +35424,7 @@ async function installValgrindBuildDeps() {
         return true;
     }
     catch (error) {
-        (0, utils_1.printError)(`Failed to install build dependencies: ${error.message}`);
+        (0, utils_1.printInfo)(`Failed to install build dependencies: ${error.message}`);
         return false;
     }
 }
@@ -35425,7 +35437,7 @@ async function installValgrindFromSource(version, installBuildDeps = false, conf
             if (installBuildDeps) {
                 const depsResult = await installValgrindBuildDeps();
                 if (!depsResult) {
-                    (0, utils_1.printError)('Failed to install build dependencies');
+                    (0, utils_1.printInfo)('Failed to install build dependencies');
                     return false;
                 }
             }
@@ -35460,7 +35472,7 @@ async function installValgrindFromSource(version, installBuildDeps = false, conf
             await (0, utils_1.execPrivileged)('make', ['install'], { cwd: sourceDir });
         }
         catch (error) {
-            (0, utils_1.printError)(`Failed to install Valgrind from source: ${error.message}`);
+            (0, utils_1.printInfo)(`Failed to install Valgrind from source: ${error.message}`);
             return false;
         }
         await installDebugSymbols();
@@ -36126,7 +36138,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.VALGRIND_SOURCE_REPO = exports.VALGRIND_BUILDER_REPO = exports.GUNGRAUN_REPO = void 0;
+exports.VALGRIND_SOURCE_REPO = exports.VALGRIND_BUILDER_REPO = exports.LOG_PREFIX = exports.GUNGRAUN_REPO = void 0;
 exports.isDebug = isDebug;
 exports.bail = bail;
 exports.isRoot = isRoot;
@@ -36150,6 +36162,7 @@ const fs = __importStar(__nccwpck_require__(9896));
 const path = __importStar(__nccwpck_require__(6928));
 /** GitHub repository for gungraun-runner releases. */
 exports.GUNGRAUN_REPO = 'gungraun/gungraun';
+exports.LOG_PREFIX = 'setup-gungraun:';
 /** GitHub repository for valgrind-builder releases. */
 exports.VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
 exports.VALGRIND_SOURCE_REPO = 'https://sourceware.org/git/valgrind.git';
@@ -36226,15 +36239,15 @@ function normalizePath(path) {
 }
 /** Logs a error message. */
 function printError(message) {
-    core.error(message);
+    core.error(`${exports.LOG_PREFIX} ${message}`);
 }
 /** Logs an informational message. */
 function printInfo(message) {
-    core.info(message);
+    core.info(`${exports.LOG_PREFIX} ${message}`);
 }
 /** Logs a warning message. */
 function printWarning(message) {
-    core.warning(message);
+    core.warning(`${exports.LOG_PREFIX} ${message}`);
 }
 /** Logs a debug message if debugging is enabled */
 function printDebug(message) {

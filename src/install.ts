@@ -76,7 +76,8 @@ export async function installRunner(
     githubToken: string,
     target: string
 ): Promise<void> {
-    for (const strategy of strategies) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
         switch (strategy) {
             case 'binstall': {
                 const result = await installRunnerWithBinstall(version, target);
@@ -111,7 +112,11 @@ export async function installRunner(
             }
         }
 
-        printError(`Runner strategy '${strategy}' failed`);
+        if (index === strategies.length - 1) {
+            printError(`Last runner strategy '${strategy}' failed`);
+        } else {
+            printInfo(`Runner strategy '${strategy}' was tried`);
+        }
     }
 
     throw new Error('All runner install strategies failed');
@@ -130,13 +135,13 @@ export async function installRunnerFromRelease(
 
             const runnerPath = await findBinary(extractDir, 'gungraun-runner');
             if (!runnerPath) {
-                printError('Could not find gungraun-runner binary in archive');
+                printInfo('Could not find gungraun-runner binary in archive');
                 return false;
             }
 
             const result = getRunnerInstallDir();
             if (!result) {
-                printError('Unable to find a installation directory for gungraun-runner');
+                printInfo('Unable to find a installation directory for gungraun-runner');
                 return false;
             }
             const { dir: installDir, needsExport } = result;
@@ -159,7 +164,7 @@ export async function installRunnerFromRelease(
 
             return true;
         } catch (error) {
-            printError(
+            printInfo(
                 `Failed to install gungraun-runner from release: ${(error as Error).message}`
             );
 
@@ -184,9 +189,7 @@ export async function installRunnerFromSource(version: Version, target?: string)
 
             return true;
         } catch (error) {
-            printError(
-                `Failed to install gungraun-runner from source: ${(error as Error).message}`
-            );
+            printInfo(`Failed to install gungraun-runner from source: ${(error as Error).message}`);
 
             return false;
         }
@@ -218,7 +221,7 @@ export async function installRunnerWithBinstall(
 
             return true;
         } catch (error) {
-            printError(
+            printInfo(
                 `Failed to install gungraun-runner with cargo-binstall: ${(error as Error).message}`
             );
 
@@ -238,7 +241,8 @@ export async function installValgrind(
     configureArgs: string[] = [],
     makeEnvs: Map<string, string> = new Map()
 ): Promise<void> {
-    for (const strategy of strategies) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
         switch (strategy) {
             case 'builder': {
                 const result = await installValgrindFromBuilder(
@@ -283,7 +287,11 @@ export async function installValgrind(
             }
         }
 
-        printError(`Valgrind strategy '${strategy}' failed`);
+        if (index === strategies.length - 1) {
+            printError(`Last Valgrind strategy '${strategy}' failed`);
+        } else {
+            printInfo(`Valgrind strategy '${strategy}' was tried`);
+        }
     }
 
     throw new Error('All valgrind installation strategies failed');
@@ -320,7 +328,7 @@ export async function installValgrindFromBuilder(
                     githubToken
                 );
                 if (!result) {
-                    printError(
+                    printInfo(
                         `No Valgrind builder release found for Valgrind version ${version} \
 (${arch}-${platform})`
                     );
@@ -343,7 +351,7 @@ export async function installValgrindFromBuilder(
                 '/'
             ]);
         } catch (error) {
-            printError(`Failed to install Valgrind from release: ${(error as Error).message}`);
+            printInfo(`Failed to install Valgrind from release: ${(error as Error).message}`);
 
             return false;
         }
@@ -359,7 +367,7 @@ export async function installValgrindWithPackageManager(version: Version): Promi
         const { packageManager } = await detectPlatform();
 
         if (!packageManager) {
-            printError(`Cannot install Valgrind: No package manager detected for this platform`);
+            printInfo(`Cannot install Valgrind: No package manager detected for this platform`);
 
             return false;
         }
@@ -372,16 +380,16 @@ export async function installValgrindWithPackageManager(version: Version): Promi
                 );
 
                 if (!packageVersion) {
-                    printError(`Unable to retrieve version information with ${packageManager}.`);
+                    printInfo(`Unable to retrieve version information with ${packageManager}.`);
                     return false;
                 } else if (!latestVersion.equals(packageVersion)) {
-                    printError(`The package version doesn't match the requested version`);
+                    printInfo(`The package version doesn't match the requested version`);
                     return false;
                 } else {
                     // pass through to install with package manager
                 }
             } catch (error) {
-                printError(
+                printInfo(
                     `Error retrieving package version with ${packageManager}: ${(error as Error).message}`
                 );
                 return false;
@@ -395,7 +403,7 @@ export async function installValgrindWithPackageManager(version: Version): Promi
 
             return true;
         } catch (error) {
-            printError(
+            printInfo(
                 `Failed to install Valgrind with package manager: ${(error as Error).message}`
             );
 
@@ -409,7 +417,7 @@ export async function installValgrindBuildDeps(): Promise<boolean> {
     const { packageManager } = await detectPlatform();
 
     if (!packageManager) {
-        printError(`Cannot install build dependencies: unsupported package manager`);
+        printInfo(`Cannot install build dependencies: unsupported package manager`);
         return false;
     }
 
@@ -420,7 +428,7 @@ export async function installValgrindBuildDeps(): Promise<boolean> {
 
         return true;
     } catch (error) {
-        printError(`Failed to install build dependencies: ${(error as Error).message}`);
+        printInfo(`Failed to install build dependencies: ${(error as Error).message}`);
 
         return false;
     }
@@ -441,7 +449,7 @@ export async function installValgrindFromSource(
             if (installBuildDeps) {
                 const depsResult = await installValgrindBuildDeps();
                 if (!depsResult) {
-                    printError('Failed to install build dependencies');
+                    printInfo('Failed to install build dependencies');
                     return false;
                 }
             }
@@ -481,7 +489,7 @@ export async function installValgrindFromSource(
             printInfo(`:: Running: make install`);
             await execPrivileged('make', ['install'], { cwd: sourceDir });
         } catch (error) {
-            printError(`Failed to install Valgrind from source: ${(error as Error).message}`);
+            printInfo(`Failed to install Valgrind from source: ${(error as Error).message}`);
             return false;
         }
 

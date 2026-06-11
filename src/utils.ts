@@ -6,6 +6,8 @@ import * as path from 'path';
 /** GitHub repository for gungraun-runner releases. */
 export const GUNGRAUN_REPO = 'gungraun/gungraun';
 
+export const LOG_PREFIX = 'setup-gungraun:';
+
 /** GitHub repository for valgrind-builder releases. */
 export const VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
 
@@ -103,17 +105,17 @@ export function normalizePath(path: string): string {
 
 /** Logs a error message. */
 export function printError(message: string): void {
-    core.error(message);
+    core.error(`${LOG_PREFIX} ${message}`);
 }
 
 /** Logs an informational message. */
 export function printInfo(message: string): void {
-    core.info(message);
+    core.info(`${LOG_PREFIX} ${message}`);
 }
 
 /** Logs a warning message. */
 export function printWarning(message: string): void {
-    core.warning(message);
+    core.warning(`${LOG_PREFIX} ${message}`);
 }
 
 /** Logs a debug message if debugging is enabled */

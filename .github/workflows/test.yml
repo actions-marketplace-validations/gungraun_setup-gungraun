@@ -24,7 +24,7 @@ jobs:
   format-and-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
@@ -36,7 +36,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
@@ -72,7 +72,7 @@ jobs:
             setup-fake-project: true
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@cargo-binstall
         if: matrix.setup-binstall
@@ -144,7 +144,7 @@ jobs:
             install-build-deps: true
             valgrind-version: 3.20.0
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Detect and set valgrind version
@@ -283,7 +283,7 @@ jobs:
           *) ;;
           esac
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Detect the expected valgrind version
         shell: sh
         id: get_valgrind_version
@@ -371,7 +371,7 @@ jobs:
         include:
           - expected-version: 3.25.0
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Run action

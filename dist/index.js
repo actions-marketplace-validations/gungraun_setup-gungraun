@@ -1,10 +1,9 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
+/******/ var __webpack_modules__ = ({
 
 /***/ 4914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -139,7 +138,6 @@ function escapeProperty(s) {
 /***/ 7484:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -525,7 +523,6 @@ exports.platform = __importStar(__nccwpck_require__(8968));
 /***/ 4753:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -603,7 +600,6 @@ function prepareKeyValueMessage(key, value) {
 /***/ 5306:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -687,7 +683,6 @@ exports.OidcClient = OidcClient;
 /***/ 1976:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -765,7 +760,6 @@ function toPlatformPath(pth) {
 /***/ 8968:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -876,7 +870,6 @@ function getDetails() {
 /***/ 1847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1166,7 +1159,6 @@ exports.summary = _summary;
 /***/ 302:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1212,7 +1204,6 @@ function toCommandProperties(annotationProperties) {
 /***/ 5236:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1335,7 +1326,6 @@ function getExecOutput(commandLine, args, options) {
 /***/ 6665:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1964,293 +1954,9 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
-/***/ 1648:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Context = void 0;
-const fs_1 = __nccwpck_require__(9896);
-const os_1 = __nccwpck_require__(857);
-class Context {
-    /**
-     * Hydrate the context from the environment
-     */
-    constructor() {
-        var _a, _b, _c;
-        this.payload = {};
-        if (process.env.GITHUB_EVENT_PATH) {
-            if ((0, fs_1.existsSync)(process.env.GITHUB_EVENT_PATH)) {
-                this.payload = JSON.parse((0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
-            }
-            else {
-                const path = process.env.GITHUB_EVENT_PATH;
-                process.stdout.write(`GITHUB_EVENT_PATH ${path} does not exist${os_1.EOL}`);
-            }
-        }
-        this.eventName = process.env.GITHUB_EVENT_NAME;
-        this.sha = process.env.GITHUB_SHA;
-        this.ref = process.env.GITHUB_REF;
-        this.workflow = process.env.GITHUB_WORKFLOW;
-        this.action = process.env.GITHUB_ACTION;
-        this.actor = process.env.GITHUB_ACTOR;
-        this.job = process.env.GITHUB_JOB;
-        this.runAttempt = parseInt(process.env.GITHUB_RUN_ATTEMPT, 10);
-        this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
-        this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
-        this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
-        this.serverUrl = (_b = process.env.GITHUB_SERVER_URL) !== null && _b !== void 0 ? _b : `https://github.com`;
-        this.graphqlUrl =
-            (_c = process.env.GITHUB_GRAPHQL_URL) !== null && _c !== void 0 ? _c : `https://api.github.com/graphql`;
-    }
-    get issue() {
-        const payload = this.payload;
-        return Object.assign(Object.assign({}, this.repo), { number: (payload.issue || payload.pull_request || payload).number });
-    }
-    get repo() {
-        if (process.env.GITHUB_REPOSITORY) {
-            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-            return { owner, repo };
-        }
-        if (this.payload.repository) {
-            return {
-                owner: this.payload.repository.owner.login,
-                repo: this.payload.repository.name
-            };
-        }
-        throw new Error("context.repo requires a GITHUB_REPOSITORY environment variable like 'owner/repo'");
-    }
-}
-exports.Context = Context;
-//# sourceMappingURL=context.js.map
-
-/***/ }),
-
-/***/ 3228:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.context = void 0;
-exports.getOctokit = getOctokit;
-const Context = __importStar(__nccwpck_require__(1648));
-const utils_1 = __nccwpck_require__(8006);
-exports.context = new Context.Context();
-/**
- * Returns a hydrated octokit ready to use for GitHub Actions
- *
- * @param     token    the repo PAT or GITHUB_TOKEN
- * @param     options  other options to set
- */
-function getOctokit(token, options, ...additionalPlugins) {
-    const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
-    return new GitHubWithPlugins((0, utils_1.getOctokitOptions)(token, options));
-}
-//# sourceMappingURL=github.js.map
-
-/***/ }),
-
-/***/ 5156:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAuthString = getAuthString;
-exports.getProxyAgent = getProxyAgent;
-exports.getProxyAgentDispatcher = getProxyAgentDispatcher;
-exports.getProxyFetch = getProxyFetch;
-exports.getApiBaseUrl = getApiBaseUrl;
-const httpClient = __importStar(__nccwpck_require__(4844));
-const undici_1 = __nccwpck_require__(6752);
-function getAuthString(token, options) {
-    if (!token && !options.auth) {
-        throw new Error('Parameter token or opts.auth is required');
-    }
-    else if (token && options.auth) {
-        throw new Error('Parameters token and opts.auth may not both be specified');
-    }
-    return typeof options.auth === 'string' ? options.auth : `token ${token}`;
-}
-function getProxyAgent(destinationUrl) {
-    const hc = new httpClient.HttpClient();
-    return hc.getAgent(destinationUrl);
-}
-function getProxyAgentDispatcher(destinationUrl) {
-    const hc = new httpClient.HttpClient();
-    return hc.getAgentDispatcher(destinationUrl);
-}
-function getProxyFetch(destinationUrl) {
-    const httpDispatcher = getProxyAgentDispatcher(destinationUrl);
-    const proxyFetch = (url, opts) => __awaiter(this, void 0, void 0, function* () {
-        return (0, undici_1.fetch)(url, Object.assign(Object.assign({}, opts), { dispatcher: httpDispatcher }));
-    });
-    return proxyFetch;
-}
-function getApiBaseUrl() {
-    return process.env['GITHUB_API_URL'] || 'https://api.github.com';
-}
-//# sourceMappingURL=utils.js.map
-
-/***/ }),
-
-/***/ 8006:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GitHub = exports.defaults = exports.context = void 0;
-exports.getOctokitOptions = getOctokitOptions;
-const Context = __importStar(__nccwpck_require__(1648));
-const Utils = __importStar(__nccwpck_require__(5156));
-// octokit + plugins
-const core_1 = __nccwpck_require__(4629);
-const plugin_rest_endpoint_methods_1 = __nccwpck_require__(9210);
-const plugin_paginate_rest_1 = __nccwpck_require__(3779);
-exports.context = new Context.Context();
-const baseUrl = Utils.getApiBaseUrl();
-exports.defaults = {
-    baseUrl,
-    request: {
-        agent: Utils.getProxyAgent(baseUrl),
-        fetch: Utils.getProxyFetch(baseUrl)
-    }
-};
-exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
-/**
- * Convience function to correctly format Octokit Options to pass into the constructor.
- *
- * @param     token    the repo PAT or GITHUB_TOKEN
- * @param     options  other options to set
- */
-function getOctokitOptions(token, options) {
-    const opts = Object.assign({}, options || {}); // Shallow clone - don't mutate the object provided by the caller
-    // Auth
-    const auth = Utils.getAuthString(token, opts);
-    if (auth) {
-        opts.auth = auth;
-    }
-    return opts;
-}
-//# sourceMappingURL=utils.js.map
-
-/***/ }),
-
 /***/ 4552:
 /***/ (function(__unused_webpack_module, exports) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2338,7 +2044,6 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 4844:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -3082,7 +2787,6 @@ const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCa
 /***/ 4988:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getProxyUrl = getProxyUrl;
@@ -3183,7 +2887,6 @@ class DecodedURL extends URL {
 /***/ 5207:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3414,7 +3117,6 @@ function getCmdPath() {
 /***/ 4994:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3733,7 +3435,6 @@ function copyFile(srcFile, destFile, force) {
 /***/ 8036:
 /***/ (function(module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3878,7 +3579,6 @@ function _readLinuxVersionFile() {
 /***/ 7380:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -3982,7 +3682,6 @@ exports.RetryHelper = RetryHelper;
 /***/ 3472:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -6315,7 +6014,6 @@ function coerce (version, options) {
 /***/ 6591:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 exports.quote = __nccwpck_require__(5335);
@@ -6327,7 +6025,6 @@ exports.parse = __nccwpck_require__(2696);
 /***/ 2696:
 /***/ ((module) => {
 
-"use strict";
 
 
 // '<(' is process substitution operator and
@@ -6561,7 +6258,6 @@ module.exports = function parse(s, env, opts) {
 /***/ 5335:
 /***/ ((module) => {
 
-"use strict";
 
 
 var OPS = [
@@ -6638,7 +6334,6 @@ module.exports = __nccwpck_require__(218);
 /***/ 218:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 var net = __nccwpck_require__(9278);
@@ -6910,7 +6605,6 @@ exports.debug = debug; // for test
 /***/ 6752:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Client = __nccwpck_require__(3701)
@@ -7151,7 +6845,6 @@ module.exports = {
 /***/ 2279:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -7267,7 +6960,6 @@ module.exports = connect
 /***/ 6862:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -7526,7 +7218,6 @@ module.exports = pipeline
 /***/ 4043:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -7748,7 +7439,6 @@ module.exports.RequestHandler = RequestHandler
 /***/ 3560:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -7976,7 +7666,6 @@ module.exports = stream
 /***/ 1882:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { InvalidArgumentError, SocketError } = __nccwpck_require__(8707)
@@ -8092,7 +7781,6 @@ module.exports = upgrade
 /***/ 6615:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 module.exports.request = __nccwpck_require__(4043)
@@ -8107,7 +7795,6 @@ module.exports.connect = __nccwpck_require__(2279)
 /***/ 9927:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // Ported from https://github.com/nodejs/undici/pull/907
 
 
@@ -8600,7 +8287,6 @@ module.exports = {
 /***/ 9136:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const net = __nccwpck_require__(7030)
@@ -8848,7 +8534,6 @@ module.exports = buildConnector
 /***/ 735:
 /***/ ((module) => {
 
-"use strict";
 
 
 /** @type {Record<string, string | undefined>} */
@@ -8974,7 +8659,6 @@ module.exports = {
 /***/ 2414:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const diagnosticsChannel = __nccwpck_require__(3053)
 const util = __nccwpck_require__(7975)
@@ -9184,7 +8868,6 @@ module.exports = {
 /***/ 8707:
 /***/ ((module) => {
 
-"use strict";
 
 
 const kUndiciError = Symbol.for('undici.error.UND_ERR')
@@ -9617,7 +9300,6 @@ module.exports = {
 /***/ 4655:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -10104,7 +9786,6 @@ module.exports = {
 /***/ 7752:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -10264,7 +9945,6 @@ module.exports = {
 /***/ 3440:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -10991,7 +10671,6 @@ module.exports = {
 /***/ 7405:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { InvalidArgumentError } = __nccwpck_require__(8707)
@@ -11128,7 +10807,6 @@ module.exports = Agent
 /***/ 837:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -11345,7 +11023,6 @@ module.exports = BalancedPool
 /***/ 637:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 /* global WebAssembly */
@@ -12769,7 +12446,6 @@ module.exports = connectH1
 /***/ 8788:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -13521,7 +13197,6 @@ module.exports = connectH2
 /***/ 3701:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // @ts-check
 
 
@@ -14152,7 +13827,6 @@ module.exports = Client
 /***/ 1841:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Dispatcher = __nccwpck_require__(883)
@@ -14358,7 +14032,6 @@ module.exports = DispatcherBase
 /***/ 883:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const EventEmitter = __nccwpck_require__(8474)
 
@@ -14431,7 +14104,6 @@ module.exports = Dispatcher
 /***/ 3137:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const DispatcherBase = __nccwpck_require__(1841)
@@ -14599,7 +14271,6 @@ module.exports = EnvHttpProxyAgent
 /***/ 4660:
 /***/ ((module) => {
 
-"use strict";
 /* eslint-disable */
 
 
@@ -14724,7 +14395,6 @@ module.exports = class FixedQueue {
 /***/ 2128:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const DispatcherBase = __nccwpck_require__(1841)
@@ -14967,7 +14637,6 @@ module.exports = PoolStats
 /***/ 628:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -15082,7 +14751,6 @@ module.exports = Pool
 /***/ 6672:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kProxy, kClose, kDestroy, kDispatch, kInterceptors } = __nccwpck_require__(6443)
@@ -15364,7 +15032,6 @@ module.exports = ProxyAgent
 /***/ 50:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Dispatcher = __nccwpck_require__(883)
@@ -15407,7 +15074,6 @@ module.exports = RetryAgent
 /***/ 2581:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 // We include a version number for the Dispatcher API. In case of breaking changes,
@@ -15447,7 +15113,6 @@ module.exports = {
 /***/ 8155:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = class DecoratorHandler {
@@ -15499,7 +15164,6 @@ module.exports = class DecoratorHandler {
 /***/ 8754:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -15739,7 +15403,6 @@ module.exports = RedirectHandler
 /***/ 7816:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const assert = __nccwpck_require__(4589)
 
@@ -16121,7 +15784,6 @@ module.exports = RetryHandler
 /***/ 379:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const { isIP } = __nccwpck_require__(7030)
 const { lookup } = __nccwpck_require__(610)
@@ -16504,7 +16166,6 @@ module.exports = interceptorOpts => {
 /***/ 8060:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -16635,7 +16296,6 @@ module.exports = createDumpInterceptor
 /***/ 5092:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const RedirectHandler = __nccwpck_require__(8754)
@@ -16664,7 +16324,6 @@ module.exports = createRedirectInterceptor
 /***/ 1514:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const RedirectHandler = __nccwpck_require__(8754)
 
@@ -16696,7 +16355,6 @@ module.exports = opts => {
 /***/ 2026:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const RetryHandler = __nccwpck_require__(7816)
 
@@ -16723,7 +16381,6 @@ module.exports = globalOpts => {
 /***/ 2824:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
@@ -17008,7 +16665,6 @@ exports.SPECIAL_HEADERS = {
 /***/ 3870:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Buffer } = __nccwpck_require__(4573)
@@ -17021,7 +16677,6 @@ module.exports = Buffer.from('AGFzbQEAAAABJwdgAX8Bf2ADf39/AX9gAX8AYAJ/fwBgBH9/f3
 /***/ 3434:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Buffer } = __nccwpck_require__(4573)
@@ -17034,7 +16689,6 @@ module.exports = Buffer.from('AGFzbQEAAAABJwdgAX8Bf2ADf39/AX9gAX8AYAJ/fwBgBH9/f3
 /***/ 172:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enumToMap = void 0;
@@ -17056,7 +16710,6 @@ exports.enumToMap = enumToMap;
 /***/ 7501:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kClients } = __nccwpck_require__(6443)
@@ -17224,7 +16877,6 @@ module.exports = MockAgent
 /***/ 7365:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { promisify } = __nccwpck_require__(7975)
@@ -17291,7 +16943,6 @@ module.exports = MockClient
 /***/ 2429:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { UndiciError } = __nccwpck_require__(8707)
@@ -17327,7 +16978,6 @@ module.exports = {
 /***/ 1511:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { getResponseData, buildKey, addMockDispatch } = __nccwpck_require__(3397)
@@ -17542,7 +17192,6 @@ module.exports.MockScope = MockScope
 /***/ 4004:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { promisify } = __nccwpck_require__(7975)
@@ -17609,7 +17258,6 @@ module.exports = MockPool
 /***/ 1117:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -17640,7 +17288,6 @@ module.exports = {
 /***/ 3397:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { MockNotMatchedError } = __nccwpck_require__(2429)
@@ -18015,7 +17662,6 @@ module.exports = {
 /***/ 6142:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Transform } = __nccwpck_require__(7075)
@@ -18066,7 +17712,6 @@ module.exports = class PendingInterceptorsFormatter {
 /***/ 1529:
 /***/ ((module) => {
 
-"use strict";
 
 
 const singulars = {
@@ -18103,7 +17748,6 @@ module.exports = class Pluralizer {
 /***/ 6603:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -18534,7 +18178,6 @@ module.exports = {
 /***/ 9634:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConstruct } = __nccwpck_require__(109)
@@ -19401,7 +19044,6 @@ module.exports = {
 /***/ 3245:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConstruct } = __nccwpck_require__(109)
@@ -19561,7 +19203,6 @@ module.exports = {
 /***/ 109:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 module.exports = {
@@ -19574,7 +19215,6 @@ module.exports = {
 /***/ 6798:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -19627,7 +19267,6 @@ module.exports = {
 /***/ 1276:
 /***/ ((module) => {
 
-"use strict";
 
 
 // https://wicg.github.io/cookie-store/#cookie-maximum-attribute-value-size
@@ -19647,7 +19286,6 @@ module.exports = {
 /***/ 9061:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { parseSetCookie } = __nccwpck_require__(1978)
@@ -19839,7 +19477,6 @@ module.exports = {
 /***/ 1978:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { maxNameValuePairSize, maxAttributeValueSize } = __nccwpck_require__(1276)
@@ -20164,7 +19801,6 @@ module.exports = {
 /***/ 7797:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -20454,7 +20090,6 @@ module.exports = {
 /***/ 4031:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 const { Transform } = __nccwpck_require__(7075)
 const { isASCIINumber, isValidLastEventId } = __nccwpck_require__(4811)
@@ -20860,7 +20495,6 @@ module.exports = {
 /***/ 1238:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { pipeline } = __nccwpck_require__(7075)
@@ -21348,7 +20982,6 @@ module.exports = {
 /***/ 4811:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -21393,7 +21026,6 @@ module.exports = {
 /***/ 4492:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const util = __nccwpck_require__(3440)
@@ -21930,7 +21562,6 @@ module.exports = {
 /***/ 4495:
 /***/ ((module) => {
 
-"use strict";
 
 
 const corsSafeListedMethods = /** @type {const} */ (['GET', 'HEAD', 'POST'])
@@ -22062,7 +21693,6 @@ module.exports = {
 /***/ 1900:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(4589)
@@ -22814,7 +22444,6 @@ module.exports = {
 /***/ 6653:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kConnected, kSize } = __nccwpck_require__(6443)
@@ -22868,7 +22497,6 @@ module.exports = function () {
 /***/ 7114:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Blob, File } = __nccwpck_require__(4573)
@@ -23002,7 +22630,6 @@ module.exports = { FileLike, isFileLike }
 /***/ 116:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { isUSVString, bufferToLowerCasedHeaderName } = __nccwpck_require__(3440)
@@ -23484,7 +23111,6 @@ module.exports = {
 /***/ 5910:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { isBlobLike, iteratorMixin } = __nccwpck_require__(3168)
@@ -23744,7 +23370,6 @@ module.exports = { FormData, makeEntry }
 /***/ 1059:
 /***/ ((module) => {
 
-"use strict";
 
 
 // In case of breaking changes, increase the version
@@ -23792,7 +23417,6 @@ module.exports = {
 /***/ 660:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // https://github.com/Ethan-Arrowood/undici-fetch
 
 
@@ -24487,7 +24111,6 @@ module.exports = {
 /***/ 4398:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // https://github.com/Ethan-Arrowood/undici-fetch
 
 
@@ -26767,7 +26390,6 @@ module.exports = {
 /***/ 9967:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 /* globals AbortController */
 
 
@@ -27812,7 +27434,6 @@ module.exports = { Request, makeRequest, fromInnerRequest, cloneRequest }
 /***/ 9051:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Headers, HeadersList, fill, getHeadersGuard, setHeadersGuard, setHeadersList } = __nccwpck_require__(660)
@@ -28430,7 +28051,6 @@ module.exports = {
 /***/ 3627:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -28447,7 +28067,6 @@ module.exports = {
 /***/ 3168:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Transform } = __nccwpck_require__(7075)
@@ -30087,7 +29706,6 @@ module.exports = {
 /***/ 5893:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { types, inspect } = __nccwpck_require__(7975)
@@ -30790,7 +30408,6 @@ module.exports = {
 /***/ 2607:
 /***/ ((module) => {
 
-"use strict";
 
 
 /**
@@ -31088,7 +30705,6 @@ module.exports = {
 /***/ 8355:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -31440,7 +31056,6 @@ module.exports = {
 /***/ 8573:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -31526,7 +31141,6 @@ module.exports = {
 /***/ 961:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -31544,7 +31158,6 @@ module.exports = {
 /***/ 3610:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -31943,7 +31556,6 @@ module.exports = {
 /***/ 6897:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { uid, states, sentCloseFrameState, emptyBuffer, opcodes } = __nccwpck_require__(736)
@@ -32322,7 +31934,6 @@ module.exports = {
 /***/ 736:
 /***/ ((module) => {
 
-"use strict";
 
 
 // This is a Globally Unique Identifier unique used
@@ -32396,7 +32007,6 @@ module.exports = {
 /***/ 5188:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -32733,7 +32343,6 @@ module.exports = {
 /***/ 3264:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { maxUnsigned16Bit } = __nccwpck_require__(736)
@@ -32837,7 +32446,6 @@ module.exports = {
 /***/ 9469:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { createInflateRaw, Z_DEFAULT_WINDOWBITS } = __nccwpck_require__(8522)
@@ -32945,7 +32553,6 @@ module.exports = { PerMessageDeflate }
 /***/ 1652:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Writable } = __nccwpck_require__(7075)
@@ -33443,7 +33050,6 @@ module.exports = {
 /***/ 3900:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { WebsocketFrameSend } = __nccwpck_require__(3264)
@@ -33555,7 +33161,6 @@ module.exports = { SendQueue }
 /***/ 1216:
 /***/ ((module) => {
 
-"use strict";
 
 
 module.exports = {
@@ -33575,7 +33180,6 @@ module.exports = {
 /***/ 8625:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = __nccwpck_require__(1216)
@@ -33905,7 +33509,6 @@ module.exports = {
 /***/ 3726:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { webidl } = __nccwpck_require__(5893)
@@ -34502,2311 +34105,254 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1052:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.detectArch = detectArch;
-exports.detectShaVariant = detectShaVariant;
-exports.detectPlatform = detectPlatform;
-exports.detectProjectVersion = detectProjectVersion;
-exports.detectTarget = detectTarget;
-exports.resolvePackageManager = resolvePackageManager;
-const exec = __importStar(__nccwpck_require__(5236));
-const fs = __importStar(__nccwpck_require__(9896));
-const utils_1 = __nccwpck_require__(1798);
-const version_1 = __nccwpck_require__(311);
-const platform_1 = __nccwpck_require__(3728);
-const ID_LIKE_PATTERNS = [
-    [/debian/, new platform_1.AptGet()],
-    [/fedora/, new platform_1.Dnf()],
-    [/suse/, new platform_1.Zypper()],
-    [/arch/, new platform_1.Pacman()],
-    [/alpine/, new platform_1.Apk()]
-];
-// No suse, since suse is an ID_LIKE
-const PACKAGE_MANAGERS = {
-    debian: new platform_1.AptGet(),
-    fedora: new platform_1.Dnf(),
-    arch: new platform_1.Pacman(),
-    alpine: new platform_1.Apk(),
-    amzn: new platform_1.Yum()
-};
-/** Extracts the architecture prefix from a Rust target triple. */
-function detectArch(target) {
-    return target.split('-')[0];
-}
-function detectShaVariant(hash) {
-    let variant;
-    switch (hash.length) {
-        case 40:
-            variant = 1;
-            break;
-        case 56:
-            variant = 224;
-            break;
-        case 64:
-            variant = 256;
-            break;
-        case 96:
-            variant = 384;
-            break;
-        case 128:
-            variant = 512;
-            break;
-        default:
-            return null;
-    }
-    return 'sha' + variant;
-}
-/** Detects the platform, version, and package manager from /etc/os-release. */
-async function detectPlatform() {
-    if (!fs.existsSync('/etc/os-release')) {
-        throw new Error('Cannot detect platform: /etc/os-release not found');
-    }
-    const content = fs.readFileSync('/etc/os-release', 'utf-8');
-    const idMatch = content.match(/^ID="?(.+?)"?$/m);
-    const versionMatch = content.match(/^VERSION_ID="?(.+?)"?$/m);
-    if (!idMatch) {
-        throw new Error('Cannot detect platform: ID missing from /etc/os-release');
-    }
-    const id = idMatch[1].trim();
-    const versionId = versionMatch ? versionMatch[1].trim() : null;
-    const idLikeMatch = content.match(/^ID_LIKE="?(.+?)"?$/m);
-    const idLike = idLikeMatch ? idLikeMatch[1].trim() : null;
-    const relatedIds = idLike?.split(' ') ?? [];
-    const packageManager = resolvePackageManager(id, idLike);
-    const platform = versionId ? `${id}-${versionId}` : `${id}-unknown`;
-    return { id, relatedIds, versionId, platform, packageManager };
-}
-/** Detects the gungraun-runner version from the project's cargo metadata or pkgid. */
-async function detectProjectVersion() {
-    let metadataStdout = null;
-    try {
-        const { stdout } = await exec.getExecOutput((0, utils_1.getCargoBin)(), ['metadata', '--format-version=1'], { silent: !(0, utils_1.isDebug)(), ignoreReturnCode: true });
-        metadataStdout = stdout;
-    }
-    catch {
-        // Fall through
-    }
-    if (metadataStdout) {
-        let pkgs;
-        try {
-            const metadata = JSON.parse(metadataStdout);
-            pkgs = metadata.packages?.filter((p) => p.name === 'gungraun');
-        }
-        catch {
-            // Fall through to cargo pkgid
-        }
-        if (pkgs?.length === 1 && pkgs[0].version) {
-            return version_1.ResolvedVersion.fromString(pkgs[0].version);
-        }
-        if (pkgs && pkgs.length > 1) {
-            const versions = pkgs.map((p) => p.version).join(', ');
-            throw new Error(`Multiple gungraun versions detected in project (${versions}). Set runner-version \
-explicitly.`);
-        }
-    }
-    try {
-        const { stdout } = await exec.getExecOutput((0, utils_1.getCargoBin)(), ['pkgid', 'gungraun'], {
-            silent: !(0, utils_1.isDebug)(),
-            ignoreReturnCode: true
-        });
-        return version_1.ResolvedVersion.fromString(stdout);
-    }
-    catch {
-        // Fall through to error
-    }
-    throw new Error('Could not detect gungraun-runner version from project. Set runner-version explicitly.');
-}
-/** Detects the Rust compiler target triple */
-async function detectTarget() {
-    const { stdout } = await exec.getExecOutput('rustc', ['-vV'], {
-        silent: !(0, utils_1.isDebug)()
-    });
-    const match = stdout.match(/^host:\s*(.+)$/m);
-    if (!match) {
-        throw new Error('Could not detect target from rustc -vV');
-    }
-    return match[1].trim(); // Safe: printErr exits if match is null
-}
-/** Resolves the package manager for a distro using its ID and ID_LIKE fields. */
-function resolvePackageManager(id, idLike) {
-    if (idLike) {
-        for (const [pattern, pm] of ID_LIKE_PATTERNS) {
-            if (pattern.test(idLike)) {
-                return pm;
-            }
-        }
-    }
-    return PACKAGE_MANAGERS[id] ?? null;
-}
-
-
-/***/ }),
-
-/***/ 1531:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.downloadAndExtractRunner = downloadAndExtractRunner;
-exports.downloadAndExtractRelease = downloadAndExtractRelease;
-exports.downloadAndExtractValgrindUrl = downloadAndExtractValgrindUrl;
-exports.downloadAndExtractValgrindSource = downloadAndExtractValgrindSource;
-exports.downloadAndExtractValgrind = downloadAndExtractValgrind;
-const tc = __importStar(__nccwpck_require__(3472));
-const resolve_1 = __nccwpck_require__(1259);
-const utils_1 = __nccwpck_require__(1798);
-const path_1 = __importDefault(__nccwpck_require__(6928));
-const hash_1 = __nccwpck_require__(6495);
-/** Downloads and extracts the gungraun-runner release archive for a given tag and target. */
-async function downloadAndExtractRunner(version, target, githubToken) {
-    const assetName = `gungraun-runner-${version.withPrefix()}-${target}.tar.gz`;
-    return downloadAndExtractRelease(utils_1.GUNGRAUN_REPO, version, assetName, githubToken);
-}
-async function downloadAndExtractRelease(repo, version, assetName, githubToken) {
-    const release = await (0, resolve_1.fetchReleaseAssetData)(repo, version, githubToken);
-    const archiveAsset = release.assets.find((a) => a.name === assetName);
-    const shaAsset = release.assets.find((a) => a.name === `${assetName}.sha256`);
-    if (!archiveAsset) {
-        throw new Error(`Could not find release asset: ${assetName}`);
-    }
-    const archivePath = await tc.downloadTool(archiveAsset.browserDownloadUrl);
-    if (shaAsset) {
-        const shaPath = await tc.downloadTool(shaAsset.browserDownloadUrl);
-        await (0, hash_1.verifySha)(256, archivePath, shaPath, assetName);
-    }
-    const extractDir = await tc.extractTar(archivePath);
-    return extractDir;
-}
-async function downloadAndExtractValgrindUrl(valgrindUrl, valgrindShaUrl) {
-    const archivePath = await tc.downloadTool(valgrindUrl.toString());
-    const name = path_1.default.basename(archivePath);
-    const assetName = path_1.default.basename(new URL(valgrindUrl).pathname);
-    if (valgrindShaUrl) {
-        const shaPath = await tc.downloadTool(valgrindShaUrl.toString());
-        await (0, hash_1.verifySha)('auto', archivePath, shaPath, assetName);
-    }
-    const extractDir = await tc.extractTar(archivePath);
-    return { extractDir, name };
-}
-async function downloadAndExtractValgrindSource(version) {
-    // The resolved version is always major.minor.patch
-    const assetName = `valgrind-${version}.tar.bz2`;
-    const tarballUrl = `https://sourceware.org/pub/valgrind/${assetName}`;
-    const shaSumsUrl = `https://sourceware.org/pub/valgrind/sha512.sum`;
-    const archivePath = await (0, utils_1.retry)(5, async () => {
-        return await tc.downloadTool(tarballUrl);
-    });
-    const shaAsset = await (0, utils_1.retry)(5, async () => {
-        return await tc.downloadTool(shaSumsUrl);
-    });
-    await (0, hash_1.verifySha)(512, archivePath, shaAsset, assetName);
-    const extractDir = await tc.extractTar(archivePath, undefined, 'xj');
-    return extractDir;
-}
-/** Downloads and extracts the valgrind release archive for a given tag and asset name. */
-async function downloadAndExtractValgrind(version, assetName, githubToken) {
-    return downloadAndExtractRelease(utils_1.VALGRIND_BUILDER_REPO, version, assetName, githubToken);
-}
-
-
-/***/ }),
-
-/***/ 6495:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.extractHash = extractHash;
-exports.verifySha = verifySha;
-const crypto = __importStar(__nccwpck_require__(6982));
-const fs = __importStar(__nccwpck_require__(9896));
-const detect_1 = __nccwpck_require__(1052);
-const path = __importStar(__nccwpck_require__(6928));
-const utils_1 = __nccwpck_require__(1798);
-function extractHash(filePath, expectedName) {
-    if (!filePath || !expectedName) {
-        return null;
-    }
-    const shaContent = fs.readFileSync(filePath, 'utf-8').trim();
-    const hash = shaContent
-        .split(/\r?\n/)
-        .map((line) => {
-        const [a, b] = (0, utils_1.splitOnce)(line, ' ');
-        return [a.trim(), b.trim().replace(/^\*/, '')];
-    })
-        .find(([a, b]) => {
-        return a.length > 0 && (0, utils_1.normalizePath)(b) === (0, utils_1.normalizePath)(expectedName);
-    })?.[0];
-    return hash ?? null;
-}
-async function verifySha(variant, archivePath, shaFilePath, assetName) {
-    const expectedName = assetName ? assetName : path.basename(archivePath);
-    const expectedHash = extractHash(shaFilePath, expectedName);
-    if (!expectedHash) {
-        throw new Error(`Could not find SHA-${variant} entry for '${expectedName}' in checksum file \
-'${shaFilePath}'`);
-    }
-    let shaVariant;
-    if (variant === 'auto') {
-        const detected = (0, detect_1.detectShaVariant)(expectedHash);
-        if (!detected) {
-            throw new Error('Unable to detect sha variant');
-        }
-        shaVariant = detected;
-    }
-    else {
-        shaVariant = 'sha' + variant;
-    }
-    const actualHash = crypto
-        .createHash(shaVariant)
-        .update(fs.readFileSync(archivePath))
-        .digest('hex');
-    if (actualHash !== expectedHash) {
-        throw new Error(`${shaVariant} verification failed for ${expectedName}
-Expected: ${expectedHash}
-Actual:   ${actualHash}`);
-    }
-    (0, utils_1.printInfo)(`${shaVariant} verified for ${expectedName}`);
-}
-
-
-/***/ }),
-
-/***/ 8422:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.VALID_RUNNER_STRATEGIES = exports.VALID_VALGRIND_STRATEGIES = void 0;
-exports.parseGithubToken = parseGithubToken;
-exports.parseInputs = parseInputs;
-exports.parseRunnerTarget = parseRunnerTarget;
-exports.parseRunnerStrategies = parseRunnerStrategies;
-exports.parseRunnerVersion = parseRunnerVersion;
-exports.parseStrategies = parseStrategies;
-exports.parseValgrindConfigureArgs = parseValgrindConfigureArgs;
-exports.parseValgrindMakeEnvs = parseValgrindMakeEnvs;
-exports.parseValgrindStrategies = parseValgrindStrategies;
-exports.parseValgrindUrl = parseValgrindUrl;
-exports.parseValgrindShaUrl = parseValgrindShaUrl;
-exports.parseValgrindVersion = parseValgrindVersion;
-exports.parseInstallBuildDeps = parseInstallBuildDeps;
-const core = __importStar(__nccwpck_require__(7484));
-const shell_quote_1 = __nccwpck_require__(6591);
-const version_1 = __nccwpck_require__(311);
-const detect_1 = __nccwpck_require__(1052);
-const resolve_1 = __nccwpck_require__(1259);
-const utils_1 = __nccwpck_require__(1798);
-exports.VALID_VALGRIND_STRATEGIES = [
-    'builder',
-    'none',
-    'source',
-    'system'
-];
-exports.VALID_RUNNER_STRATEGIES = [
-    'binstall',
-    'none',
-    'release',
-    'source'
-];
-async function parseGithubToken() {
-    return core.getInput('github-token') || '';
-}
-async function parseInputs() {
-    const githubToken = await parseGithubToken();
-    const installBuildDeps = await parseInstallBuildDeps();
-    const runnerStrategies = await parseRunnerStrategies();
-    const isRunnerStrategyNone = runnerStrategies.includes('none');
-    const runnerTarget = await parseRunnerTarget(isRunnerStrategyNone);
-    const runnerVersion = await parseRunnerVersion(isRunnerStrategyNone, githubToken);
-    const valgrindVersion = await parseValgrindVersion();
-    const valgrindConfigureArgs = await parseValgrindConfigureArgs();
-    const valgrindMakeEnvs = await parseValgrindMakeEnvs();
-    const valgrindStrategies = await parseValgrindStrategies();
-    const valgrindUrl = await parseValgrindUrl();
-    const valgrindShaUrl = await parseValgrindShaUrl();
-    return {
-        githubToken,
-        installBuildDeps,
-        runnerStrategies,
-        runnerTarget,
-        runnerVersion,
-        valgrindConfigureArgs,
-        valgrindMakeEnvs,
-        valgrindStrategies,
-        valgrindUrl,
-        valgrindShaUrl,
-        valgrindVersion
-    };
-}
-async function parseRunnerTarget(isNoneStrategy) {
-    if (isNoneStrategy) {
-        return '';
-    }
-    else {
-        return core.getInput('runner-target') || (await (0, detect_1.detectTarget)());
-    }
-}
-async function parseRunnerStrategies() {
-    try {
-        return parseStrategies(core.getInput('runner-strategy'), exports.VALID_RUNNER_STRATEGIES, 'runner');
-    }
-    catch (error) {
-        throw new Error(`Invalid runner-strategy: ${error.message}`);
-    }
-}
-async function parseRunnerVersion(isNoneStrategy, githubToken) {
-    if (isNoneStrategy) {
-        return version_1.Version.auto();
-    }
-    const runnerVersionInput = core.getInput('runner-version') || 'auto';
-    let runnerVersion;
-    if (runnerVersionInput.toLowerCase() === 'auto') {
-        try {
-            runnerVersion = await (0, detect_1.detectProjectVersion)();
-        }
-        catch (error) {
-            throw new Error(`Unable to detect gungraun-runner version: ${error.message}`);
-        }
-    }
-    else {
-        let validVersions;
-        try {
-            validVersions = await (0, resolve_1.fetchRunnerVersions)(githubToken);
-            runnerVersion = version_1.Version.fromString(runnerVersionInput);
-        }
-        catch (error) {
-            throw new Error(`Failed to fetch gungraun-runner versions: ${error.message}`);
-        }
-        if (!runnerVersion.isAutoOrLatest() &&
-            !validVersions.some((v) => v.equals(runnerVersion))) {
-            throw new Error(`Invalid runner-version ${runnerVersionInput}: Valid versions are:
-${validVersions.join(', ')}`);
-        }
-    }
-    return runnerVersion;
-}
-function parseStrategies(input, valid, label) {
-    const strategies = new Set(input
-        .split(',')
-        .map((s) => s.trim().toLowerCase())
-        .filter((s) => s.length > 0));
-    if (strategies.size === 0) {
-        return ['none'];
-    }
-    for (const s of strategies) {
-        if (!valid.includes(s)) {
-            throw new Error(`Invalid ${label} strategy '${s}'. Valid values: ${valid.join(', ')}`);
-        }
-        else if (s === 'none') {
-            return ['none'];
-        }
-    }
-    return Array.from(strategies);
-}
-async function parseValgrindConfigureArgs() {
-    const input = core.getInput('valgrind-configure-args');
-    if (!input) {
-        return [];
-    }
-    const parsed = (0, shell_quote_1.parse)(input);
-    const args = [];
-    for (const token of parsed) {
-        if (typeof token !== 'string') {
-            throw new Error(`Invalid valgrind-configure-args: other tokens than strings are not allowed`);
-        }
-        args.push(token);
-    }
-    return args;
-}
-async function parseValgrindMakeEnvs() {
-    const input = core.getInput('valgrind-make-envs');
-    if (!input) {
-        return new Map();
-    }
-    const parsed = (0, shell_quote_1.parse)(input);
-    const envs = new Map();
-    for (const token of parsed) {
-        if (typeof token !== 'string') {
-            throw new Error(`Invalid valgrind-make-envs: other tokens than strings are not allowed`);
-        }
-        const [key, value] = (0, utils_1.splitOnce)(token, '=').map((t) => t.trim());
-        envs.set(key, value);
-    }
-    return envs;
-}
-async function parseValgrindStrategies() {
-    try {
-        return parseStrategies(core.getInput('valgrind-strategy'), exports.VALID_VALGRIND_STRATEGIES, 'valgrind');
-    }
-    catch (error) {
-        throw new Error(`Invalid valgrind-strategy: ${error.message}`);
-    }
-}
-async function parseValgrindUrl() {
-    try {
-        const input = core.getInput('valgrind-url');
-        if (input) {
-            return new URL(input);
-        }
-        else {
-            return undefined;
-        }
-    }
-    catch (error) {
-        throw new Error(`Invalid valgrind-url: ${error.message}`);
-    }
-}
-async function parseValgrindShaUrl() {
-    try {
-        const input = core.getInput('valgrind-sha-url');
-        if (input) {
-            return new URL(input);
-        }
-        else {
-            return undefined;
-        }
-    }
-    catch (error) {
-        throw new Error(`Invalid valgrind-sha-url: ${error.message}`);
-    }
-}
-async function parseValgrindVersion() {
-    let valgrindVersionInput;
-    let valgrindVersion;
-    try {
-        valgrindVersionInput = core.getInput('valgrind-version') || 'auto';
-        valgrindVersion = version_1.Version.fromString(valgrindVersionInput);
-    }
-    catch (error) {
-        throw new Error(`Invalid valgrind-version: ${error.message} `);
-    }
-    if (!valgrindVersion.isAutoOrLatest()) {
-        let validVersions;
-        try {
-            validVersions = (await (0, resolve_1.fetchSortedValgrindVersions)()).filter((v) => v.major >= 3 && v.minor >= 16);
-        }
-        catch {
-            throw new Error(`Failed to validate Valgrind version`);
-        }
-        if (!validVersions.some((v) => v.equals(valgrindVersion))) {
-            throw new Error(`Invalid valgrind-version '${valgrindVersionInput}': \
-Supported versions are: ${validVersions.join(', ')}`);
-        }
-    }
-    return valgrindVersion;
-}
-async function parseInstallBuildDeps() {
-    return core.getBooleanInput('install-build-deps') || false;
-}
-
-
-/***/ }),
-
-/***/ 232:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getRunnerInstallDir = getRunnerInstallDir;
-exports.installDebugSymbols = installDebugSymbols;
-exports.installRunner = installRunner;
-exports.installRunnerFromRelease = installRunnerFromRelease;
-exports.installRunnerFromSource = installRunnerFromSource;
-exports.installRunnerWithBinstall = installRunnerWithBinstall;
-exports.installValgrind = installValgrind;
-exports.installValgrindFromBuilder = installValgrindFromBuilder;
-exports.installValgrindWithPackageManager = installValgrindWithPackageManager;
-exports.installValgrindBuildDeps = installValgrindBuildDeps;
-exports.installValgrindFromSource = installValgrindFromSource;
-const core = __importStar(__nccwpck_require__(7484));
-const exec = __importStar(__nccwpck_require__(5236));
-const fs = __importStar(__nccwpck_require__(9896));
-const io = __importStar(__nccwpck_require__(4994));
-const path = __importStar(__nccwpck_require__(6928));
-const os = __importStar(__nccwpck_require__(857));
-const detect_1 = __nccwpck_require__(1052);
-const download_1 = __nccwpck_require__(1531);
-const resolve_1 = __nccwpck_require__(1259);
-const utils_1 = __nccwpck_require__(1798);
-const version_1 = __nccwpck_require__(311);
-const platform_1 = __nccwpck_require__(3728);
-const shell_quote_1 = __nccwpck_require__(6591);
-function getRunnerInstallDir() {
-    if (process.env.CARGO_INSTALL_ROOT) {
-        return { dir: `${process.env.CARGO_INSTALL_ROOT}/bin`, needsExport: false };
-    }
-    if (process.env.CARGO_HOME) {
-        return { dir: `${process.env.CARGO_HOME}/bin`, needsExport: false };
-    }
-    if (process.env.HOME) {
-        return { dir: `${process.env.HOME}/.cargo/bin`, needsExport: true };
-    }
-    if (process.env.RUNNER_TEMP) {
-        return { dir: `${process.env.RUNNER_TEMP}/.cargo/bin`, needsExport: true };
-    }
-    return null;
-}
-async function installDebugSymbols() {
-    let warning = false;
-    try {
-        const { packageManager } = await (0, detect_1.detectPlatform)();
-        if (packageManager) {
-            await packageManager.accept(new platform_1.PackagesInstaller(...packageManager.getDebugInfoPackages()));
-        }
-        else {
-            warning = true;
-        }
-    }
-    catch {
-        warning = true;
-    }
-    if (warning) {
-        (0, utils_1.printWarning)(`Failed to install debug symbols for libc. That means you might not \
-be able to use the memcheck tool. Other tools will likely still work`);
-    }
-}
-/** Installs the gungraun-runner by trying each strategy in order until one succeeds. */
-async function installRunner(version, strategies, githubToken, target) {
-    for (let index = 0; index < strategies.length; index++) {
-        const strategy = strategies[index];
-        switch (strategy) {
-            case 'binstall': {
-                const result = await installRunnerWithBinstall(version, target);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('gungraun-runner', 'gungraun-runner');
-                    return;
-                }
-                break;
-            }
-            case 'release': {
-                const result = await installRunnerFromRelease(version, githubToken, target);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('gungraun-runner', 'gungraun-runner');
-                    return;
-                }
-                break;
-            }
-            case 'source': {
-                const result = await installRunnerFromSource(version);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('gungraun-runner', 'gungraun-runner');
-                    return;
-                }
-                break;
-            }
-            case 'none': {
-                (0, utils_1.printInfo)('Skipping gungraun-runner installation');
-                return;
-            }
-            default: {
-                throw new Error(`Invalid strategy '${strategy}'`);
-            }
-        }
-        if (index === strategies.length - 1) {
-            (0, utils_1.printError)(`Last runner strategy '${strategy}' failed`);
-        }
-        else {
-            (0, utils_1.printInfo)(`Runner strategy '${strategy}' was tried`);
-        }
-    }
-    throw new Error('All runner install strategies failed');
-}
-/** Installs gungraun-runner from a GitHub release archive. */
-async function installRunnerFromRelease(version, githubToken, target) {
-    return (0, utils_1.withGroup)(`Downloading gungraun-runner '${version}'`, async () => {
-        try {
-            const resolvedVersion = await (0, resolve_1.resolveRunnerVersion)(version, githubToken);
-            const extractDir = await (0, download_1.downloadAndExtractRunner)(resolvedVersion, target, githubToken);
-            const runnerPath = await (0, utils_1.findBinary)(extractDir, 'gungraun-runner');
-            if (!runnerPath) {
-                (0, utils_1.printInfo)('Could not find gungraun-runner binary in archive');
-                return false;
-            }
-            const result = getRunnerInstallDir();
-            if (!result) {
-                (0, utils_1.printInfo)('Unable to find a installation directory for gungraun-runner');
-                return false;
-            }
-            const { dir: installDir, needsExport } = result;
-            await exec.exec('chmod', ['+x', runnerPath]);
-            if (!fs.existsSync(installDir)) {
-                fs.mkdirSync(installDir, { recursive: true });
-            }
-            await io.mv(runnerPath, path.join(installDir, 'gungraun-runner'));
-            if (needsExport) {
-                core.addPath(installDir);
-                process.env.PATH = `${installDir}${path.delimiter}${process.env.PATH}`;
-                core.exportVariable('GUNGRAUN_RUNNER', path.join(installDir, 'gungraun-runner'));
-            }
-            return true;
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install gungraun-runner from release: ${error.message}`);
-            return false;
-        }
-    });
-}
-/** Installs gungraun-runner from source via cargo install. */
-async function installRunnerFromSource(version, target) {
-    return (0, utils_1.withGroup)('Installing gungraun-runner via cargo install', async () => {
-        try {
-            const args = ['install', 'gungraun-runner'];
-            if (!version.isLatest()) {
-                args.push('--version', version.toString());
-            }
-            if (target) {
-                args.push('--target', target);
-            }
-            await exec.exec((0, utils_1.getCargoBin)(), args);
-            return true;
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install gungraun-runner from source: ${error.message}`);
-            return false;
-        }
-    });
-}
-/** Installs gungraun-runner via cargo-binstall if available. */
-async function installRunnerWithBinstall(version, target) {
-    if (!(await io.which('cargo-binstall', false))) {
-        return false;
-    }
-    return (0, utils_1.withGroup)('Installing gungraun-runner via cargo-binstall', async () => {
-        try {
-            const args = ['binstall', '-y', '--disable-strategies', 'compile'];
-            if (target) {
-                args.push(`--targets`, target);
-            }
-            if (version.isLatest()) {
-                args.push('gungraun-runner');
-            }
-            else {
-                args.push(`gungraun-runner@${version}`);
-            }
-            await exec.exec((0, utils_1.getCargoBin)(), args);
-            return true;
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install gungraun-runner with cargo-binstall: ${error.message}`);
-            return false;
-        }
-    });
-}
-/** Installs valgrind by trying each strategy in order until one succeeds. */
-async function installValgrind(version, strategies, installBuildDeps = false, githubToken, valgrindUrl, valgrindShaUrl, configureArgs = [], makeEnvs = new Map()) {
-    for (let index = 0; index < strategies.length; index++) {
-        const strategy = strategies[index];
-        switch (strategy) {
-            case 'builder': {
-                const result = await installValgrindFromBuilder(version.isAuto() ? version_1.Version.latest() : version, githubToken, valgrindUrl, valgrindShaUrl);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('valgrind', 'valgrind');
-                    return;
-                }
-                break;
-            }
-            case 'system': {
-                const result = await installValgrindWithPackageManager(version);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('valgrind', 'valgrind');
-                    return;
-                }
-                break;
-            }
-            case 'source': {
-                const result = await installValgrindFromSource(version.isAuto() ? version_1.Version.latest() : version, installBuildDeps, configureArgs, makeEnvs);
-                if (result) {
-                    await (0, utils_1.logInstalledVersion)('valgrind', 'valgrind');
-                    return;
-                }
-                break;
-            }
-            case 'none': {
-                (0, utils_1.printInfo)('Skipping valgrind installation');
-                return;
-            }
-            default: {
-                throw new Error(`Invalid strategy '${strategy}'`);
-            }
-        }
-        if (index === strategies.length - 1) {
-            (0, utils_1.printError)(`Last Valgrind strategy '${strategy}' failed`);
-        }
-        else {
-            (0, utils_1.printInfo)(`Valgrind strategy '${strategy}' was tried`);
-        }
-    }
-    throw new Error('All valgrind installation strategies failed');
-}
-/** Installs valgrind from the gungraun/valgrind-builder GitHub release. */
-async function installValgrindFromBuilder(version, githubToken, valgrindUrl, valgrindShaUrl) {
-    return (0, utils_1.withGroup)('Installing valgrind from builder', async () => {
-        try {
-            let extractDir;
-            if (valgrindUrl) {
-                (0, utils_1.printInfo)(`Downloading Valgrind archive from url '${valgrindUrl}'`);
-                const { extractDir: dir } = await (0, download_1.downloadAndExtractValgrindUrl)(valgrindUrl, valgrindShaUrl);
-                extractDir = dir;
-            }
-            else {
-                const { platform } = await (0, detect_1.detectPlatform)();
-                const target = await (0, detect_1.detectTarget)();
-                const arch = (0, detect_1.detectArch)(target);
-                const result = await (0, resolve_1.resolveValgrindBuilderAssetName)(version, arch, platform, githubToken);
-                if (!result) {
-                    (0, utils_1.printInfo)(`No Valgrind builder release found for Valgrind version ${version} \
-(${arch}-${platform})`);
-                    return false;
-                }
-                const { name } = result;
-                (0, utils_1.printInfo)(`Downloading Valgrind builder archive '${name}'`);
-                // This is not the valgrind version. We always use the latest version of the builder
-                // release and extract the archive attached to the latest release with the given
-                // `name`.
-                extractDir = await (0, download_1.downloadAndExtractValgrind)(version_1.Version.latest(), name, githubToken);
-            }
-            const entries = await fs.promises.readdir(extractDir);
-            await (0, utils_1.execPrivileged)('cp', [
-                '-a',
-                ...entries.map((e) => path.join(extractDir, e)),
-                '/'
-            ]);
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install Valgrind from release: ${error.message}`);
-            return false;
-        }
-        await installDebugSymbols();
-        return true;
-    });
-}
-/** Installs valgrind using the system package manager. */
-async function installValgrindWithPackageManager(version) {
-    return (0, utils_1.withGroup)('Installing valgrind via package manager', async () => {
-        const { packageManager } = await (0, detect_1.detectPlatform)();
-        if (!packageManager) {
-            (0, utils_1.printInfo)(`Cannot install Valgrind: No package manager detected for this platform`);
-            return false;
-        }
-        if (!version.isAuto()) {
-            try {
-                const latestVersion = await (0, resolve_1.resolveValgrindVersion)(version);
-                const packageVersion = await packageManager.accept(new platform_1.FetchLatestPackageVersion('valgrind'));
-                if (!packageVersion) {
-                    (0, utils_1.printInfo)(`Unable to retrieve version information with ${packageManager}.`);
-                    return false;
-                }
-                else if (!latestVersion.equals(packageVersion)) {
-                    (0, utils_1.printInfo)(`The package version doesn't match the requested version`);
-                    return false;
-                }
-                else {
-                    // pass through to install with package manager
-                }
-            }
-            catch (error) {
-                (0, utils_1.printInfo)(`Error retrieving package version with ${packageManager}: ${error.message}`);
-                return false;
-            }
-        }
-        try {
-            await packageManager.accept(new platform_1.PackagesInstaller('valgrind', ...packageManager.getDebugInfoPackages()));
-            return true;
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install Valgrind with package manager: ${error.message}`);
-            return false;
-        }
-    });
-}
-/** Installs build dependencies required to compile valgrind from source. */
-async function installValgrindBuildDeps() {
-    const { packageManager } = await (0, detect_1.detectPlatform)();
-    if (!packageManager) {
-        (0, utils_1.printInfo)(`Cannot install build dependencies: unsupported package manager`);
-        return false;
-    }
-    try {
-        const packages = packageManager.getValgrindBuildDeps();
-        await packageManager.accept(new platform_1.PackagesInstaller(...packages));
-        (0, utils_1.printInfo)(`Installed build dependencies: ${packages.join(', ')}`);
-        return true;
-    }
-    catch (error) {
-        (0, utils_1.printInfo)(`Failed to install build dependencies: ${error.message}`);
-        return false;
-    }
-}
-/** Installs valgrind from the source tarball. */
-async function installValgrindFromSource(version, installBuildDeps = false, configureArgs = [], makeEnvs = new Map()) {
-    return (0, utils_1.withGroup)('Installing valgrind from source', async () => {
-        try {
-            const { id } = await (0, detect_1.detectPlatform)();
-            const resolvedVersion = await (0, resolve_1.resolveValgrindVersion)(version);
-            if (installBuildDeps) {
-                const depsResult = await installValgrindBuildDeps();
-                if (!depsResult) {
-                    (0, utils_1.printInfo)('Failed to install build dependencies');
-                    return false;
-                }
-            }
-            const extractDir = await (0, download_1.downloadAndExtractValgrindSource)(resolvedVersion);
-            const sourceDir = path.join(extractDir, `valgrind-${resolvedVersion}`);
-            const execOpts = { cwd: sourceDir };
-            const args = ['--prefix=/usr'];
-            // based on the APKBUILD:
-            // https://gitlab.alpinelinux.org/alpine/aports/-/blob/68861fc5eb9fcc485c720fdf743272b41cbc313b/main/valgrind/APKBUILD
-            if (id === 'alpine') {
-                execOpts.env = {
-                    CFLAGS: '-fno-stack-protector -no-pie -U_FORTIFY_SOURCE',
-                    ...process.env,
-                    ...Object.fromEntries(makeEnvs)
-                };
-                args.push('--without-mpicc');
-            }
-            else {
-                execOpts.env = {
-                    ...process.env,
-                    ...Object.fromEntries(makeEnvs)
-                };
-            }
-            args.push(...configureArgs);
-            (0, utils_1.printInfo)(`:: Running: ./configure ${(0, shell_quote_1.quote)(args)}`);
-            await exec.exec('./configure', args, execOpts);
-            const ncpus = os.cpus().length;
-            const makeArgs = [`-j${ncpus}`, 'BUILD_DOCS=none'];
-            (0, utils_1.printInfo)(`:: Running: make ${(0, shell_quote_1.quote)(args)}`);
-            await exec.exec('make', makeArgs, { ...execOpts });
-            (0, utils_1.printInfo)(`:: Running: make install`);
-            await (0, utils_1.execPrivileged)('make', ['install'], { cwd: sourceDir });
-        }
-        catch (error) {
-            (0, utils_1.printInfo)(`Failed to install Valgrind from source: ${error.message}`);
-            return false;
-        }
-        await installDebugSymbols();
-        return true;
-    });
-}
-
-
-/***/ }),
-
-/***/ 1730:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(7484));
-const exec = __importStar(__nccwpck_require__(5236));
-const io = __importStar(__nccwpck_require__(4994));
-const install_1 = __nccwpck_require__(232);
-const utils_1 = __nccwpck_require__(1798);
-const inputs_1 = __nccwpck_require__(8422);
-const fs = __importStar(__nccwpck_require__(9896));
-/** Main entry point: validates environment, detects versions, and installs gungraun-runner and valgrind. */
-async function run() {
-    if (process.platform !== 'linux') {
-        (0, utils_1.bail)('This action currently only supports Linux runners');
-    }
-    let inputs;
-    try {
-        inputs = await (0, inputs_1.parseInputs)();
-    }
-    catch (error) {
-        (0, utils_1.bail)(`Error parsing inputs: ${error.message}`);
-    }
-    if (!inputs.runnerStrategies.includes('none') && !(await io.which((0, utils_1.getCargoBin)(), false))) {
-        (0, utils_1.bail)('cargo is not installed. This action requires Rust/Cargo to be able to install gungraun-runner.');
-    }
-    const { githubToken, installBuildDeps, runnerStrategies, runnerVersion, runnerTarget, valgrindConfigureArgs, valgrindMakeEnvs, valgrindStrategies, valgrindUrl, valgrindShaUrl, valgrindVersion } = inputs;
-    const valgrindPath = await io.which('valgrind', false);
-    if (valgrindPath) {
-        try {
-            const { stdout } = await exec.getExecOutput('valgrind', ['--version'], {
-                silent: !(0, utils_1.isDebug)(),
-                ignoreReturnCode: true
-            });
-            (0, utils_1.printInfo)(`Valgrind already installed: ${stdout.trim()} (${valgrindPath})`);
-        }
-        catch {
-            (0, utils_1.printInfo)(`Valgrind already installed (${valgrindPath})`);
-        }
-    }
-    else {
-        try {
-            await (0, install_1.installValgrind)(valgrindVersion, valgrindStrategies, installBuildDeps, githubToken, valgrindUrl, valgrindShaUrl, valgrindConfigureArgs, valgrindMakeEnvs);
-            try {
-                const urls = fs
-                    .readdirSync('/etc/debuginfod')
-                    .map((file) => {
-                    if (file.endsWith('.urls')) {
-                        return fs
-                            .readFileSync(`/etc/debuginfod/${file}`, 'utf8')
-                            .replaceAll('\n', ' ')
-                            .trim();
-                    }
-                    else {
-                        return '';
-                    }
-                })
-                    .filter((url) => url.length > 0)
-                    .join(' ');
-                if (urls) {
-                    (0, utils_1.printInfo)(`Setting DEBUGINFOD_URLS to '${urls}'`);
-                    core.exportVariable('DEBUGINFOD_URLS', urls);
-                }
-            }
-            catch {
-                (0, utils_1.printDebug)(`debuginfod urls don't exist or are not readable`);
-            }
-        }
-        catch (error) {
-            (0, utils_1.bail)(`Error installing Valgrind: ${error.message}`);
-        }
-    }
-    try {
-        await (0, install_1.installRunner)(runnerVersion, runnerStrategies, githubToken, runnerTarget);
-    }
-    catch (error) {
-        (0, utils_1.bail)(`Error installing gungraun-runner: ${error.message}`);
-    }
-}
-run().catch((error) => {
-    core.setFailed(`Action failed: ${error.message}`);
-});
-
-
-/***/ }),
-
-/***/ 3728:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PackagesInstaller = exports.FetchLatestPackageVersion = exports.Zypper = exports.Yum = exports.Pacman = exports.MicroDnf = exports.Dnf = exports.AptGet = exports.Apk = void 0;
-const version_1 = __nccwpck_require__(311);
-const utils_1 = __nccwpck_require__(1798);
-class Apk {
-    debugInfoPackages = ['musl-dbg'];
-    // The busybox sed doesn't work with the configure script
-    valgrindBuildDeps = [
-        'build-base',
-        'bzip2',
-        'sed',
-        'perl',
-        'linux-headers'
-    ];
-    accept(v) {
-        return v.visitApk(this);
-    }
-    getDebugInfoPackages() {
-        return this.debugInfoPackages;
-    }
-    getValgrindBuildDeps() {
-        return this.valgrindBuildDeps;
-    }
-    async updateCache() {
-        await (0, utils_1.execPrivileged)('apk', ['update']);
-    }
-}
-exports.Apk = Apk;
-class AptGet {
-    debugInfoPackages = ['libc6-dbg'];
-    valgrindBuildDeps = ['build-essential', 'gcc', 'make', 'bzip2'];
-    accept(v) {
-        return v.visitAptGet(this);
-    }
-    getDebugInfoPackages() {
-        return this.debugInfoPackages;
-    }
-    getValgrindBuildDeps() {
-        return this.valgrindBuildDeps;
-    }
-    async updateCache() {
-        await (0, utils_1.execPrivileged)('apt-get', ['update', '-qq', '--allow-releaseinfo-change'], {
-            env: { DEBIAN_FRONTEND: 'noninteractive' }
-        });
-    }
-}
-exports.AptGet = AptGet;
-class Dnf {
-    debugInfoPackages = ['glibc-debuginfo'];
-    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
-    accept(v) {
-        return v.visitDnf(this);
-    }
-    extractVersionStrings(output, pkg) {
-        // sample: "valgrind.x86_64   3.17.0-1.fc34   updates"
-        const regex = new RegExp(String.raw `^${pkg}[^\s]*\s+([^\s]+).*`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        if (matches.length === 0) {
-            return null;
-        }
-        return matches.map((m) => m[1]);
-    }
-    getDebugInfoPackages() {
-        return this.debugInfoPackages;
-    }
-    getValgrindBuildDeps() {
-        return this.valgrindBuildDeps;
-    }
-}
-exports.Dnf = Dnf;
-class MicroDnf extends Dnf {
-    accept(v) {
-        return v.visitMicroDnf(this);
-    }
-    extractVersionStrings(output, pkg) {
-        // sample: "valgrind-1:3.25.1-3.el10.x86_64"
-        const regex = new RegExp(String.raw `^${pkg}[^\s:]*:([^\s]+).*`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        if (matches.length === 0) {
-            return null;
-        }
-        return matches.map((m) => m[1]);
-    }
-}
-exports.MicroDnf = MicroDnf;
-class Pacman {
-    // Arch linux doesn't ship the debug symbols with glibc and doesn't have them as a separate
-    // package. Instead, arch linux relies on debuginfod.
-    debugInfoPackages = ['debuginfod'];
-    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
-    accept(v) {
-        return v.visitPacman(this);
-    }
-    getDebugInfoPackages() {
-        return this.debugInfoPackages;
-    }
-    getValgrindBuildDeps() {
-        return this.valgrindBuildDeps;
-    }
-    async updateCache() {
-        await (0, utils_1.execPrivileged)('pacman', ['-Sy']);
-    }
-}
-exports.Pacman = Pacman;
-class Yum extends Dnf {
-    accept(v) {
-        return v.visitYum(this);
-    }
-}
-exports.Yum = Yum;
-class Zypper {
-    // This package is part of the `--plus-content debug` repository
-    debugInfoPackages = ['glibc-debuginfo'];
-    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
-    accept(v) {
-        return v.visitZypper(this);
-    }
-    getDebugInfoPackages() {
-        return this.debugInfoPackages;
-    }
-    getValgrindBuildDeps() {
-        return this.valgrindBuildDeps;
-    }
-}
-exports.Zypper = Zypper;
-class FetchLatestPackageVersion {
-    pkg;
-    constructor(pkg) {
-        this.pkg = pkg;
-    }
-    static getLatestVersion(versions) {
-        const resolvedVersions = versions
-            ?.map((v) => version_1.ResolvedVersion.fromString(v))
-            .sort((a, b) => a.compare(b));
-        if (resolvedVersions) {
-            return resolvedVersions[resolvedVersions.length - 1] ?? null;
-        }
-        return null;
-    }
-    async visitAptGet(pm) {
-        await pm.updateCache();
-        const output = await (0, utils_1.execPrivilegedWithOutput)('apt-cache', ['policy', this.pkg], {
-            env: { DEBIAN_FRONTEND: 'noninteractive' }
-        });
-        // sample: "  Installed: (none)\n  Candidate: 1:3.15.0-1"
-        const regex = new RegExp(String.raw `^\s*Candidate:\s*([^\s]+)`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
-    }
-    async visitApk(pm) {
-        await pm.updateCache();
-        const output = await (0, utils_1.execPrivilegedWithOutput)('apk', ['policy', this.pkg]);
-        // sample policy:
-        // "valgrind policy:
-        //    3.25.1-r2:
-        //      https://dl-cdn.alpinelinux.org/alpine/v3.23/main"
-        const regex = new RegExp(String.raw `${this.pkg}\s*policy:\s*([^\s:]+):`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
-    }
-    async visitDnf(pm) {
-        let output;
-        try {
-            output = await (0, utils_1.execPrivilegedWithOutput)('dnf', [
-                '--enablerepo=*-debuginfo',
-                'list',
-                '--showduplicates',
-                this.pkg
-            ]);
-        }
-        catch {
-            return new MicroDnf().accept(new FetchLatestPackageVersion(this.pkg));
-        }
-        const matches = pm.extractVersionStrings(output, this.pkg);
-        return FetchLatestPackageVersion.getLatestVersion(matches);
-    }
-    async visitMicroDnf(pm) {
-        const output = await (0, utils_1.execPrivilegedWithOutput)('microdnf', [
-            '--enablerepo=*-debuginfo',
-            'repoquery',
-            this.pkg
-        ]);
-        const matches = pm.extractVersionStrings(output, this.pkg);
-        return FetchLatestPackageVersion.getLatestVersion(matches);
-    }
-    async visitPacman(pm) {
-        await pm.updateCache();
-        const output = await (0, utils_1.execPrivilegedWithOutput)('pacman', ['-Si', this.pkg]);
-        // sample: "Version         : 3.17.0-1"
-        const regex = new RegExp(String.raw `^\s*Version\s*:\s*([^\s]+)`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        return FetchLatestPackageVersion.getLatestVersion(matches?.map((m) => m[1]));
-    }
-    async visitYum(pm) {
-        let output;
-        try {
-            output = await (0, utils_1.execPrivilegedWithOutput)('yum', [
-                '--enablerepo=*-debuginfo',
-                'list',
-                '--showduplicates',
-                this.pkg
-            ]);
-        }
-        catch {
-            return new Dnf().accept(new FetchLatestPackageVersion(this.pkg));
-        }
-        const matches = pm.extractVersionStrings(output, this.pkg);
-        return FetchLatestPackageVersion.getLatestVersion(matches);
-    }
-    async visitZypper(_pm) {
-        const output = await (0, utils_1.execPrivilegedWithOutput)('zypper', ['info', this.pkg]);
-        // sample: "Version   : 3.17.0-1.1"
-        const regex = new RegExp(String.raw `^\s*Version\s*:\s*([^\s]+)`, 'gm');
-        const matches = [...output.matchAll(regex)];
-        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
-    }
-}
-exports.FetchLatestPackageVersion = FetchLatestPackageVersion;
-class PackagesInstaller {
-    pkgs;
-    constructor(...pkgs) {
-        this.pkgs = pkgs;
-    }
-    hasPackages() {
-        return this.pkgs.length > 0;
-    }
-    async visitAptGet(pm) {
-        if (this.hasPackages()) {
-            await pm.updateCache();
-            await (0, utils_1.execPrivilegedWithOutput)('apt-get', ['install', '-y', '--no-install-recommends', ...this.pkgs], { env: { DEBIAN_FRONTEND: 'noninteractive' }, silent: false });
-        }
-    }
-    async visitApk(pm) {
-        if (this.hasPackages()) {
-            await pm.updateCache();
-            await (0, utils_1.execPrivilegedWithOutput)('apk', ['add', ...this.pkgs], { silent: false });
-        }
-    }
-    async visitDnf(_pm) {
-        if (this.hasPackages()) {
-            try {
-                await (0, utils_1.execPrivilegedWithOutput)('dnf', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
-            }
-            catch {
-                return new MicroDnf().accept(new PackagesInstaller(...this.pkgs));
-            }
-        }
-    }
-    async visitMicroDnf(_pm) {
-        if (this.hasPackages()) {
-            await (0, utils_1.execPrivilegedWithOutput)('microdnf', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
-        }
-    }
-    async visitPacman(pm) {
-        if (this.hasPackages()) {
-            await pm.updateCache();
-            await (0, utils_1.execPrivilegedWithOutput)('pacman', ['-S', '--noconfirm', ...this.pkgs], {
-                silent: false
-            });
-        }
-    }
-    async visitYum(_pm) {
-        if (this.hasPackages()) {
-            try {
-                await (0, utils_1.execPrivilegedWithOutput)('yum', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
-            }
-            catch {
-                return new Dnf().accept(new PackagesInstaller(...this.pkgs));
-            }
-        }
-    }
-    async visitZypper(_pm) {
-        if (this.hasPackages()) {
-            await (0, utils_1.execPrivilegedWithOutput)('zypper', [
-                '--non-interactive',
-                '--plus-content',
-                'debug',
-                'install',
-                ...this.pkgs
-            ], { silent: false });
-        }
-    }
-}
-exports.PackagesInstaller = PackagesInstaller;
-
-
-/***/ }),
-
-/***/ 1259:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.fetchReleaseAssetData = fetchReleaseAssetData;
-exports.fetchRunnerVersions = fetchRunnerVersions;
-exports.fetchSortedValgrindVersions = fetchSortedValgrindVersions;
-exports.resolveRunnerVersion = resolveRunnerVersion;
-exports.resolveValgrindBuilderAssetName = resolveValgrindBuilderAssetName;
-exports.resolveValgrindVersion = resolveValgrindVersion;
-const exec = __importStar(__nccwpck_require__(5236));
-const github_1 = __nccwpck_require__(3228);
-const utils_1 = __nccwpck_require__(1798);
-const version_1 = __nccwpck_require__(311);
-/** Fetches release assets for a given repo and tag from the GitHub API. */
-async function fetchReleaseAssetData(repo, version, githubToken, retries) {
-    const octokit = (0, github_1.getOctokit)(githubToken);
-    const [owner, repoName] = repo.split('/');
-    try {
-        return await (0, utils_1.retry)(retries ?? 5, async () => {
-            let release;
-            if (version.isLatest()) {
-                release = await octokit.rest.repos.getLatestRelease({
-                    owner,
-                    repo: repoName
-                });
-            }
-            else {
-                release = await octokit.rest.repos.getReleaseByTag({
-                    owner,
-                    repo: repoName,
-                    tag: version.withPrefix()
-                });
-            }
-            return {
-                tagName: release.data.tag_name,
-                assets: release.data.assets.map((a) => ({
-                    name: a.name,
-                    browserDownloadUrl: a.browser_download_url
-                }))
-            };
-        });
-    }
-    catch (error) {
-        throw new Error(`Failed to fetch release assets: ${error.message}`);
-    }
-}
-async function fetchRunnerVersions(githubToken, retries) {
-    const octokit = (0, github_1.getOctokit)(githubToken);
-    const [owner, repoName] = utils_1.GUNGRAUN_REPO.split('/');
-    try {
-        return await (0, utils_1.retry)(retries ?? 5, async () => {
-            const { data } = await octokit.rest.repos.listReleases({
-                owner,
-                repo: repoName
-            });
-            if (data.length > 0) {
-                return data.map((d) => version_1.ResolvedVersion.fromString(d.tag_name));
-            }
-            else {
-                throw new Error(`At least one version should be present`);
-            }
-        });
-    }
-    catch (error) {
-        throw new Error(`Failed to fetch gungraun-runner versions: ${error.message}`);
-    }
-}
-async function fetchSortedValgrindVersions() {
-    const stdout = await (0, utils_1.retry)(5, async () => {
-        const output = await exec.getExecOutput('git', ['ls-remote', '--tags', utils_1.VALGRIND_SOURCE_REPO], {
-            silent: !(0, utils_1.isDebug)()
-        });
-        return output.stdout;
-    });
-    const versions = stdout
-        .trim()
-        .split('\n')
-        .filter((l) => !l.includes('^{}'))
-        .map((l) => version_1.ResolvedVersion.fromValgrindTag(l))
-        .sort((a, b) => a.compare(b));
-    if (versions.length === 0) {
-        throw new Error('Could not determine latest valgrind version from sourceware.org');
-    }
-    return versions;
-}
-async function resolveLatestTag(repo, notFoundMessage, githubToken, retries) {
-    const octokit = (0, github_1.getOctokit)(githubToken);
-    const [owner, repoName] = repo.split('/');
-    let tag;
-    try {
-        tag = await (0, utils_1.retry)(retries ?? 5, async () => {
-            const { data } = await octokit.rest.repos.getLatestRelease({
-                owner,
-                repo: repoName
-            });
-            return data.tag_name;
-        });
-    }
-    catch (error) {
-        throw new Error(notFoundMessage + `: ${error.message}`);
-    }
-    return version_1.ResolvedVersion.fromString(tag);
-}
-/** Resolves a gungraun-runner version tag, fetching "latest" from GitHub if needed. */
-async function resolveRunnerVersion(version, githubToken, retries) {
-    if (!version.isAutoOrLatest()) {
-        return version;
-    }
-    return await resolveLatestTag(utils_1.GUNGRAUN_REPO, 'Could not determine latest release version for gungraun-runner', githubToken, retries);
-}
-/** Resolves the valgrind asset name matching the given architecture and platform. */
-async function resolveValgrindBuilderAssetName(version, arch, platform, githubToken) {
-    // This is not the version of valgrind but the version of valgrind-builder and we always want
-    // the assets from the latest valgrind-builder release.
-    const release = await fetchReleaseAssetData(utils_1.VALGRIND_BUILDER_REPO, version_1.Version.latest(), githubToken);
-    // Example: valgrind-3.19.0-x86_64-ubuntu-22.04.tar.gz
-    if (version.isAutoOrLatest()) {
-        const pattern = new RegExp(String.raw `^valgrind-(\d+)\.(\d+)\.(\d+)-${RegExp.escape(arch)}-${RegExp.escape(platform)}\.tar\.gz$`);
-        const sorted = release.assets
-            .map((a) => a.name.match(pattern))
-            .filter((match) => match != null)
-            .map((m) => {
-            const resolvedVersion = new version_1.ResolvedVersion(Number(m[1]), Number(m[2]), Number(m[3]));
-            const name = m[0];
-            return {
-                version: resolvedVersion,
-                name
-            };
-        })
-            .sort((a, b) => {
-            return a.version.compare(b.version);
-        });
-        return sorted[sorted.length - 1] ?? null;
-    }
-    else {
-        const expected = `valgrind-${version}-${arch}-${platform}.tar.gz`;
-        const match = release.assets.find((a) => a.name === expected);
-        if (!match) {
-            return null;
-        }
-        else {
-            return {
-                version: version_1.ResolvedVersion.fromVersion(version),
-                name: match.name
-            };
-        }
-    }
-}
-/** Resolves a valgrind version for building from source, using git ls-remote for "latest" and
- * "auto". */
-async function resolveValgrindVersion(version) {
-    const versions = await fetchSortedValgrindVersions();
-    if (!version.isAutoOrLatest()) {
-        if (versions.some((v) => v.equals(version))) {
-            return version;
-        }
-        else {
-            throw new Error(`Invalid version ${version}`);
-        }
-    }
-    return versions[versions.length - 1];
-}
-
-
-/***/ }),
-
-/***/ 1798:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.VALGRIND_SOURCE_REPO = exports.VALGRIND_BUILDER_REPO = exports.LOG_PREFIX = exports.GUNGRAUN_REPO = void 0;
-exports.isDebug = isDebug;
-exports.bail = bail;
-exports.isRoot = isRoot;
-exports.execPrivileged = execPrivileged;
-exports.execPrivilegedWithOutput = execPrivilegedWithOutput;
-exports.findBinary = findBinary;
-exports.getCargoBin = getCargoBin;
-exports.logInstalledVersion = logInstalledVersion;
-exports.normalizePath = normalizePath;
-exports.printError = printError;
-exports.printInfo = printInfo;
-exports.printWarning = printWarning;
-exports.printDebug = printDebug;
-exports.randNumber = randNumber;
-exports.retry = retry;
-exports.splitOnce = splitOnce;
-exports.withGroup = withGroup;
-const core = __importStar(__nccwpck_require__(7484));
-const exec = __importStar(__nccwpck_require__(5236));
-const fs = __importStar(__nccwpck_require__(9896));
-const path = __importStar(__nccwpck_require__(6928));
-/** GitHub repository for gungraun-runner releases. */
-exports.GUNGRAUN_REPO = 'gungraun/gungraun';
-exports.LOG_PREFIX = 'setup-gungraun:';
-/** GitHub repository for valgrind-builder releases. */
-exports.VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
-exports.VALGRIND_SOURCE_REPO = 'https://sourceware.org/git/valgrind.git';
-function isDebug() {
-    return (!!process.env.GUNGRAUN_ACTION_DEBUG ||
-        process.env.ACTIONS_STEP_DEBUG === 'true' ||
-        process.env.RUNNER_DEBUG === '1');
-}
-/** Marks the action as failed and exits the process. Never returns. */
-function bail(message) {
-    core.setFailed(message);
-    process.exit(1);
-}
-function isRoot() {
-    return process.getuid?.() === 0;
-}
-async function execPrivileged(cmd, args, opts) {
-    const execOpts = { silent: !isDebug() };
-    if (opts?.cwd) {
-        execOpts.cwd = opts.cwd;
-    }
-    if (opts?.env) {
-        execOpts.env = { ...process.env, ...opts.env };
-    }
-    if (isRoot()) {
-        await exec.exec(cmd, args, execOpts);
-    }
-    else {
-        await exec.exec('sudo', [cmd, ...args], execOpts);
-    }
-}
-async function execPrivilegedWithOutput(cmd, args, opts) {
-    const execOpts = { silent: opts?.silent ?? !isDebug() };
-    if (opts?.env) {
-        execOpts.env = { ...process.env, ...opts.env };
-    }
-    if (isRoot()) {
-        const { stdout } = await exec.getExecOutput(cmd, args, execOpts);
-        return stdout;
-    }
-    const { stdout } = await exec.getExecOutput('sudo', [cmd, ...args], execOpts);
-    return stdout;
-}
-async function findBinary(dir, name) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true, recursive: true });
-    for (const entry of entries) {
-        if (entry.isFile() && entry.name === name) {
-            // entry.parentPath is supported by node versions from 20 upwards
-            return path.join(entry.parentPath, entry.name);
-        }
-    }
-    return null;
-}
-/** Returns the cargo binary path, respecting the CARGO environment variable. */
-function getCargoBin() {
-    return process.env.CARGO || 'cargo';
-}
-/** Logs the installed version of a binary, or a fallback string if unavailable. */
-async function logInstalledVersion(binary, label) {
-    const { stdout } = await exec.getExecOutput(binary, ['--version'], {
-        silent: !isDebug(),
-        ignoreReturnCode: true
-    });
-    printInfo(`${label} installed: ${stdout.trim() || 'version unknown'}`);
-}
-function normalizePath(path) {
-    const trimmed = path.trim();
-    if (trimmed.length > 2) {
-        return trimmed.startsWith('./') ? trimmed.slice(2) : trimmed;
-    }
-    else {
-        return trimmed.startsWith('./') ? '.' : trimmed;
-    }
-}
-/** Logs a error message. */
-function printError(message) {
-    core.error(`${exports.LOG_PREFIX} ${message}`);
-}
-/** Logs an informational message. */
-function printInfo(message) {
-    core.info(`${exports.LOG_PREFIX} ${message}`);
-}
-/** Logs a warning message. */
-function printWarning(message) {
-    core.warning(`${exports.LOG_PREFIX} ${message}`);
-}
-/** Logs a debug message if debugging is enabled */
-function printDebug(message) {
-    if (isDebug()) {
-        console.log(message);
-    }
-}
-function randNumber(min = 0, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-async function retry(maxRetries, fn) {
-    for (let index = 0;; index++) {
-        try {
-            return await fn();
-        }
-        catch (error) {
-            if (index < maxRetries) {
-                await new Promise((r) => setTimeout(r, randNumber(5000, 20000)));
-                continue;
-            }
-            else {
-                throw error;
-            }
-        }
-    }
-}
-function splitOnce(str, sep) {
-    const i = str.indexOf(sep);
-    if (i === -1)
-        return [str, ''];
-    return [str.slice(0, i), str.slice(i + sep.length)];
-}
-/** Runs an async function within a named log group, ensuring the group is closed. */
-async function withGroup(name, fn) {
-    core.startGroup(name);
-    try {
-        return await fn();
-    }
-    finally {
-        core.endGroup();
-    }
-}
-
-
-/***/ }),
-
-/***/ 311:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResolvedVersion = exports.Version = void 0;
-class Version {
-    major;
-    minor;
-    patch;
-    constructor(major, minor, patch) {
-        if (!Number.isSafeInteger(major) ||
-            !Number.isSafeInteger(minor) ||
-            !Number.isSafeInteger(patch)) {
-            throw new Error('A version cannot be represented by an unsafe number');
-        }
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
-    }
-    static fromValgrindTag(tag) {
-        const match = tag.match(/VALGRIND_(\d+)_(\d+)_(\d+)/);
-        if (match) {
-            return new Version(Number(match[1]), Number(match[2]), Number(match[3]));
-        }
-        throw new Error(`Invalid Valgrind version tag: ${tag}`);
-    }
-    static fromString(str) {
-        const lower = str.trim().toLowerCase();
-        if (lower === 'latest') {
-            return Version.latest();
-        }
-        else if (lower === 'auto') {
-            return Version.auto();
-        }
-        const match = lower.match(/[v]?(\d+)\.(\d+)\.(\d+)/);
-        if (match) {
-            return new Version(Number(match[1]), Number(match[2]), Number(match[3]));
-        }
-        throw new Error(`Invalid version string: ${str}`);
-    }
-    static latest() {
-        return new Version(-1, 0, 0);
-    }
-    static auto() {
-        return new Version(-2, 0, 0);
-    }
-    /**
-     * Compares this version with another version
-     *
-     * Returns a negative number if this version is smaller than the other version, zero if they are
-     * equal and a positive number otherwise. The result of this function can be used for the `sort`
-     * function of `Array.sort`.
-     *
-     * Special cases: auto < latest < semver
-     *
-     * @param other: The other version
-     */
-    compare(other) {
-        return this.major - other.major || this.minor - other.minor || this.patch - other.patch;
-    }
-    equals(other) {
-        return this.compare(other) === 0;
-    }
-    isAuto() {
-        return this.major === -2;
-    }
-    isLatest() {
-        return this.major === -1;
-    }
-    isAutoOrLatest() {
-        return this.isAuto() || this.isLatest();
-    }
-    toString() {
-        if (this.isLatest()) {
-            return 'latest';
-        }
-        else if (this.isAuto()) {
-            return 'auto';
-        }
-        return `${this.major}.${this.minor}.${this.patch}`;
-    }
-    withPrefix() {
-        if (this.isLatest()) {
-            return 'latest';
-        }
-        else if (this.isAuto()) {
-            return 'auto';
-        }
-        return `v${this.toString()}`;
-    }
-}
-exports.Version = Version;
-class ResolvedVersion extends Version {
-    constructor(major, minor, patch) {
-        if (major === -1 || major === -2) {
-            throw new Error("A resolved version cannot be 'latest' or 'auto'");
-        }
-        super(major, minor, patch);
-    }
-    static fromValgrindTag(tag) {
-        const version = super.fromValgrindTag(tag);
-        return ResolvedVersion.fromVersion(version);
-    }
-    static fromString(str) {
-        const version = super.fromString(str);
-        if (version.isAutoOrLatest()) {
-            throw new Error("A resolved version cannot be 'latest' or 'auto'");
-        }
-        return ResolvedVersion.fromVersion(version);
-    }
-    static fromVersion(version) {
-        return new ResolvedVersion(version.major, version.minor, version.patch);
-    }
-    static latest() {
-        throw new Error("A resolved version cannot be 'latest'");
-    }
-    static auto() {
-        throw new Error("A resolved version cannot be 'auto'");
-    }
-    isLatest() {
-        return false;
-    }
-    isAuto() {
-        return false;
-    }
-    isAutoOrLatest() {
-        return false;
-    }
-    toString() {
-        return `${this.major}.${this.minor}.${this.patch}`;
-    }
-    withPrefix() {
-        return `v${this.toString()}`;
-    }
-}
-exports.ResolvedVersion = ResolvedVersion;
-
-
-/***/ }),
-
 /***/ 2613:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
 /***/ 5317:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
 /***/ 6982:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
 
 /***/ }),
 
 /***/ 4434:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
 /***/ 9896:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
 /***/ 8611:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
 /***/ 5692:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
 /***/ 9278:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
 /***/ 4589:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:assert");
 
 /***/ }),
 
 /***/ 6698:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:async_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:async_hooks");
 
 /***/ }),
 
 /***/ 4573:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:buffer");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:buffer");
 
 /***/ }),
 
 /***/ 7540:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:console");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:console");
 
 /***/ }),
 
 /***/ 7598:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:crypto");
 
 /***/ }),
 
 /***/ 3053:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:diagnostics_channel");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:diagnostics_channel");
 
 /***/ }),
 
 /***/ 610:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:dns");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:dns");
 
 /***/ }),
 
 /***/ 8474:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:events");
 
 /***/ }),
 
 /***/ 7067:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:http");
 
 /***/ }),
 
 /***/ 2467:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:http2");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:http2");
 
 /***/ }),
 
 /***/ 7030:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:net");
 
 /***/ }),
 
 /***/ 643:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:perf_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:perf_hooks");
 
 /***/ }),
 
 /***/ 1792:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:querystring");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:querystring");
 
 /***/ }),
 
 /***/ 7075:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream");
 
 /***/ }),
 
 /***/ 1692:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:tls");
 
 /***/ }),
 
 /***/ 3136:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:url");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:url");
 
 /***/ }),
 
 /***/ 7975:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util");
 
 /***/ }),
 
 /***/ 3429:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:util/types");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util/types");
 
 /***/ }),
 
 /***/ 5919:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:worker_threads");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:worker_threads");
 
 /***/ }),
 
 /***/ 8522:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("node:zlib");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:zlib");
 
 /***/ }),
 
 /***/ 857:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
 /***/ 6928:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
 /***/ 2203:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream");
 
 /***/ }),
 
 /***/ 3193:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("string_decoder");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
 
 /***/ }),
 
 /***/ 3557:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("timers");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
 
 /***/ }),
 
 /***/ 4756:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
 /***/ 9023:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ }),
 
 /***/ 4649:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 var __webpack_unused_export__;
 
 /*!
@@ -36979,20 +34525,845 @@ function qstring(str) {
 }
 //# sourceMappingURL=index.js.map
 
-/***/ }),
+/***/ })
 
-/***/ 4629:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+/******/ });
+/************************************************************************/
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __nccwpck_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
+/******/ 	}
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	var threw = true;
+/******/ 	try {
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 		threw = false;
+/******/ 	} finally {
+/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 	}
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
+/************************************************************************/
+/******/ /* webpack/runtime/compat */
+/******/ 
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
+/************************************************************************/
+var __webpack_exports__ = {};
 
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(7484);
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __nccwpck_require__(5236);
+// EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
+var io = __nccwpck_require__(4994);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(9896);
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(6928);
+// EXTERNAL MODULE: external "os"
+var external_os_ = __nccwpck_require__(857);
+;// CONCATENATED MODULE: ./.ncc-build/utils.js
 
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  Octokit: () => (/* binding */ Octokit)
-});
 
+
+
+/** GitHub repository for gungraun-runner releases. */
+const GUNGRAUN_REPO = 'gungraun/gungraun';
+const LOG_PREFIX = 'setup-gungraun:';
+/** GitHub repository for valgrind-builder releases. */
+const VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
+const VALGRIND_SOURCE_REPO = 'https://sourceware.org/git/valgrind.git';
+function isDebug() {
+    return (!!process.env.GUNGRAUN_ACTION_DEBUG ||
+        process.env.ACTIONS_STEP_DEBUG === 'true' ||
+        process.env.RUNNER_DEBUG === '1');
+}
+/** Marks the action as failed and exits the process. Never returns. */
+function bail(message) {
+    core.setFailed(message);
+    process.exit(1);
+}
+function isRoot() {
+    return process.getuid?.() === 0;
+}
+async function execPrivileged(cmd, args, opts) {
+    const execOpts = { silent: !isDebug() };
+    if (opts?.cwd) {
+        execOpts.cwd = opts.cwd;
+    }
+    if (opts?.env) {
+        execOpts.env = { ...process.env, ...opts.env };
+    }
+    if (isRoot()) {
+        await exec.exec(cmd, args, execOpts);
+    }
+    else {
+        await exec.exec('sudo', [cmd, ...args], execOpts);
+    }
+}
+async function execPrivilegedWithOutput(cmd, args, opts) {
+    const execOpts = { silent: opts?.silent ?? !isDebug() };
+    if (opts?.env) {
+        execOpts.env = { ...process.env, ...opts.env };
+    }
+    if (isRoot()) {
+        const { stdout } = await exec.getExecOutput(cmd, args, execOpts);
+        return stdout;
+    }
+    const { stdout } = await exec.getExecOutput('sudo', [cmd, ...args], execOpts);
+    return stdout;
+}
+async function findBinary(dir, name) {
+    const entries = external_fs_.readdirSync(dir, { withFileTypes: true, recursive: true });
+    for (const entry of entries) {
+        if (entry.isFile() && entry.name === name) {
+            // entry.parentPath is supported by node versions from 20 upwards
+            return external_path_.join(entry.parentPath, entry.name);
+        }
+    }
+    return null;
+}
+/** Returns the cargo binary path, respecting the CARGO environment variable. */
+function getCargoBin() {
+    return process.env.CARGO || 'cargo';
+}
+/** Logs the installed version of a binary, or a fallback string if unavailable. */
+async function logInstalledVersion(binary, label) {
+    const { stdout } = await exec.getExecOutput(binary, ['--version'], {
+        silent: !isDebug(),
+        ignoreReturnCode: true
+    });
+    printInfo(`${label} installed: ${stdout.trim() || 'version unknown'}`);
+}
+function normalizePath(path) {
+    const trimmed = path.trim();
+    if (trimmed.length > 2) {
+        return trimmed.startsWith('./') ? trimmed.slice(2) : trimmed;
+    }
+    else {
+        return trimmed.startsWith('./') ? '.' : trimmed;
+    }
+}
+/** Logs a error message. */
+function printError(message) {
+    core.error(`${LOG_PREFIX} ${message}`);
+}
+/** Logs an informational message. */
+function printInfo(message) {
+    core.info(`${LOG_PREFIX} ${message}`);
+}
+/** Logs a warning message. */
+function printWarning(message) {
+    core.warning(`${LOG_PREFIX} ${message}`);
+}
+/** Logs a debug message if debugging is enabled */
+function printDebug(message) {
+    if (isDebug()) {
+        console.log(message);
+    }
+}
+function randNumber(min = 0, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+async function retry(maxRetries, fn) {
+    for (let index = 0;; index++) {
+        try {
+            return await fn();
+        }
+        catch (error) {
+            if (index < maxRetries) {
+                await new Promise((r) => setTimeout(r, randNumber(5000, 20000)));
+                continue;
+            }
+            else {
+                throw error;
+            }
+        }
+    }
+}
+function splitOnce(str, sep) {
+    const i = str.indexOf(sep);
+    if (i === -1)
+        return [str, ''];
+    return [str.slice(0, i), str.slice(i + sep.length)];
+}
+/** Runs an async function within a named log group, ensuring the group is closed. */
+async function withGroup(name, fn) {
+    core.startGroup(name);
+    try {
+        return await fn();
+    }
+    finally {
+        core.endGroup();
+    }
+}
+//# sourceMappingURL=utils.js.map
+;// CONCATENATED MODULE: ./.ncc-build/version.js
+class Version {
+    major;
+    minor;
+    patch;
+    constructor(major, minor, patch) {
+        if (!Number.isSafeInteger(major) ||
+            !Number.isSafeInteger(minor) ||
+            !Number.isSafeInteger(patch)) {
+            throw new Error('A version cannot be represented by an unsafe number');
+        }
+        this.major = major;
+        this.minor = minor;
+        this.patch = patch;
+    }
+    static fromValgrindTag(tag) {
+        const match = tag.match(/VALGRIND_(\d+)_(\d+)_(\d+)/);
+        if (match) {
+            return new Version(Number(match[1]), Number(match[2]), Number(match[3]));
+        }
+        throw new Error(`Invalid Valgrind version tag: ${tag}`);
+    }
+    static fromString(str) {
+        const lower = str.trim().toLowerCase();
+        if (lower === 'latest') {
+            return Version.latest();
+        }
+        else if (lower === 'auto') {
+            return Version.auto();
+        }
+        const match = lower.match(/[v]?(\d+)\.(\d+)\.(\d+)/);
+        if (match) {
+            return new Version(Number(match[1]), Number(match[2]), Number(match[3]));
+        }
+        throw new Error(`Invalid version string: ${str}`);
+    }
+    static latest() {
+        return new Version(-1, 0, 0);
+    }
+    static auto() {
+        return new Version(-2, 0, 0);
+    }
+    /**
+     * Compares this version with another version
+     *
+     * Returns a negative number if this version is smaller than the other version, zero if they are
+     * equal and a positive number otherwise. The result of this function can be used for the `sort`
+     * function of `Array.sort`.
+     *
+     * Special cases: auto < latest < semver
+     *
+     * @param other: The other version
+     */
+    compare(other) {
+        return this.major - other.major || this.minor - other.minor || this.patch - other.patch;
+    }
+    equals(other) {
+        return this.compare(other) === 0;
+    }
+    isAuto() {
+        return this.major === -2;
+    }
+    isLatest() {
+        return this.major === -1;
+    }
+    isAutoOrLatest() {
+        return this.isAuto() || this.isLatest();
+    }
+    toString() {
+        if (this.isLatest()) {
+            return 'latest';
+        }
+        else if (this.isAuto()) {
+            return 'auto';
+        }
+        return `${this.major}.${this.minor}.${this.patch}`;
+    }
+    withPrefix() {
+        if (this.isLatest()) {
+            return 'latest';
+        }
+        else if (this.isAuto()) {
+            return 'auto';
+        }
+        return `v${this.toString()}`;
+    }
+}
+class ResolvedVersion extends Version {
+    constructor(major, minor, patch) {
+        if (major === -1 || major === -2) {
+            throw new Error("A resolved version cannot be 'latest' or 'auto'");
+        }
+        super(major, minor, patch);
+    }
+    static fromValgrindTag(tag) {
+        const version = super.fromValgrindTag(tag);
+        return ResolvedVersion.fromVersion(version);
+    }
+    static fromString(str) {
+        const version = super.fromString(str);
+        if (version.isAutoOrLatest()) {
+            throw new Error("A resolved version cannot be 'latest' or 'auto'");
+        }
+        return ResolvedVersion.fromVersion(version);
+    }
+    static fromVersion(version) {
+        return new ResolvedVersion(version.major, version.minor, version.patch);
+    }
+    static latest() {
+        throw new Error("A resolved version cannot be 'latest'");
+    }
+    static auto() {
+        throw new Error("A resolved version cannot be 'auto'");
+    }
+    isLatest() {
+        return false;
+    }
+    isAuto() {
+        return false;
+    }
+    isAutoOrLatest() {
+        return false;
+    }
+    toString() {
+        return `${this.major}.${this.minor}.${this.patch}`;
+    }
+    withPrefix() {
+        return `v${this.toString()}`;
+    }
+}
+//# sourceMappingURL=version.js.map
+;// CONCATENATED MODULE: ./.ncc-build/platform.js
+
+
+class Apk {
+    debugInfoPackages = ['musl-dbg'];
+    // The busybox sed doesn't work with the configure script
+    valgrindBuildDeps = [
+        'build-base',
+        'bzip2',
+        'sed',
+        'perl',
+        'linux-headers'
+    ];
+    accept(v) {
+        return v.visitApk(this);
+    }
+    getDebugInfoPackages() {
+        return this.debugInfoPackages;
+    }
+    getValgrindBuildDeps() {
+        return this.valgrindBuildDeps;
+    }
+    async updateCache() {
+        await execPrivileged('apk', ['update']);
+    }
+}
+class AptGet {
+    debugInfoPackages = ['libc6-dbg'];
+    valgrindBuildDeps = ['build-essential', 'gcc', 'make', 'bzip2'];
+    accept(v) {
+        return v.visitAptGet(this);
+    }
+    getDebugInfoPackages() {
+        return this.debugInfoPackages;
+    }
+    getValgrindBuildDeps() {
+        return this.valgrindBuildDeps;
+    }
+    async updateCache() {
+        await execPrivileged('apt-get', ['update', '-qq', '--allow-releaseinfo-change'], {
+            env: { DEBIAN_FRONTEND: 'noninteractive' }
+        });
+    }
+}
+class Dnf {
+    debugInfoPackages = ['glibc-debuginfo'];
+    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
+    accept(v) {
+        return v.visitDnf(this);
+    }
+    extractVersionStrings(output, pkg) {
+        // sample: "valgrind.x86_64   3.17.0-1.fc34   updates"
+        const regex = new RegExp(String.raw `^${pkg}[^\s]*\s+([^\s]+).*`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        if (matches.length === 0) {
+            return null;
+        }
+        return matches.map((m) => m[1]);
+    }
+    getDebugInfoPackages() {
+        return this.debugInfoPackages;
+    }
+    getValgrindBuildDeps() {
+        return this.valgrindBuildDeps;
+    }
+}
+class MicroDnf extends Dnf {
+    accept(v) {
+        return v.visitMicroDnf(this);
+    }
+    extractVersionStrings(output, pkg) {
+        // sample: "valgrind-1:3.25.1-3.el10.x86_64"
+        const regex = new RegExp(String.raw `^${pkg}[^\s:]*:([^\s]+).*`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        if (matches.length === 0) {
+            return null;
+        }
+        return matches.map((m) => m[1]);
+    }
+}
+class Pacman {
+    // Arch linux doesn't ship the debug symbols with glibc and doesn't have them as a separate
+    // package. Instead, arch linux relies on debuginfod.
+    debugInfoPackages = ['debuginfod'];
+    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
+    accept(v) {
+        return v.visitPacman(this);
+    }
+    getDebugInfoPackages() {
+        return this.debugInfoPackages;
+    }
+    getValgrindBuildDeps() {
+        return this.valgrindBuildDeps;
+    }
+    async updateCache() {
+        await execPrivileged('pacman', ['-Sy']);
+    }
+}
+class Yum extends Dnf {
+    accept(v) {
+        return v.visitYum(this);
+    }
+}
+class Zypper {
+    // This package is part of the `--plus-content debug` repository
+    debugInfoPackages = ['glibc-debuginfo'];
+    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
+    accept(v) {
+        return v.visitZypper(this);
+    }
+    getDebugInfoPackages() {
+        return this.debugInfoPackages;
+    }
+    getValgrindBuildDeps() {
+        return this.valgrindBuildDeps;
+    }
+}
+class FetchLatestPackageVersion {
+    pkg;
+    constructor(pkg) {
+        this.pkg = pkg;
+    }
+    static getLatestVersion(versions) {
+        const resolvedVersions = versions
+            ?.map((v) => ResolvedVersion.fromString(v))
+            .sort((a, b) => a.compare(b));
+        if (resolvedVersions) {
+            return resolvedVersions[resolvedVersions.length - 1] ?? null;
+        }
+        return null;
+    }
+    async visitAptGet(pm) {
+        await pm.updateCache();
+        const output = await execPrivilegedWithOutput('apt-cache', ['policy', this.pkg], {
+            env: { DEBIAN_FRONTEND: 'noninteractive' }
+        });
+        // sample: "  Installed: (none)\n  Candidate: 1:3.15.0-1"
+        const regex = new RegExp(String.raw `^\s*Candidate:\s*([^\s]+)`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
+    }
+    async visitApk(pm) {
+        await pm.updateCache();
+        const output = await execPrivilegedWithOutput('apk', ['policy', this.pkg]);
+        // sample policy:
+        // "valgrind policy:
+        //    3.25.1-r2:
+        //      https://dl-cdn.alpinelinux.org/alpine/v3.23/main"
+        const regex = new RegExp(String.raw `${this.pkg}\s*policy:\s*([^\s:]+):`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
+    }
+    async visitDnf(pm) {
+        let output;
+        try {
+            output = await execPrivilegedWithOutput('dnf', [
+                '--enablerepo=*-debuginfo',
+                'list',
+                '--showduplicates',
+                this.pkg
+            ]);
+        }
+        catch {
+            return new MicroDnf().accept(new FetchLatestPackageVersion(this.pkg));
+        }
+        const matches = pm.extractVersionStrings(output, this.pkg);
+        return FetchLatestPackageVersion.getLatestVersion(matches);
+    }
+    async visitMicroDnf(pm) {
+        const output = await execPrivilegedWithOutput('microdnf', [
+            '--enablerepo=*-debuginfo',
+            'repoquery',
+            this.pkg
+        ]);
+        const matches = pm.extractVersionStrings(output, this.pkg);
+        return FetchLatestPackageVersion.getLatestVersion(matches);
+    }
+    async visitPacman(pm) {
+        await pm.updateCache();
+        const output = await execPrivilegedWithOutput('pacman', ['-Si', this.pkg]);
+        // sample: "Version         : 3.17.0-1"
+        const regex = new RegExp(String.raw `^\s*Version\s*:\s*([^\s]+)`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        return FetchLatestPackageVersion.getLatestVersion(matches?.map((m) => m[1]));
+    }
+    async visitYum(pm) {
+        let output;
+        try {
+            output = await execPrivilegedWithOutput('yum', [
+                '--enablerepo=*-debuginfo',
+                'list',
+                '--showduplicates',
+                this.pkg
+            ]);
+        }
+        catch {
+            return new Dnf().accept(new FetchLatestPackageVersion(this.pkg));
+        }
+        const matches = pm.extractVersionStrings(output, this.pkg);
+        return FetchLatestPackageVersion.getLatestVersion(matches);
+    }
+    async visitZypper(_pm) {
+        const output = await execPrivilegedWithOutput('zypper', ['info', this.pkg]);
+        // sample: "Version   : 3.17.0-1.1"
+        const regex = new RegExp(String.raw `^\s*Version\s*:\s*([^\s]+)`, 'gm');
+        const matches = [...output.matchAll(regex)];
+        return FetchLatestPackageVersion.getLatestVersion(matches.map((m) => m[1]));
+    }
+}
+class PackagesInstaller {
+    pkgs;
+    constructor(...pkgs) {
+        this.pkgs = pkgs;
+    }
+    hasPackages() {
+        return this.pkgs.length > 0;
+    }
+    async visitAptGet(pm) {
+        if (this.hasPackages()) {
+            await pm.updateCache();
+            await execPrivilegedWithOutput('apt-get', ['install', '-y', '--no-install-recommends', ...this.pkgs], { env: { DEBIAN_FRONTEND: 'noninteractive' }, silent: false });
+        }
+    }
+    async visitApk(pm) {
+        if (this.hasPackages()) {
+            await pm.updateCache();
+            await execPrivilegedWithOutput('apk', ['add', ...this.pkgs], { silent: false });
+        }
+    }
+    async visitDnf(_pm) {
+        if (this.hasPackages()) {
+            try {
+                await execPrivilegedWithOutput('dnf', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
+            }
+            catch {
+                return new MicroDnf().accept(new PackagesInstaller(...this.pkgs));
+            }
+        }
+    }
+    async visitMicroDnf(_pm) {
+        if (this.hasPackages()) {
+            await execPrivilegedWithOutput('microdnf', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
+        }
+    }
+    async visitPacman(pm) {
+        if (this.hasPackages()) {
+            await pm.updateCache();
+            await execPrivilegedWithOutput('pacman', ['-S', '--noconfirm', ...this.pkgs], {
+                silent: false
+            });
+        }
+    }
+    async visitYum(_pm) {
+        if (this.hasPackages()) {
+            try {
+                await execPrivilegedWithOutput('yum', ['--enablerepo=*-debuginfo', 'install', '-y', ...this.pkgs], { silent: false });
+            }
+            catch {
+                return new Dnf().accept(new PackagesInstaller(...this.pkgs));
+            }
+        }
+    }
+    async visitZypper(_pm) {
+        if (this.hasPackages()) {
+            await execPrivilegedWithOutput('zypper', [
+                '--non-interactive',
+                '--plus-content',
+                'debug',
+                'install',
+                ...this.pkgs
+            ], { silent: false });
+        }
+    }
+}
+//# sourceMappingURL=platform.js.map
+;// CONCATENATED MODULE: ./.ncc-build/detect.js
+
+
+
+
+
+const ID_LIKE_PATTERNS = [
+    [/debian/, new AptGet()],
+    [/fedora/, new Dnf()],
+    [/suse/, new Zypper()],
+    [/arch/, new Pacman()],
+    [/alpine/, new Apk()]
+];
+// No suse, since suse is an ID_LIKE
+const PACKAGE_MANAGERS = {
+    debian: new AptGet(),
+    fedora: new Dnf(),
+    arch: new Pacman(),
+    alpine: new Apk(),
+    amzn: new Yum()
+};
+/** Extracts the architecture prefix from a Rust target triple. */
+function detectArch(target) {
+    return target.split('-')[0];
+}
+function detectShaVariant(hash) {
+    let variant;
+    switch (hash.length) {
+        case 40:
+            variant = 1;
+            break;
+        case 56:
+            variant = 224;
+            break;
+        case 64:
+            variant = 256;
+            break;
+        case 96:
+            variant = 384;
+            break;
+        case 128:
+            variant = 512;
+            break;
+        default:
+            return null;
+    }
+    return 'sha' + variant;
+}
+/** Detects the platform, version, and package manager from /etc/os-release. */
+async function detectPlatform() {
+    if (!external_fs_.existsSync('/etc/os-release')) {
+        throw new Error('Cannot detect platform: /etc/os-release not found');
+    }
+    const content = external_fs_.readFileSync('/etc/os-release', 'utf-8');
+    const idMatch = content.match(/^ID="?(.+?)"?$/m);
+    const versionMatch = content.match(/^VERSION_ID="?(.+?)"?$/m);
+    if (!idMatch) {
+        throw new Error('Cannot detect platform: ID missing from /etc/os-release');
+    }
+    const id = idMatch[1].trim();
+    const versionId = versionMatch ? versionMatch[1].trim() : null;
+    const idLikeMatch = content.match(/^ID_LIKE="?(.+?)"?$/m);
+    const idLike = idLikeMatch ? idLikeMatch[1].trim() : null;
+    const relatedIds = idLike?.split(' ') ?? [];
+    const packageManager = resolvePackageManager(id, idLike);
+    const platform = versionId ? `${id}-${versionId}` : `${id}-unknown`;
+    return { id, relatedIds, versionId, platform, packageManager };
+}
+/** Detects the gungraun-runner version from the project's cargo metadata or pkgid. */
+async function detectProjectVersion() {
+    let metadataStdout = null;
+    try {
+        const { stdout } = await exec.getExecOutput(getCargoBin(), ['metadata', '--format-version=1'], { silent: !isDebug(), ignoreReturnCode: true });
+        metadataStdout = stdout;
+    }
+    catch {
+        // Fall through
+    }
+    if (metadataStdout) {
+        let pkgs;
+        try {
+            const metadata = JSON.parse(metadataStdout);
+            pkgs = metadata.packages?.filter((p) => p.name === 'gungraun');
+        }
+        catch {
+            // Fall through to cargo pkgid
+        }
+        if (pkgs?.length === 1 && pkgs[0].version) {
+            return ResolvedVersion.fromString(pkgs[0].version);
+        }
+        if (pkgs && pkgs.length > 1) {
+            const versions = pkgs.map((p) => p.version).join(', ');
+            throw new Error(`Multiple gungraun versions detected in project (${versions}). Set runner-version \
+explicitly.`);
+        }
+    }
+    try {
+        const { stdout } = await exec.getExecOutput(getCargoBin(), ['pkgid', 'gungraun'], {
+            silent: !isDebug(),
+            ignoreReturnCode: true
+        });
+        return ResolvedVersion.fromString(stdout);
+    }
+    catch {
+        // Fall through to error
+    }
+    throw new Error('Could not detect gungraun-runner version from project. Set runner-version explicitly.');
+}
+/** Detects the Rust compiler target triple */
+async function detectTarget() {
+    const { stdout } = await exec.getExecOutput('rustc', ['-vV'], {
+        silent: !isDebug()
+    });
+    const match = stdout.match(/^host:\s*(.+)$/m);
+    if (!match) {
+        throw new Error('Could not detect target from rustc -vV');
+    }
+    return match[1].trim(); // Safe: printErr exits if match is null
+}
+/** Resolves the package manager for a distro using its ID and ID_LIKE fields. */
+function resolvePackageManager(id, idLike) {
+    if (idLike) {
+        for (const [pattern, pm] of ID_LIKE_PATTERNS) {
+            if (pattern.test(idLike)) {
+                return pm;
+            }
+        }
+    }
+    return PACKAGE_MANAGERS[id] ?? null;
+}
+//# sourceMappingURL=detect.js.map
+// EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
+var tool_cache = __nccwpck_require__(3472);
+;// CONCATENATED MODULE: ./node_modules/@actions/github/lib/context.js
+
+
+class Context {
+    /**
+     * Hydrate the context from the environment
+     */
+    constructor() {
+        var _a, _b, _c;
+        this.payload = {};
+        if (process.env.GITHUB_EVENT_PATH) {
+            if ((0,external_fs_.existsSync)(process.env.GITHUB_EVENT_PATH)) {
+                this.payload = JSON.parse((0,external_fs_.readFileSync)(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
+            }
+            else {
+                const path = process.env.GITHUB_EVENT_PATH;
+                process.stdout.write(`GITHUB_EVENT_PATH ${path} does not exist${external_os_.EOL}`);
+            }
+        }
+        this.eventName = process.env.GITHUB_EVENT_NAME;
+        this.sha = process.env.GITHUB_SHA;
+        this.ref = process.env.GITHUB_REF;
+        this.workflow = process.env.GITHUB_WORKFLOW;
+        this.action = process.env.GITHUB_ACTION;
+        this.actor = process.env.GITHUB_ACTOR;
+        this.job = process.env.GITHUB_JOB;
+        this.runAttempt = parseInt(process.env.GITHUB_RUN_ATTEMPT, 10);
+        this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
+        this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
+        this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
+        this.serverUrl = (_b = process.env.GITHUB_SERVER_URL) !== null && _b !== void 0 ? _b : `https://github.com`;
+        this.graphqlUrl =
+            (_c = process.env.GITHUB_GRAPHQL_URL) !== null && _c !== void 0 ? _c : `https://api.github.com/graphql`;
+    }
+    get issue() {
+        const payload = this.payload;
+        return Object.assign(Object.assign({}, this.repo), { number: (payload.issue || payload.pull_request || payload).number });
+    }
+    get repo() {
+        if (process.env.GITHUB_REPOSITORY) {
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            return { owner, repo };
+        }
+        if (this.payload.repository) {
+            return {
+                owner: this.payload.repository.owner.login,
+                repo: this.payload.repository.name
+            };
+        }
+        throw new Error("context.repo requires a GITHUB_REPOSITORY environment variable like 'owner/repo'");
+    }
+}
+//# sourceMappingURL=context.js.map
+// EXTERNAL MODULE: ./node_modules/@actions/http-client/lib/index.js
+var lib = __nccwpck_require__(4844);
+// EXTERNAL MODULE: ./node_modules/undici/index.js
+var undici = __nccwpck_require__(6752);
+;// CONCATENATED MODULE: ./node_modules/@actions/github/lib/internal/utils.js
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function getAuthString(token, options) {
+    if (!token && !options.auth) {
+        throw new Error('Parameter token or opts.auth is required');
+    }
+    else if (token && options.auth) {
+        throw new Error('Parameters token and opts.auth may not both be specified');
+    }
+    return typeof options.auth === 'string' ? options.auth : `token ${token}`;
+}
+function getProxyAgent(destinationUrl) {
+    const hc = new lib.HttpClient();
+    return hc.getAgent(destinationUrl);
+}
+function getProxyAgentDispatcher(destinationUrl) {
+    const hc = new lib.HttpClient();
+    return hc.getAgentDispatcher(destinationUrl);
+}
+function getProxyFetch(destinationUrl) {
+    const httpDispatcher = getProxyAgentDispatcher(destinationUrl);
+    const proxyFetch = (url, opts) => __awaiter(this, void 0, void 0, function* () {
+        return (0,undici.fetch)(url, Object.assign(Object.assign({}, opts), { dispatcher: httpDispatcher }));
+    });
+    return proxyFetch;
+}
+function getApiBaseUrl() {
+    return process.env['GITHUB_API_URL'] || 'https://api.github.com';
+}
+function getUserAgentWithOrchestrationId(baseUserAgent) {
+    var _a;
+    const orchId = (_a = process.env['ACTIONS_ORCHESTRATION_ID']) === null || _a === void 0 ? void 0 : _a.trim();
+    if (orchId) {
+        const sanitizedId = orchId.replace(/[^a-z0-9_.-]/gi, '_');
+        const tag = `actions_orchestration_id/${sanitizedId}`;
+        if (baseUserAgent === null || baseUserAgent === void 0 ? void 0 : baseUserAgent.includes(tag))
+            return baseUserAgent;
+        const ua = baseUserAgent ? `${baseUserAgent} ` : '';
+        return `${ua}${tag}`;
+    }
+    return baseUserAgent;
+}
+//# sourceMappingURL=utils.js.map
 ;// CONCATENATED MODULE: ./node_modules/universal-user-agent/index.js
 function getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
@@ -38289,449 +36660,8 @@ class Octokit {
 }
 
 
-
-/***/ }),
-
-/***/ 3779:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   composePaginateRest: () => (/* binding */ composePaginateRest),
-/* harmony export */   isPaginatingEndpoint: () => (/* binding */ isPaginatingEndpoint),
-/* harmony export */   paginateRest: () => (/* binding */ paginateRest),
-/* harmony export */   paginatingEndpoints: () => (/* binding */ paginatingEndpoints)
-/* harmony export */ });
-// pkg/dist-src/version.js
-var VERSION = "0.0.0-development";
-
-// pkg/dist-src/normalize-paginated-list-response.js
-function normalizePaginatedListResponse(response) {
-  if (!response.data) {
-    return {
-      ...response,
-      data: []
-    };
-  }
-  const responseNeedsNormalization = ("total_count" in response.data || "total_commits" in response.data) && !("url" in response.data);
-  if (!responseNeedsNormalization) return response;
-  const incompleteResults = response.data.incomplete_results;
-  const repositorySelection = response.data.repository_selection;
-  const totalCount = response.data.total_count;
-  const totalCommits = response.data.total_commits;
-  delete response.data.incomplete_results;
-  delete response.data.repository_selection;
-  delete response.data.total_count;
-  delete response.data.total_commits;
-  const namespaceKey = Object.keys(response.data)[0];
-  const data = response.data[namespaceKey];
-  response.data = data;
-  if (typeof incompleteResults !== "undefined") {
-    response.data.incomplete_results = incompleteResults;
-  }
-  if (typeof repositorySelection !== "undefined") {
-    response.data.repository_selection = repositorySelection;
-  }
-  response.data.total_count = totalCount;
-  response.data.total_commits = totalCommits;
-  return response;
-}
-
-// pkg/dist-src/iterator.js
-function iterator(octokit, route, parameters) {
-  const options = typeof route === "function" ? route.endpoint(parameters) : octokit.request.endpoint(route, parameters);
-  const requestMethod = typeof route === "function" ? route : octokit.request;
-  const method = options.method;
-  const headers = options.headers;
-  let url = options.url;
-  return {
-    [Symbol.asyncIterator]: () => ({
-      async next() {
-        if (!url) return { done: true };
-        try {
-          const response = await requestMethod({ method, url, headers });
-          const normalizedResponse = normalizePaginatedListResponse(response);
-          url = ((normalizedResponse.headers.link || "").match(
-            /<([^<>]+)>;\s*rel="next"/
-          ) || [])[1];
-          if (!url && "total_commits" in normalizedResponse.data) {
-            const parsedUrl = new URL(normalizedResponse.url);
-            const params = parsedUrl.searchParams;
-            const page = parseInt(params.get("page") || "1", 10);
-            const per_page = parseInt(params.get("per_page") || "250", 10);
-            if (page * per_page < normalizedResponse.data.total_commits) {
-              params.set("page", String(page + 1));
-              url = parsedUrl.toString();
-            }
-          }
-          return { value: normalizedResponse };
-        } catch (error) {
-          if (error.status !== 409) throw error;
-          url = "";
-          return {
-            value: {
-              status: 200,
-              headers: {},
-              data: []
-            }
-          };
-        }
-      }
-    })
-  };
-}
-
-// pkg/dist-src/paginate.js
-function paginate(octokit, route, parameters, mapFn) {
-  if (typeof parameters === "function") {
-    mapFn = parameters;
-    parameters = void 0;
-  }
-  return gather(
-    octokit,
-    [],
-    iterator(octokit, route, parameters)[Symbol.asyncIterator](),
-    mapFn
-  );
-}
-function gather(octokit, results, iterator2, mapFn) {
-  return iterator2.next().then((result) => {
-    if (result.done) {
-      return results;
-    }
-    let earlyExit = false;
-    function done() {
-      earlyExit = true;
-    }
-    results = results.concat(
-      mapFn ? mapFn(result.value, done) : result.value.data
-    );
-    if (earlyExit) {
-      return results;
-    }
-    return gather(octokit, results, iterator2, mapFn);
-  });
-}
-
-// pkg/dist-src/compose-paginate.js
-var composePaginateRest = Object.assign(paginate, {
-  iterator
-});
-
-// pkg/dist-src/generated/paginating-endpoints.js
-var paginatingEndpoints = [
-  "GET /advisories",
-  "GET /app/hook/deliveries",
-  "GET /app/installation-requests",
-  "GET /app/installations",
-  "GET /assignments/{assignment_id}/accepted_assignments",
-  "GET /classrooms",
-  "GET /classrooms/{classroom_id}/assignments",
-  "GET /enterprises/{enterprise}/code-security/configurations",
-  "GET /enterprises/{enterprise}/code-security/configurations/{configuration_id}/repositories",
-  "GET /enterprises/{enterprise}/dependabot/alerts",
-  "GET /enterprises/{enterprise}/teams",
-  "GET /enterprises/{enterprise}/teams/{enterprise-team}/memberships",
-  "GET /enterprises/{enterprise}/teams/{enterprise-team}/organizations",
-  "GET /events",
-  "GET /gists",
-  "GET /gists/public",
-  "GET /gists/starred",
-  "GET /gists/{gist_id}/comments",
-  "GET /gists/{gist_id}/commits",
-  "GET /gists/{gist_id}/forks",
-  "GET /installation/repositories",
-  "GET /issues",
-  "GET /licenses",
-  "GET /marketplace_listing/plans",
-  "GET /marketplace_listing/plans/{plan_id}/accounts",
-  "GET /marketplace_listing/stubbed/plans",
-  "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts",
-  "GET /networks/{owner}/{repo}/events",
-  "GET /notifications",
-  "GET /organizations",
-  "GET /organizations/{org}/dependabot/repository-access",
-  "GET /orgs/{org}/actions/cache/usage-by-repository",
-  "GET /orgs/{org}/actions/hosted-runners",
-  "GET /orgs/{org}/actions/permissions/repositories",
-  "GET /orgs/{org}/actions/permissions/self-hosted-runners/repositories",
-  "GET /orgs/{org}/actions/runner-groups",
-  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners",
-  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories",
-  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners",
-  "GET /orgs/{org}/actions/runners",
-  "GET /orgs/{org}/actions/secrets",
-  "GET /orgs/{org}/actions/secrets/{secret_name}/repositories",
-  "GET /orgs/{org}/actions/variables",
-  "GET /orgs/{org}/actions/variables/{name}/repositories",
-  "GET /orgs/{org}/attestations/repositories",
-  "GET /orgs/{org}/attestations/{subject_digest}",
-  "GET /orgs/{org}/blocks",
-  "GET /orgs/{org}/campaigns",
-  "GET /orgs/{org}/code-scanning/alerts",
-  "GET /orgs/{org}/code-security/configurations",
-  "GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories",
-  "GET /orgs/{org}/codespaces",
-  "GET /orgs/{org}/codespaces/secrets",
-  "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories",
-  "GET /orgs/{org}/copilot/billing/seats",
-  "GET /orgs/{org}/copilot/metrics",
-  "GET /orgs/{org}/dependabot/alerts",
-  "GET /orgs/{org}/dependabot/secrets",
-  "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories",
-  "GET /orgs/{org}/events",
-  "GET /orgs/{org}/failed_invitations",
-  "GET /orgs/{org}/hooks",
-  "GET /orgs/{org}/hooks/{hook_id}/deliveries",
-  "GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}",
-  "GET /orgs/{org}/insights/api/subject-stats",
-  "GET /orgs/{org}/insights/api/user-stats/{user_id}",
-  "GET /orgs/{org}/installations",
-  "GET /orgs/{org}/invitations",
-  "GET /orgs/{org}/invitations/{invitation_id}/teams",
-  "GET /orgs/{org}/issues",
-  "GET /orgs/{org}/members",
-  "GET /orgs/{org}/members/{username}/codespaces",
-  "GET /orgs/{org}/migrations",
-  "GET /orgs/{org}/migrations/{migration_id}/repositories",
-  "GET /orgs/{org}/organization-roles/{role_id}/teams",
-  "GET /orgs/{org}/organization-roles/{role_id}/users",
-  "GET /orgs/{org}/outside_collaborators",
-  "GET /orgs/{org}/packages",
-  "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
-  "GET /orgs/{org}/personal-access-token-requests",
-  "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories",
-  "GET /orgs/{org}/personal-access-tokens",
-  "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
-  "GET /orgs/{org}/private-registries",
-  "GET /orgs/{org}/projects",
-  "GET /orgs/{org}/projectsV2",
-  "GET /orgs/{org}/projectsV2/{project_number}/fields",
-  "GET /orgs/{org}/projectsV2/{project_number}/items",
-  "GET /orgs/{org}/properties/values",
-  "GET /orgs/{org}/public_members",
-  "GET /orgs/{org}/repos",
-  "GET /orgs/{org}/rulesets",
-  "GET /orgs/{org}/rulesets/rule-suites",
-  "GET /orgs/{org}/rulesets/{ruleset_id}/history",
-  "GET /orgs/{org}/secret-scanning/alerts",
-  "GET /orgs/{org}/security-advisories",
-  "GET /orgs/{org}/settings/immutable-releases/repositories",
-  "GET /orgs/{org}/settings/network-configurations",
-  "GET /orgs/{org}/team/{team_slug}/copilot/metrics",
-  "GET /orgs/{org}/teams",
-  "GET /orgs/{org}/teams/{team_slug}/discussions",
-  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments",
-  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions",
-  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions",
-  "GET /orgs/{org}/teams/{team_slug}/invitations",
-  "GET /orgs/{org}/teams/{team_slug}/members",
-  "GET /orgs/{org}/teams/{team_slug}/projects",
-  "GET /orgs/{org}/teams/{team_slug}/repos",
-  "GET /orgs/{org}/teams/{team_slug}/teams",
-  "GET /projects/{project_id}/collaborators",
-  "GET /repos/{owner}/{repo}/actions/artifacts",
-  "GET /repos/{owner}/{repo}/actions/caches",
-  "GET /repos/{owner}/{repo}/actions/organization-secrets",
-  "GET /repos/{owner}/{repo}/actions/organization-variables",
-  "GET /repos/{owner}/{repo}/actions/runners",
-  "GET /repos/{owner}/{repo}/actions/runs",
-  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts",
-  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs",
-  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
-  "GET /repos/{owner}/{repo}/actions/secrets",
-  "GET /repos/{owner}/{repo}/actions/variables",
-  "GET /repos/{owner}/{repo}/actions/workflows",
-  "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
-  "GET /repos/{owner}/{repo}/activity",
-  "GET /repos/{owner}/{repo}/assignees",
-  "GET /repos/{owner}/{repo}/attestations/{subject_digest}",
-  "GET /repos/{owner}/{repo}/branches",
-  "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
-  "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs",
-  "GET /repos/{owner}/{repo}/code-scanning/alerts",
-  "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances",
-  "GET /repos/{owner}/{repo}/code-scanning/analyses",
-  "GET /repos/{owner}/{repo}/codespaces",
-  "GET /repos/{owner}/{repo}/codespaces/devcontainers",
-  "GET /repos/{owner}/{repo}/codespaces/secrets",
-  "GET /repos/{owner}/{repo}/collaborators",
-  "GET /repos/{owner}/{repo}/comments",
-  "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions",
-  "GET /repos/{owner}/{repo}/commits",
-  "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments",
-  "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls",
-  "GET /repos/{owner}/{repo}/commits/{ref}/check-runs",
-  "GET /repos/{owner}/{repo}/commits/{ref}/check-suites",
-  "GET /repos/{owner}/{repo}/commits/{ref}/status",
-  "GET /repos/{owner}/{repo}/commits/{ref}/statuses",
-  "GET /repos/{owner}/{repo}/compare/{basehead}",
-  "GET /repos/{owner}/{repo}/compare/{base}...{head}",
-  "GET /repos/{owner}/{repo}/contributors",
-  "GET /repos/{owner}/{repo}/dependabot/alerts",
-  "GET /repos/{owner}/{repo}/dependabot/secrets",
-  "GET /repos/{owner}/{repo}/deployments",
-  "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
-  "GET /repos/{owner}/{repo}/environments",
-  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies",
-  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps",
-  "GET /repos/{owner}/{repo}/environments/{environment_name}/secrets",
-  "GET /repos/{owner}/{repo}/environments/{environment_name}/variables",
-  "GET /repos/{owner}/{repo}/events",
-  "GET /repos/{owner}/{repo}/forks",
-  "GET /repos/{owner}/{repo}/hooks",
-  "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries",
-  "GET /repos/{owner}/{repo}/invitations",
-  "GET /repos/{owner}/{repo}/issues",
-  "GET /repos/{owner}/{repo}/issues/comments",
-  "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions",
-  "GET /repos/{owner}/{repo}/issues/events",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/events",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/labels",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues",
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline",
-  "GET /repos/{owner}/{repo}/keys",
-  "GET /repos/{owner}/{repo}/labels",
-  "GET /repos/{owner}/{repo}/milestones",
-  "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels",
-  "GET /repos/{owner}/{repo}/notifications",
-  "GET /repos/{owner}/{repo}/pages/builds",
-  "GET /repos/{owner}/{repo}/projects",
-  "GET /repos/{owner}/{repo}/pulls",
-  "GET /repos/{owner}/{repo}/pulls/comments",
-  "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions",
-  "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments",
-  "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
-  "GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
-  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
-  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments",
-  "GET /repos/{owner}/{repo}/releases",
-  "GET /repos/{owner}/{repo}/releases/{release_id}/assets",
-  "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
-  "GET /repos/{owner}/{repo}/rules/branches/{branch}",
-  "GET /repos/{owner}/{repo}/rulesets",
-  "GET /repos/{owner}/{repo}/rulesets/rule-suites",
-  "GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history",
-  "GET /repos/{owner}/{repo}/secret-scanning/alerts",
-  "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
-  "GET /repos/{owner}/{repo}/security-advisories",
-  "GET /repos/{owner}/{repo}/stargazers",
-  "GET /repos/{owner}/{repo}/subscribers",
-  "GET /repos/{owner}/{repo}/tags",
-  "GET /repos/{owner}/{repo}/teams",
-  "GET /repos/{owner}/{repo}/topics",
-  "GET /repositories",
-  "GET /search/code",
-  "GET /search/commits",
-  "GET /search/issues",
-  "GET /search/labels",
-  "GET /search/repositories",
-  "GET /search/topics",
-  "GET /search/users",
-  "GET /teams/{team_id}/discussions",
-  "GET /teams/{team_id}/discussions/{discussion_number}/comments",
-  "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions",
-  "GET /teams/{team_id}/discussions/{discussion_number}/reactions",
-  "GET /teams/{team_id}/invitations",
-  "GET /teams/{team_id}/members",
-  "GET /teams/{team_id}/projects",
-  "GET /teams/{team_id}/repos",
-  "GET /teams/{team_id}/teams",
-  "GET /user/blocks",
-  "GET /user/codespaces",
-  "GET /user/codespaces/secrets",
-  "GET /user/emails",
-  "GET /user/followers",
-  "GET /user/following",
-  "GET /user/gpg_keys",
-  "GET /user/installations",
-  "GET /user/installations/{installation_id}/repositories",
-  "GET /user/issues",
-  "GET /user/keys",
-  "GET /user/marketplace_purchases",
-  "GET /user/marketplace_purchases/stubbed",
-  "GET /user/memberships/orgs",
-  "GET /user/migrations",
-  "GET /user/migrations/{migration_id}/repositories",
-  "GET /user/orgs",
-  "GET /user/packages",
-  "GET /user/packages/{package_type}/{package_name}/versions",
-  "GET /user/public_emails",
-  "GET /user/repos",
-  "GET /user/repository_invitations",
-  "GET /user/social_accounts",
-  "GET /user/ssh_signing_keys",
-  "GET /user/starred",
-  "GET /user/subscriptions",
-  "GET /user/teams",
-  "GET /users",
-  "GET /users/{username}/attestations/{subject_digest}",
-  "GET /users/{username}/events",
-  "GET /users/{username}/events/orgs/{org}",
-  "GET /users/{username}/events/public",
-  "GET /users/{username}/followers",
-  "GET /users/{username}/following",
-  "GET /users/{username}/gists",
-  "GET /users/{username}/gpg_keys",
-  "GET /users/{username}/keys",
-  "GET /users/{username}/orgs",
-  "GET /users/{username}/packages",
-  "GET /users/{username}/projects",
-  "GET /users/{username}/projectsV2",
-  "GET /users/{username}/projectsV2/{project_number}/fields",
-  "GET /users/{username}/projectsV2/{project_number}/items",
-  "GET /users/{username}/received_events",
-  "GET /users/{username}/received_events/public",
-  "GET /users/{username}/repos",
-  "GET /users/{username}/social_accounts",
-  "GET /users/{username}/ssh_signing_keys",
-  "GET /users/{username}/starred",
-  "GET /users/{username}/subscriptions"
-];
-
-// pkg/dist-src/paginating-endpoints.js
-function isPaginatingEndpoint(arg) {
-  if (typeof arg === "string") {
-    return paginatingEndpoints.includes(arg);
-  } else {
-    return false;
-  }
-}
-
-// pkg/dist-src/index.js
-function paginateRest(octokit) {
-  return {
-    paginate: Object.assign(paginate.bind(null, octokit), {
-      iterator: iterator.bind(null, octokit)
-    })
-  };
-}
-paginateRest.VERSION = VERSION;
-
-
-
-/***/ }),
-
-/***/ 9210:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  legacyRestEndpointMethods: () => (/* binding */ legacyRestEndpointMethods),
-  restEndpointMethods: () => (/* binding */ restEndpointMethods)
-});
-
 ;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
-const VERSION = "17.0.0";
+const dist_src_version_VERSION = "17.0.0";
 
 //# sourceMappingURL=version.js.map
 
@@ -41164,7 +39094,7 @@ function restEndpointMethods(octokit) {
     rest: api
   };
 }
-restEndpointMethods.VERSION = VERSION;
+restEndpointMethods.VERSION = dist_src_version_VERSION;
 function legacyRestEndpointMethods(octokit) {
   const api = endpointsToMethods(octokit);
   return {
@@ -41172,85 +39102,1400 @@ function legacyRestEndpointMethods(octokit) {
     rest: api
   };
 }
-legacyRestEndpointMethods.VERSION = VERSION;
+legacyRestEndpointMethods.VERSION = dist_src_version_VERSION;
 
 //# sourceMappingURL=index.js.map
 
+;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
+// pkg/dist-src/version.js
+var plugin_paginate_rest_dist_bundle_VERSION = "0.0.0-development";
 
-/***/ })
+// pkg/dist-src/normalize-paginated-list-response.js
+function normalizePaginatedListResponse(response) {
+  if (!response.data) {
+    return {
+      ...response,
+      data: []
+    };
+  }
+  const responseNeedsNormalization = ("total_count" in response.data || "total_commits" in response.data) && !("url" in response.data);
+  if (!responseNeedsNormalization) return response;
+  const incompleteResults = response.data.incomplete_results;
+  const repositorySelection = response.data.repository_selection;
+  const totalCount = response.data.total_count;
+  const totalCommits = response.data.total_commits;
+  delete response.data.incomplete_results;
+  delete response.data.repository_selection;
+  delete response.data.total_count;
+  delete response.data.total_commits;
+  const namespaceKey = Object.keys(response.data)[0];
+  const data = response.data[namespaceKey];
+  response.data = data;
+  if (typeof incompleteResults !== "undefined") {
+    response.data.incomplete_results = incompleteResults;
+  }
+  if (typeof repositorySelection !== "undefined") {
+    response.data.repository_selection = repositorySelection;
+  }
+  response.data.total_count = totalCount;
+  response.data.total_commits = totalCommits;
+  return response;
+}
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(1730);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
-/******/ })()
-;
+// pkg/dist-src/iterator.js
+function iterator(octokit, route, parameters) {
+  const options = typeof route === "function" ? route.endpoint(parameters) : octokit.request.endpoint(route, parameters);
+  const requestMethod = typeof route === "function" ? route : octokit.request;
+  const method = options.method;
+  const headers = options.headers;
+  let url = options.url;
+  return {
+    [Symbol.asyncIterator]: () => ({
+      async next() {
+        if (!url) return { done: true };
+        try {
+          const response = await requestMethod({ method, url, headers });
+          const normalizedResponse = normalizePaginatedListResponse(response);
+          url = ((normalizedResponse.headers.link || "").match(
+            /<([^<>]+)>;\s*rel="next"/
+          ) || [])[1];
+          if (!url && "total_commits" in normalizedResponse.data) {
+            const parsedUrl = new URL(normalizedResponse.url);
+            const params = parsedUrl.searchParams;
+            const page = parseInt(params.get("page") || "1", 10);
+            const per_page = parseInt(params.get("per_page") || "250", 10);
+            if (page * per_page < normalizedResponse.data.total_commits) {
+              params.set("page", String(page + 1));
+              url = parsedUrl.toString();
+            }
+          }
+          return { value: normalizedResponse };
+        } catch (error) {
+          if (error.status !== 409) throw error;
+          url = "";
+          return {
+            value: {
+              status: 200,
+              headers: {},
+              data: []
+            }
+          };
+        }
+      }
+    })
+  };
+}
+
+// pkg/dist-src/paginate.js
+function paginate(octokit, route, parameters, mapFn) {
+  if (typeof parameters === "function") {
+    mapFn = parameters;
+    parameters = void 0;
+  }
+  return gather(
+    octokit,
+    [],
+    iterator(octokit, route, parameters)[Symbol.asyncIterator](),
+    mapFn
+  );
+}
+function gather(octokit, results, iterator2, mapFn) {
+  return iterator2.next().then((result) => {
+    if (result.done) {
+      return results;
+    }
+    let earlyExit = false;
+    function done() {
+      earlyExit = true;
+    }
+    results = results.concat(
+      mapFn ? mapFn(result.value, done) : result.value.data
+    );
+    if (earlyExit) {
+      return results;
+    }
+    return gather(octokit, results, iterator2, mapFn);
+  });
+}
+
+// pkg/dist-src/compose-paginate.js
+var composePaginateRest = Object.assign(paginate, {
+  iterator
+});
+
+// pkg/dist-src/generated/paginating-endpoints.js
+var paginatingEndpoints = (/* unused pure expression or super */ null && ([
+  "GET /advisories",
+  "GET /app/hook/deliveries",
+  "GET /app/installation-requests",
+  "GET /app/installations",
+  "GET /assignments/{assignment_id}/accepted_assignments",
+  "GET /classrooms",
+  "GET /classrooms/{classroom_id}/assignments",
+  "GET /enterprises/{enterprise}/code-security/configurations",
+  "GET /enterprises/{enterprise}/code-security/configurations/{configuration_id}/repositories",
+  "GET /enterprises/{enterprise}/dependabot/alerts",
+  "GET /enterprises/{enterprise}/teams",
+  "GET /enterprises/{enterprise}/teams/{enterprise-team}/memberships",
+  "GET /enterprises/{enterprise}/teams/{enterprise-team}/organizations",
+  "GET /events",
+  "GET /gists",
+  "GET /gists/public",
+  "GET /gists/starred",
+  "GET /gists/{gist_id}/comments",
+  "GET /gists/{gist_id}/commits",
+  "GET /gists/{gist_id}/forks",
+  "GET /installation/repositories",
+  "GET /issues",
+  "GET /licenses",
+  "GET /marketplace_listing/plans",
+  "GET /marketplace_listing/plans/{plan_id}/accounts",
+  "GET /marketplace_listing/stubbed/plans",
+  "GET /marketplace_listing/stubbed/plans/{plan_id}/accounts",
+  "GET /networks/{owner}/{repo}/events",
+  "GET /notifications",
+  "GET /organizations",
+  "GET /organizations/{org}/dependabot/repository-access",
+  "GET /orgs/{org}/actions/cache/usage-by-repository",
+  "GET /orgs/{org}/actions/hosted-runners",
+  "GET /orgs/{org}/actions/permissions/repositories",
+  "GET /orgs/{org}/actions/permissions/self-hosted-runners/repositories",
+  "GET /orgs/{org}/actions/runner-groups",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/hosted-runners",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories",
+  "GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners",
+  "GET /orgs/{org}/actions/runners",
+  "GET /orgs/{org}/actions/secrets",
+  "GET /orgs/{org}/actions/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/actions/variables",
+  "GET /orgs/{org}/actions/variables/{name}/repositories",
+  "GET /orgs/{org}/attestations/repositories",
+  "GET /orgs/{org}/attestations/{subject_digest}",
+  "GET /orgs/{org}/blocks",
+  "GET /orgs/{org}/campaigns",
+  "GET /orgs/{org}/code-scanning/alerts",
+  "GET /orgs/{org}/code-security/configurations",
+  "GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories",
+  "GET /orgs/{org}/codespaces",
+  "GET /orgs/{org}/codespaces/secrets",
+  "GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/copilot/billing/seats",
+  "GET /orgs/{org}/copilot/metrics",
+  "GET /orgs/{org}/dependabot/alerts",
+  "GET /orgs/{org}/dependabot/secrets",
+  "GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories",
+  "GET /orgs/{org}/events",
+  "GET /orgs/{org}/failed_invitations",
+  "GET /orgs/{org}/hooks",
+  "GET /orgs/{org}/hooks/{hook_id}/deliveries",
+  "GET /orgs/{org}/insights/api/route-stats/{actor_type}/{actor_id}",
+  "GET /orgs/{org}/insights/api/subject-stats",
+  "GET /orgs/{org}/insights/api/user-stats/{user_id}",
+  "GET /orgs/{org}/installations",
+  "GET /orgs/{org}/invitations",
+  "GET /orgs/{org}/invitations/{invitation_id}/teams",
+  "GET /orgs/{org}/issues",
+  "GET /orgs/{org}/members",
+  "GET /orgs/{org}/members/{username}/codespaces",
+  "GET /orgs/{org}/migrations",
+  "GET /orgs/{org}/migrations/{migration_id}/repositories",
+  "GET /orgs/{org}/organization-roles/{role_id}/teams",
+  "GET /orgs/{org}/organization-roles/{role_id}/users",
+  "GET /orgs/{org}/outside_collaborators",
+  "GET /orgs/{org}/packages",
+  "GET /orgs/{org}/packages/{package_type}/{package_name}/versions",
+  "GET /orgs/{org}/personal-access-token-requests",
+  "GET /orgs/{org}/personal-access-token-requests/{pat_request_id}/repositories",
+  "GET /orgs/{org}/personal-access-tokens",
+  "GET /orgs/{org}/personal-access-tokens/{pat_id}/repositories",
+  "GET /orgs/{org}/private-registries",
+  "GET /orgs/{org}/projects",
+  "GET /orgs/{org}/projectsV2",
+  "GET /orgs/{org}/projectsV2/{project_number}/fields",
+  "GET /orgs/{org}/projectsV2/{project_number}/items",
+  "GET /orgs/{org}/properties/values",
+  "GET /orgs/{org}/public_members",
+  "GET /orgs/{org}/repos",
+  "GET /orgs/{org}/rulesets",
+  "GET /orgs/{org}/rulesets/rule-suites",
+  "GET /orgs/{org}/rulesets/{ruleset_id}/history",
+  "GET /orgs/{org}/secret-scanning/alerts",
+  "GET /orgs/{org}/security-advisories",
+  "GET /orgs/{org}/settings/immutable-releases/repositories",
+  "GET /orgs/{org}/settings/network-configurations",
+  "GET /orgs/{org}/team/{team_slug}/copilot/metrics",
+  "GET /orgs/{org}/teams",
+  "GET /orgs/{org}/teams/{team_slug}/discussions",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions",
+  "GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions",
+  "GET /orgs/{org}/teams/{team_slug}/invitations",
+  "GET /orgs/{org}/teams/{team_slug}/members",
+  "GET /orgs/{org}/teams/{team_slug}/projects",
+  "GET /orgs/{org}/teams/{team_slug}/repos",
+  "GET /orgs/{org}/teams/{team_slug}/teams",
+  "GET /projects/{project_id}/collaborators",
+  "GET /repos/{owner}/{repo}/actions/artifacts",
+  "GET /repos/{owner}/{repo}/actions/caches",
+  "GET /repos/{owner}/{repo}/actions/organization-secrets",
+  "GET /repos/{owner}/{repo}/actions/organization-variables",
+  "GET /repos/{owner}/{repo}/actions/runners",
+  "GET /repos/{owner}/{repo}/actions/runs",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/jobs",
+  "GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs",
+  "GET /repos/{owner}/{repo}/actions/secrets",
+  "GET /repos/{owner}/{repo}/actions/variables",
+  "GET /repos/{owner}/{repo}/actions/workflows",
+  "GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
+  "GET /repos/{owner}/{repo}/activity",
+  "GET /repos/{owner}/{repo}/assignees",
+  "GET /repos/{owner}/{repo}/attestations/{subject_digest}",
+  "GET /repos/{owner}/{repo}/branches",
+  "GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations",
+  "GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs",
+  "GET /repos/{owner}/{repo}/code-scanning/alerts",
+  "GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances",
+  "GET /repos/{owner}/{repo}/code-scanning/analyses",
+  "GET /repos/{owner}/{repo}/codespaces",
+  "GET /repos/{owner}/{repo}/codespaces/devcontainers",
+  "GET /repos/{owner}/{repo}/codespaces/secrets",
+  "GET /repos/{owner}/{repo}/collaborators",
+  "GET /repos/{owner}/{repo}/comments",
+  "GET /repos/{owner}/{repo}/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/commits",
+  "GET /repos/{owner}/{repo}/commits/{commit_sha}/comments",
+  "GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls",
+  "GET /repos/{owner}/{repo}/commits/{ref}/check-runs",
+  "GET /repos/{owner}/{repo}/commits/{ref}/check-suites",
+  "GET /repos/{owner}/{repo}/commits/{ref}/status",
+  "GET /repos/{owner}/{repo}/commits/{ref}/statuses",
+  "GET /repos/{owner}/{repo}/compare/{basehead}",
+  "GET /repos/{owner}/{repo}/compare/{base}...{head}",
+  "GET /repos/{owner}/{repo}/contributors",
+  "GET /repos/{owner}/{repo}/dependabot/alerts",
+  "GET /repos/{owner}/{repo}/dependabot/secrets",
+  "GET /repos/{owner}/{repo}/deployments",
+  "GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses",
+  "GET /repos/{owner}/{repo}/environments",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/secrets",
+  "GET /repos/{owner}/{repo}/environments/{environment_name}/variables",
+  "GET /repos/{owner}/{repo}/events",
+  "GET /repos/{owner}/{repo}/forks",
+  "GET /repos/{owner}/{repo}/hooks",
+  "GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries",
+  "GET /repos/{owner}/{repo}/invitations",
+  "GET /repos/{owner}/{repo}/issues",
+  "GET /repos/{owner}/{repo}/issues/comments",
+  "GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/issues/events",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/comments",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/events",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/labels",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/reactions",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/sub_issues",
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/timeline",
+  "GET /repos/{owner}/{repo}/keys",
+  "GET /repos/{owner}/{repo}/labels",
+  "GET /repos/{owner}/{repo}/milestones",
+  "GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels",
+  "GET /repos/{owner}/{repo}/notifications",
+  "GET /repos/{owner}/{repo}/pages/builds",
+  "GET /repos/{owner}/{repo}/projects",
+  "GET /repos/{owner}/{repo}/pulls",
+  "GET /repos/{owner}/{repo}/pulls/comments",
+  "GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/comments",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
+  "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments",
+  "GET /repos/{owner}/{repo}/releases",
+  "GET /repos/{owner}/{repo}/releases/{release_id}/assets",
+  "GET /repos/{owner}/{repo}/releases/{release_id}/reactions",
+  "GET /repos/{owner}/{repo}/rules/branches/{branch}",
+  "GET /repos/{owner}/{repo}/rulesets",
+  "GET /repos/{owner}/{repo}/rulesets/rule-suites",
+  "GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history",
+  "GET /repos/{owner}/{repo}/secret-scanning/alerts",
+  "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations",
+  "GET /repos/{owner}/{repo}/security-advisories",
+  "GET /repos/{owner}/{repo}/stargazers",
+  "GET /repos/{owner}/{repo}/subscribers",
+  "GET /repos/{owner}/{repo}/tags",
+  "GET /repos/{owner}/{repo}/teams",
+  "GET /repos/{owner}/{repo}/topics",
+  "GET /repositories",
+  "GET /search/code",
+  "GET /search/commits",
+  "GET /search/issues",
+  "GET /search/labels",
+  "GET /search/repositories",
+  "GET /search/topics",
+  "GET /search/users",
+  "GET /teams/{team_id}/discussions",
+  "GET /teams/{team_id}/discussions/{discussion_number}/comments",
+  "GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions",
+  "GET /teams/{team_id}/discussions/{discussion_number}/reactions",
+  "GET /teams/{team_id}/invitations",
+  "GET /teams/{team_id}/members",
+  "GET /teams/{team_id}/projects",
+  "GET /teams/{team_id}/repos",
+  "GET /teams/{team_id}/teams",
+  "GET /user/blocks",
+  "GET /user/codespaces",
+  "GET /user/codespaces/secrets",
+  "GET /user/emails",
+  "GET /user/followers",
+  "GET /user/following",
+  "GET /user/gpg_keys",
+  "GET /user/installations",
+  "GET /user/installations/{installation_id}/repositories",
+  "GET /user/issues",
+  "GET /user/keys",
+  "GET /user/marketplace_purchases",
+  "GET /user/marketplace_purchases/stubbed",
+  "GET /user/memberships/orgs",
+  "GET /user/migrations",
+  "GET /user/migrations/{migration_id}/repositories",
+  "GET /user/orgs",
+  "GET /user/packages",
+  "GET /user/packages/{package_type}/{package_name}/versions",
+  "GET /user/public_emails",
+  "GET /user/repos",
+  "GET /user/repository_invitations",
+  "GET /user/social_accounts",
+  "GET /user/ssh_signing_keys",
+  "GET /user/starred",
+  "GET /user/subscriptions",
+  "GET /user/teams",
+  "GET /users",
+  "GET /users/{username}/attestations/{subject_digest}",
+  "GET /users/{username}/events",
+  "GET /users/{username}/events/orgs/{org}",
+  "GET /users/{username}/events/public",
+  "GET /users/{username}/followers",
+  "GET /users/{username}/following",
+  "GET /users/{username}/gists",
+  "GET /users/{username}/gpg_keys",
+  "GET /users/{username}/keys",
+  "GET /users/{username}/orgs",
+  "GET /users/{username}/packages",
+  "GET /users/{username}/projects",
+  "GET /users/{username}/projectsV2",
+  "GET /users/{username}/projectsV2/{project_number}/fields",
+  "GET /users/{username}/projectsV2/{project_number}/items",
+  "GET /users/{username}/received_events",
+  "GET /users/{username}/received_events/public",
+  "GET /users/{username}/repos",
+  "GET /users/{username}/social_accounts",
+  "GET /users/{username}/ssh_signing_keys",
+  "GET /users/{username}/starred",
+  "GET /users/{username}/subscriptions"
+]));
+
+// pkg/dist-src/paginating-endpoints.js
+function isPaginatingEndpoint(arg) {
+  if (typeof arg === "string") {
+    return paginatingEndpoints.includes(arg);
+  } else {
+    return false;
+  }
+}
+
+// pkg/dist-src/index.js
+function paginateRest(octokit) {
+  return {
+    paginate: Object.assign(paginate.bind(null, octokit), {
+      iterator: iterator.bind(null, octokit)
+    })
+  };
+}
+paginateRest.VERSION = plugin_paginate_rest_dist_bundle_VERSION;
+
+
+;// CONCATENATED MODULE: ./node_modules/@actions/github/lib/utils.js
+
+
+// octokit + plugins
+
+
+
+const context = new Context();
+const baseUrl = getApiBaseUrl();
+const defaults = {
+    baseUrl,
+    request: {
+        agent: getProxyAgent(baseUrl),
+        fetch: getProxyFetch(baseUrl)
+    }
+};
+const GitHub = Octokit.plugin(restEndpointMethods, paginateRest).defaults(defaults);
+
+/**
+ * Convience function to correctly format Octokit Options to pass into the constructor.
+ *
+ * @param     token    the repo PAT or GITHUB_TOKEN
+ * @param     options  other options to set
+ */
+function getOctokitOptions(token, options) {
+    const opts = Object.assign({}, options || {}); // Shallow clone - don't mutate the object provided by the caller
+    // Auth
+    const auth = getAuthString(token, opts);
+    if (auth) {
+        opts.auth = auth;
+    }
+    // Orchestration ID
+    const userAgent = getUserAgentWithOrchestrationId(opts.userAgent);
+    if (userAgent) {
+        opts.userAgent = userAgent;
+    }
+    return opts;
+}
+//# sourceMappingURL=utils.js.map
+;// CONCATENATED MODULE: ./node_modules/@actions/github/lib/github.js
+
+
+const github_context = new Context();
+/**
+ * Returns a hydrated octokit ready to use for GitHub Actions
+ *
+ * @param     token    the repo PAT or GITHUB_TOKEN
+ * @param     options  other options to set
+ */
+function getOctokit(token, options, ...additionalPlugins) {
+    const GitHubWithPlugins = GitHub.plugin(...additionalPlugins);
+    return new GitHubWithPlugins(getOctokitOptions(token, options));
+}
+//# sourceMappingURL=github.js.map
+;// CONCATENATED MODULE: ./.ncc-build/resolve.js
+
+
+
+
+/** Fetches release assets for a given repo and tag from the GitHub API. */
+async function fetchReleaseAssetData(repo, version, githubToken, retries) {
+    const octokit = getOctokit(githubToken);
+    const [owner, repoName] = repo.split('/');
+    try {
+        return await retry(retries ?? 5, async () => {
+            let release;
+            if (version.isLatest()) {
+                release = await octokit.rest.repos.getLatestRelease({
+                    owner,
+                    repo: repoName
+                });
+            }
+            else {
+                release = await octokit.rest.repos.getReleaseByTag({
+                    owner,
+                    repo: repoName,
+                    tag: version.withPrefix()
+                });
+            }
+            return {
+                tagName: release.data.tag_name,
+                assets: release.data.assets.map((a) => ({
+                    name: a.name,
+                    browserDownloadUrl: a.browser_download_url
+                }))
+            };
+        });
+    }
+    catch (error) {
+        throw new Error(`Failed to fetch release assets: ${error.message}`);
+    }
+}
+async function fetchRunnerVersions(githubToken, retries) {
+    const octokit = getOctokit(githubToken);
+    const [owner, repoName] = GUNGRAUN_REPO.split('/');
+    try {
+        return await retry(retries ?? 5, async () => {
+            const { data } = await octokit.rest.repos.listReleases({
+                owner,
+                repo: repoName
+            });
+            if (data.length > 0) {
+                return data.map((d) => ResolvedVersion.fromString(d.tag_name));
+            }
+            else {
+                throw new Error(`At least one version should be present`);
+            }
+        });
+    }
+    catch (error) {
+        throw new Error(`Failed to fetch gungraun-runner versions: ${error.message}`);
+    }
+}
+async function fetchSortedValgrindVersions() {
+    const stdout = await retry(5, async () => {
+        const output = await exec.getExecOutput('git', ['ls-remote', '--tags', VALGRIND_SOURCE_REPO], {
+            silent: !isDebug()
+        });
+        return output.stdout;
+    });
+    const versions = stdout
+        .trim()
+        .split('\n')
+        .filter((l) => !l.includes('^{}'))
+        .map((l) => ResolvedVersion.fromValgrindTag(l))
+        .sort((a, b) => a.compare(b));
+    if (versions.length === 0) {
+        throw new Error('Could not determine latest valgrind version from sourceware.org');
+    }
+    return versions;
+}
+async function resolveLatestTag(repo, notFoundMessage, githubToken, retries) {
+    const octokit = getOctokit(githubToken);
+    const [owner, repoName] = repo.split('/');
+    let tag;
+    try {
+        tag = await retry(retries ?? 5, async () => {
+            const { data } = await octokit.rest.repos.getLatestRelease({
+                owner,
+                repo: repoName
+            });
+            return data.tag_name;
+        });
+    }
+    catch (error) {
+        throw new Error(notFoundMessage + `: ${error.message}`);
+    }
+    return ResolvedVersion.fromString(tag);
+}
+/** Resolves a gungraun-runner version tag, fetching "latest" from GitHub if needed. */
+async function resolveRunnerVersion(version, githubToken, retries) {
+    if (!version.isAutoOrLatest()) {
+        return version;
+    }
+    return await resolveLatestTag(GUNGRAUN_REPO, 'Could not determine latest release version for gungraun-runner', githubToken, retries);
+}
+/** Resolves the valgrind asset name matching the given architecture and platform. */
+async function resolveValgrindBuilderAssetName(version, arch, platform, githubToken) {
+    // This is not the version of valgrind but the version of valgrind-builder and we always want
+    // the assets from the latest valgrind-builder release.
+    const release = await fetchReleaseAssetData(VALGRIND_BUILDER_REPO, Version.latest(), githubToken);
+    // Example: valgrind-3.19.0-x86_64-ubuntu-22.04.tar.gz
+    if (version.isAutoOrLatest()) {
+        const pattern = new RegExp(String.raw `^valgrind-(\d+)\.(\d+)\.(\d+)-${RegExp.escape(arch)}-${RegExp.escape(platform)}\.tar\.gz$`);
+        const sorted = release.assets
+            .map((a) => a.name.match(pattern))
+            .filter((match) => match != null)
+            .map((m) => {
+            const resolvedVersion = new ResolvedVersion(Number(m[1]), Number(m[2]), Number(m[3]));
+            const name = m[0];
+            return {
+                version: resolvedVersion,
+                name
+            };
+        })
+            .sort((a, b) => {
+            return a.version.compare(b.version);
+        });
+        return sorted[sorted.length - 1] ?? null;
+    }
+    else {
+        const expected = `valgrind-${version}-${arch}-${platform}.tar.gz`;
+        const match = release.assets.find((a) => a.name === expected);
+        if (!match) {
+            return null;
+        }
+        else {
+            return {
+                version: ResolvedVersion.fromVersion(version),
+                name: match.name
+            };
+        }
+    }
+}
+/** Resolves a valgrind version for building from source, using git ls-remote for "latest" and
+ * "auto". */
+async function resolveValgrindVersion(version) {
+    const versions = await fetchSortedValgrindVersions();
+    if (!version.isAutoOrLatest()) {
+        if (versions.some((v) => v.equals(version))) {
+            return version;
+        }
+        else {
+            throw new Error(`Invalid version ${version}`);
+        }
+    }
+    return versions[versions.length - 1];
+}
+//# sourceMappingURL=resolve.js.map
+// EXTERNAL MODULE: external "crypto"
+var external_crypto_ = __nccwpck_require__(6982);
+;// CONCATENATED MODULE: ./.ncc-build/hash.js
+
+
+
+
+
+function extractHash(filePath, expectedName) {
+    if (!filePath || !expectedName) {
+        return null;
+    }
+    const shaContent = external_fs_.readFileSync(filePath, 'utf-8').trim();
+    const hash = shaContent
+        .split(/\r?\n/)
+        .map((line) => {
+        const [a, b] = splitOnce(line, ' ');
+        return [a.trim(), b.trim().replace(/^\*/, '')];
+    })
+        .find(([a, b]) => {
+        return a.length > 0 && normalizePath(b) === normalizePath(expectedName);
+    })?.[0];
+    return hash ?? null;
+}
+async function verifySha(variant, archivePath, shaFilePath, assetName) {
+    const expectedName = assetName ? assetName : external_path_.basename(archivePath);
+    const expectedHash = extractHash(shaFilePath, expectedName);
+    if (!expectedHash) {
+        throw new Error(`Could not find SHA-${variant} entry for '${expectedName}' in checksum file \
+'${shaFilePath}'`);
+    }
+    let shaVariant;
+    if (variant === 'auto') {
+        const detected = detectShaVariant(expectedHash);
+        if (!detected) {
+            throw new Error('Unable to detect sha variant');
+        }
+        shaVariant = detected;
+    }
+    else {
+        shaVariant = 'sha' + variant;
+    }
+    const actualHash = external_crypto_.createHash(shaVariant)
+        .update(external_fs_.readFileSync(archivePath))
+        .digest('hex');
+    if (actualHash !== expectedHash) {
+        throw new Error(`${shaVariant} verification failed for ${expectedName}
+Expected: ${expectedHash}
+Actual:   ${actualHash}`);
+    }
+    printInfo(`${shaVariant} verified for ${expectedName}`);
+}
+//# sourceMappingURL=hash.js.map
+;// CONCATENATED MODULE: ./.ncc-build/download.js
+
+
+
+
+
+/** Downloads and extracts the gungraun-runner release archive for a given tag and target. */
+async function downloadAndExtractRunner(version, target, githubToken) {
+    const assetName = `gungraun-runner-${version.withPrefix()}-${target}.tar.gz`;
+    return downloadAndExtractRelease(GUNGRAUN_REPO, version, assetName, githubToken);
+}
+async function downloadAndExtractRelease(repo, version, assetName, githubToken) {
+    const release = await fetchReleaseAssetData(repo, version, githubToken);
+    const archiveAsset = release.assets.find((a) => a.name === assetName);
+    const shaAsset = release.assets.find((a) => a.name === `${assetName}.sha256`);
+    if (!archiveAsset) {
+        throw new Error(`Could not find release asset: ${assetName}`);
+    }
+    const archivePath = await tool_cache.downloadTool(archiveAsset.browserDownloadUrl);
+    if (shaAsset) {
+        const shaPath = await tool_cache.downloadTool(shaAsset.browserDownloadUrl);
+        await verifySha(256, archivePath, shaPath, assetName);
+    }
+    const extractDir = await tool_cache.extractTar(archivePath);
+    return extractDir;
+}
+async function downloadAndExtractValgrindUrl(valgrindUrl, valgrindShaUrl) {
+    const archivePath = await tool_cache.downloadTool(valgrindUrl.toString());
+    const name = external_path_.basename(archivePath);
+    const assetName = external_path_.basename(new URL(valgrindUrl).pathname);
+    if (valgrindShaUrl) {
+        const shaPath = await tool_cache.downloadTool(valgrindShaUrl.toString());
+        await verifySha('auto', archivePath, shaPath, assetName);
+    }
+    const extractDir = await tool_cache.extractTar(archivePath);
+    return { extractDir, name };
+}
+async function downloadAndExtractValgrindSource(version) {
+    // The resolved version is always major.minor.patch
+    const assetName = `valgrind-${version}.tar.bz2`;
+    const tarballUrl = `https://sourceware.org/pub/valgrind/${assetName}`;
+    const shaSumsUrl = `https://sourceware.org/pub/valgrind/sha512.sum`;
+    const archivePath = await retry(5, async () => {
+        return await tool_cache.downloadTool(tarballUrl);
+    });
+    const shaAsset = await retry(5, async () => {
+        return await tool_cache.downloadTool(shaSumsUrl);
+    });
+    await verifySha(512, archivePath, shaAsset, assetName);
+    const extractDir = await tool_cache.extractTar(archivePath, undefined, 'xj');
+    return extractDir;
+}
+/** Downloads and extracts the valgrind release archive for a given tag and asset name. */
+async function downloadAndExtractValgrind(version, assetName, githubToken) {
+    return downloadAndExtractRelease(VALGRIND_BUILDER_REPO, version, assetName, githubToken);
+}
+//# sourceMappingURL=download.js.map
+// EXTERNAL MODULE: ./node_modules/shell-quote/index.js
+var shell_quote = __nccwpck_require__(6591);
+;// CONCATENATED MODULE: ./.ncc-build/install.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+function getRunnerInstallDir() {
+    if (process.env.CARGO_INSTALL_ROOT) {
+        return { dir: `${process.env.CARGO_INSTALL_ROOT}/bin`, needsExport: false };
+    }
+    if (process.env.CARGO_HOME) {
+        return { dir: `${process.env.CARGO_HOME}/bin`, needsExport: false };
+    }
+    if (process.env.HOME) {
+        return { dir: `${process.env.HOME}/.cargo/bin`, needsExport: true };
+    }
+    if (process.env.RUNNER_TEMP) {
+        return { dir: `${process.env.RUNNER_TEMP}/.cargo/bin`, needsExport: true };
+    }
+    return null;
+}
+async function installDebugSymbols() {
+    let warning = false;
+    try {
+        const { packageManager } = await detectPlatform();
+        if (packageManager) {
+            await packageManager.accept(new PackagesInstaller(...packageManager.getDebugInfoPackages()));
+        }
+        else {
+            warning = true;
+        }
+    }
+    catch {
+        warning = true;
+    }
+    if (warning) {
+        printWarning(`Failed to install debug symbols for libc. That means you might not \
+be able to use the memcheck tool. Other tools will likely still work`);
+    }
+}
+/** Installs the gungraun-runner by trying each strategy in order until one succeeds. */
+async function installRunner(version, strategies, githubToken, target) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
+        switch (strategy) {
+            case 'binstall': {
+                const result = await installRunnerWithBinstall(version, target);
+                if (result) {
+                    await logInstalledVersion('gungraun-runner', 'gungraun-runner');
+                    return;
+                }
+                break;
+            }
+            case 'release': {
+                const result = await installRunnerFromRelease(version, githubToken, target);
+                if (result) {
+                    await logInstalledVersion('gungraun-runner', 'gungraun-runner');
+                    return;
+                }
+                break;
+            }
+            case 'source': {
+                const result = await installRunnerFromSource(version);
+                if (result) {
+                    await logInstalledVersion('gungraun-runner', 'gungraun-runner');
+                    return;
+                }
+                break;
+            }
+            case 'none': {
+                printInfo('Skipping gungraun-runner installation');
+                return;
+            }
+            default: {
+                throw new Error(`Invalid strategy '${strategy}'`);
+            }
+        }
+        if (index === strategies.length - 1) {
+            printError(`Last runner strategy '${strategy}' failed`);
+        }
+        else {
+            printInfo(`Runner strategy '${strategy}' was tried`);
+        }
+    }
+    throw new Error('All runner install strategies failed');
+}
+/** Installs gungraun-runner from a GitHub release archive. */
+async function installRunnerFromRelease(version, githubToken, target) {
+    return withGroup(`Downloading gungraun-runner '${version}'`, async () => {
+        try {
+            const resolvedVersion = await resolveRunnerVersion(version, githubToken);
+            const extractDir = await downloadAndExtractRunner(resolvedVersion, target, githubToken);
+            const runnerPath = await findBinary(extractDir, 'gungraun-runner');
+            if (!runnerPath) {
+                printInfo('Could not find gungraun-runner binary in archive');
+                return false;
+            }
+            const result = getRunnerInstallDir();
+            if (!result) {
+                printInfo('Unable to find a installation directory for gungraun-runner');
+                return false;
+            }
+            const { dir: installDir, needsExport } = result;
+            await exec.exec('chmod', ['+x', runnerPath]);
+            if (!external_fs_.existsSync(installDir)) {
+                external_fs_.mkdirSync(installDir, { recursive: true });
+            }
+            await io.mv(runnerPath, external_path_.join(installDir, 'gungraun-runner'));
+            if (needsExport) {
+                core.addPath(installDir);
+                process.env.PATH = `${installDir}${external_path_.delimiter}${process.env.PATH}`;
+                core.exportVariable('GUNGRAUN_RUNNER', external_path_.join(installDir, 'gungraun-runner'));
+            }
+            return true;
+        }
+        catch (error) {
+            printInfo(`Failed to install gungraun-runner from release: ${error.message}`);
+            return false;
+        }
+    });
+}
+/** Installs gungraun-runner from source via cargo install. */
+async function installRunnerFromSource(version, target) {
+    return withGroup('Installing gungraun-runner via cargo install', async () => {
+        try {
+            const args = ['install', 'gungraun-runner'];
+            if (!version.isLatest()) {
+                args.push('--version', version.toString());
+            }
+            if (target) {
+                args.push('--target', target);
+            }
+            await exec.exec(getCargoBin(), args);
+            return true;
+        }
+        catch (error) {
+            printInfo(`Failed to install gungraun-runner from source: ${error.message}`);
+            return false;
+        }
+    });
+}
+/** Installs gungraun-runner via cargo-binstall if available. */
+async function installRunnerWithBinstall(version, target) {
+    if (!(await io.which('cargo-binstall', false))) {
+        return false;
+    }
+    return withGroup('Installing gungraun-runner via cargo-binstall', async () => {
+        try {
+            const args = ['binstall', '-y', '--disable-strategies', 'compile'];
+            if (target) {
+                args.push(`--targets`, target);
+            }
+            if (version.isLatest()) {
+                args.push('gungraun-runner');
+            }
+            else {
+                args.push(`gungraun-runner@${version}`);
+            }
+            await exec.exec(getCargoBin(), args);
+            return true;
+        }
+        catch (error) {
+            printInfo(`Failed to install gungraun-runner with cargo-binstall: ${error.message}`);
+            return false;
+        }
+    });
+}
+/** Installs valgrind by trying each strategy in order until one succeeds. */
+async function installValgrind(version, strategies, installBuildDeps = false, githubToken, valgrindUrl, valgrindShaUrl, configureArgs = [], makeEnvs = new Map()) {
+    for (let index = 0; index < strategies.length; index++) {
+        const strategy = strategies[index];
+        switch (strategy) {
+            case 'builder': {
+                const result = await installValgrindFromBuilder(version.isAuto() ? Version.latest() : version, githubToken, valgrindUrl, valgrindShaUrl);
+                if (result) {
+                    await logInstalledVersion('valgrind', 'valgrind');
+                    return;
+                }
+                break;
+            }
+            case 'system': {
+                const result = await installValgrindWithPackageManager(version);
+                if (result) {
+                    await logInstalledVersion('valgrind', 'valgrind');
+                    return;
+                }
+                break;
+            }
+            case 'source': {
+                const result = await installValgrindFromSource(version.isAuto() ? Version.latest() : version, installBuildDeps, configureArgs, makeEnvs);
+                if (result) {
+                    await logInstalledVersion('valgrind', 'valgrind');
+                    return;
+                }
+                break;
+            }
+            case 'none': {
+                printInfo('Skipping valgrind installation');
+                return;
+            }
+            default: {
+                throw new Error(`Invalid strategy '${strategy}'`);
+            }
+        }
+        if (index === strategies.length - 1) {
+            printError(`Last Valgrind strategy '${strategy}' failed`);
+        }
+        else {
+            printInfo(`Valgrind strategy '${strategy}' was tried`);
+        }
+    }
+    throw new Error('All valgrind installation strategies failed');
+}
+/** Installs valgrind from the gungraun/valgrind-builder GitHub release. */
+async function installValgrindFromBuilder(version, githubToken, valgrindUrl, valgrindShaUrl) {
+    return withGroup('Installing valgrind from builder', async () => {
+        try {
+            let extractDir;
+            if (valgrindUrl) {
+                printInfo(`Downloading Valgrind archive from url '${valgrindUrl}'`);
+                const { extractDir: dir } = await downloadAndExtractValgrindUrl(valgrindUrl, valgrindShaUrl);
+                extractDir = dir;
+            }
+            else {
+                const { platform } = await detectPlatform();
+                const target = await detectTarget();
+                const arch = detectArch(target);
+                const result = await resolveValgrindBuilderAssetName(version, arch, platform, githubToken);
+                if (!result) {
+                    printInfo(`No Valgrind builder release found for Valgrind version ${version} \
+(${arch}-${platform})`);
+                    return false;
+                }
+                const { name } = result;
+                printInfo(`Downloading Valgrind builder archive '${name}'`);
+                // This is not the valgrind version. We always use the latest version of the builder
+                // release and extract the archive attached to the latest release with the given
+                // `name`.
+                extractDir = await downloadAndExtractValgrind(Version.latest(), name, githubToken);
+            }
+            const entries = await external_fs_.promises.readdir(extractDir);
+            await execPrivileged('cp', [
+                '-a',
+                ...entries.map((e) => external_path_.join(extractDir, e)),
+                '/'
+            ]);
+        }
+        catch (error) {
+            printInfo(`Failed to install Valgrind from release: ${error.message}`);
+            return false;
+        }
+        await installDebugSymbols();
+        return true;
+    });
+}
+/** Installs valgrind using the system package manager. */
+async function installValgrindWithPackageManager(version) {
+    return withGroup('Installing valgrind via package manager', async () => {
+        const { packageManager } = await detectPlatform();
+        if (!packageManager) {
+            printInfo(`Cannot install Valgrind: No package manager detected for this platform`);
+            return false;
+        }
+        if (!version.isAuto()) {
+            try {
+                const latestVersion = await resolveValgrindVersion(version);
+                const packageVersion = await packageManager.accept(new FetchLatestPackageVersion('valgrind'));
+                if (!packageVersion) {
+                    printInfo(`Unable to retrieve version information with ${packageManager}.`);
+                    return false;
+                }
+                else if (!latestVersion.equals(packageVersion)) {
+                    printInfo(`The package version doesn't match the requested version`);
+                    return false;
+                }
+                else {
+                    // pass through to install with package manager
+                }
+            }
+            catch (error) {
+                printInfo(`Error retrieving package version with ${packageManager}: ${error.message}`);
+                return false;
+            }
+        }
+        try {
+            await packageManager.accept(new PackagesInstaller('valgrind', ...packageManager.getDebugInfoPackages()));
+            return true;
+        }
+        catch (error) {
+            printInfo(`Failed to install Valgrind with package manager: ${error.message}`);
+            return false;
+        }
+    });
+}
+/** Installs build dependencies required to compile valgrind from source. */
+async function installValgrindBuildDeps() {
+    const { packageManager } = await detectPlatform();
+    if (!packageManager) {
+        printInfo(`Cannot install build dependencies: unsupported package manager`);
+        return false;
+    }
+    try {
+        const packages = packageManager.getValgrindBuildDeps();
+        await packageManager.accept(new PackagesInstaller(...packages));
+        printInfo(`Installed build dependencies: ${packages.join(', ')}`);
+        return true;
+    }
+    catch (error) {
+        printInfo(`Failed to install build dependencies: ${error.message}`);
+        return false;
+    }
+}
+/** Installs valgrind from the source tarball. */
+async function installValgrindFromSource(version, installBuildDeps = false, configureArgs = [], makeEnvs = new Map()) {
+    return withGroup('Installing valgrind from source', async () => {
+        try {
+            const { id } = await detectPlatform();
+            const resolvedVersion = await resolveValgrindVersion(version);
+            if (installBuildDeps) {
+                const depsResult = await installValgrindBuildDeps();
+                if (!depsResult) {
+                    printInfo('Failed to install build dependencies');
+                    return false;
+                }
+            }
+            const extractDir = await downloadAndExtractValgrindSource(resolvedVersion);
+            const sourceDir = external_path_.join(extractDir, `valgrind-${resolvedVersion}`);
+            const execOpts = { cwd: sourceDir };
+            const args = ['--prefix=/usr'];
+            // based on the APKBUILD:
+            // https://gitlab.alpinelinux.org/alpine/aports/-/blob/68861fc5eb9fcc485c720fdf743272b41cbc313b/main/valgrind/APKBUILD
+            if (id === 'alpine') {
+                execOpts.env = {
+                    CFLAGS: '-fno-stack-protector -no-pie -U_FORTIFY_SOURCE',
+                    ...process.env,
+                    ...Object.fromEntries(makeEnvs)
+                };
+                args.push('--without-mpicc');
+            }
+            else {
+                execOpts.env = {
+                    ...process.env,
+                    ...Object.fromEntries(makeEnvs)
+                };
+            }
+            args.push(...configureArgs);
+            printInfo(`:: Running: ./configure ${(0,shell_quote.quote)(args)}`);
+            await exec.exec('./configure', args, execOpts);
+            const ncpus = external_os_.cpus().length;
+            const makeArgs = [`-j${ncpus}`, 'BUILD_DOCS=none'];
+            printInfo(`:: Running: make ${(0,shell_quote.quote)(args)}`);
+            await exec.exec('make', makeArgs, { ...execOpts });
+            printInfo(`:: Running: make install`);
+            await execPrivileged('make', ['install'], { cwd: sourceDir });
+        }
+        catch (error) {
+            printInfo(`Failed to install Valgrind from source: ${error.message}`);
+            return false;
+        }
+        await installDebugSymbols();
+        return true;
+    });
+}
+//# sourceMappingURL=install.js.map
+;// CONCATENATED MODULE: ./.ncc-build/inputs.js
+
+
+
+
+
+
+const VALID_VALGRIND_STRATEGIES = [
+    'builder',
+    'none',
+    'source',
+    'system'
+];
+const VALID_RUNNER_STRATEGIES = [
+    'binstall',
+    'none',
+    'release',
+    'source'
+];
+async function parseGithubToken() {
+    return core.getInput('github-token') || '';
+}
+async function parseInputs() {
+    const githubToken = await parseGithubToken();
+    const installBuildDeps = await parseInstallBuildDeps();
+    const runnerStrategies = await parseRunnerStrategies();
+    const isRunnerStrategyNone = runnerStrategies.includes('none');
+    const runnerTarget = await parseRunnerTarget(isRunnerStrategyNone);
+    const runnerVersion = await parseRunnerVersion(isRunnerStrategyNone, githubToken);
+    const valgrindVersion = await parseValgrindVersion();
+    const valgrindConfigureArgs = await parseValgrindConfigureArgs();
+    const valgrindMakeEnvs = await parseValgrindMakeEnvs();
+    const valgrindStrategies = await parseValgrindStrategies();
+    const valgrindUrl = await parseValgrindUrl();
+    const valgrindShaUrl = await parseValgrindShaUrl();
+    return {
+        githubToken,
+        installBuildDeps,
+        runnerStrategies,
+        runnerTarget,
+        runnerVersion,
+        valgrindConfigureArgs,
+        valgrindMakeEnvs,
+        valgrindStrategies,
+        valgrindUrl,
+        valgrindShaUrl,
+        valgrindVersion
+    };
+}
+async function parseRunnerTarget(isNoneStrategy) {
+    if (isNoneStrategy) {
+        return '';
+    }
+    else {
+        return core.getInput('runner-target') || (await detectTarget());
+    }
+}
+async function parseRunnerStrategies() {
+    try {
+        return parseStrategies(core.getInput('runner-strategy'), VALID_RUNNER_STRATEGIES, 'runner');
+    }
+    catch (error) {
+        throw new Error(`Invalid runner-strategy: ${error.message}`);
+    }
+}
+async function parseRunnerVersion(isNoneStrategy, githubToken) {
+    if (isNoneStrategy) {
+        return Version.auto();
+    }
+    const runnerVersionInput = core.getInput('runner-version') || 'auto';
+    let runnerVersion;
+    if (runnerVersionInput.toLowerCase() === 'auto') {
+        try {
+            runnerVersion = await detectProjectVersion();
+        }
+        catch (error) {
+            throw new Error(`Unable to detect gungraun-runner version: ${error.message}`);
+        }
+    }
+    else {
+        let validVersions;
+        try {
+            validVersions = await fetchRunnerVersions(githubToken);
+            runnerVersion = Version.fromString(runnerVersionInput);
+        }
+        catch (error) {
+            throw new Error(`Failed to fetch gungraun-runner versions: ${error.message}`);
+        }
+        if (!runnerVersion.isAutoOrLatest() &&
+            !validVersions.some((v) => v.equals(runnerVersion))) {
+            throw new Error(`Invalid runner-version ${runnerVersionInput}: Valid versions are:
+${validVersions.join(', ')}`);
+        }
+    }
+    return runnerVersion;
+}
+function parseStrategies(input, valid, label) {
+    const strategies = new Set(input
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => s.length > 0));
+    if (strategies.size === 0) {
+        return ['none'];
+    }
+    for (const s of strategies) {
+        if (!valid.includes(s)) {
+            throw new Error(`Invalid ${label} strategy '${s}'. Valid values: ${valid.join(', ')}`);
+        }
+        else if (s === 'none') {
+            return ['none'];
+        }
+    }
+    return Array.from(strategies);
+}
+async function parseValgrindConfigureArgs() {
+    const input = core.getInput('valgrind-configure-args');
+    if (!input) {
+        return [];
+    }
+    const parsed = (0,shell_quote.parse)(input);
+    const args = [];
+    for (const token of parsed) {
+        if (typeof token !== 'string') {
+            throw new Error(`Invalid valgrind-configure-args: other tokens than strings are not allowed`);
+        }
+        args.push(token);
+    }
+    return args;
+}
+async function parseValgrindMakeEnvs() {
+    const input = core.getInput('valgrind-make-envs');
+    if (!input) {
+        return new Map();
+    }
+    const parsed = (0,shell_quote.parse)(input);
+    const envs = new Map();
+    for (const token of parsed) {
+        if (typeof token !== 'string') {
+            throw new Error(`Invalid valgrind-make-envs: other tokens than strings are not allowed`);
+        }
+        const [key, value] = splitOnce(token, '=').map((t) => t.trim());
+        envs.set(key, value);
+    }
+    return envs;
+}
+async function parseValgrindStrategies() {
+    try {
+        return parseStrategies(core.getInput('valgrind-strategy'), VALID_VALGRIND_STRATEGIES, 'valgrind');
+    }
+    catch (error) {
+        throw new Error(`Invalid valgrind-strategy: ${error.message}`);
+    }
+}
+async function parseValgrindUrl() {
+    try {
+        const input = core.getInput('valgrind-url');
+        if (input) {
+            return new URL(input);
+        }
+        else {
+            return undefined;
+        }
+    }
+    catch (error) {
+        throw new Error(`Invalid valgrind-url: ${error.message}`);
+    }
+}
+async function parseValgrindShaUrl() {
+    try {
+        const input = core.getInput('valgrind-sha-url');
+        if (input) {
+            return new URL(input);
+        }
+        else {
+            return undefined;
+        }
+    }
+    catch (error) {
+        throw new Error(`Invalid valgrind-sha-url: ${error.message}`);
+    }
+}
+async function parseValgrindVersion() {
+    let valgrindVersionInput;
+    let valgrindVersion;
+    try {
+        valgrindVersionInput = core.getInput('valgrind-version') || 'auto';
+        valgrindVersion = Version.fromString(valgrindVersionInput);
+    }
+    catch (error) {
+        throw new Error(`Invalid valgrind-version: ${error.message} `);
+    }
+    if (!valgrindVersion.isAutoOrLatest()) {
+        let validVersions;
+        try {
+            validVersions = (await fetchSortedValgrindVersions()).filter((v) => v.major >= 3 && v.minor >= 16);
+        }
+        catch {
+            throw new Error(`Failed to validate Valgrind version`);
+        }
+        if (!validVersions.some((v) => v.equals(valgrindVersion))) {
+            throw new Error(`Invalid valgrind-version '${valgrindVersionInput}': \
+Supported versions are: ${validVersions.join(', ')}`);
+        }
+    }
+    return valgrindVersion;
+}
+async function parseInstallBuildDeps() {
+    return core.getBooleanInput('install-build-deps') || false;
+}
+//# sourceMappingURL=inputs.js.map
+;// CONCATENATED MODULE: ./.ncc-build/main.js
+
+
+
+
+
+
+
+/** Main entry point: validates environment, detects versions, and installs gungraun-runner and valgrind. */
+async function run() {
+    if (process.platform !== 'linux') {
+        bail('This action currently only supports Linux runners');
+    }
+    let inputs;
+    try {
+        inputs = await parseInputs();
+    }
+    catch (error) {
+        bail(`Error parsing inputs: ${error.message}`);
+    }
+    if (!inputs.runnerStrategies.includes('none') && !(await io.which(getCargoBin(), false))) {
+        bail('cargo is not installed. This action requires Rust/Cargo to be able to install gungraun-runner.');
+    }
+    const { githubToken, installBuildDeps, runnerStrategies, runnerVersion, runnerTarget, valgrindConfigureArgs, valgrindMakeEnvs, valgrindStrategies, valgrindUrl, valgrindShaUrl, valgrindVersion } = inputs;
+    const valgrindPath = await io.which('valgrind', false);
+    if (valgrindPath) {
+        try {
+            const { stdout } = await exec.getExecOutput('valgrind', ['--version'], {
+                silent: !isDebug(),
+                ignoreReturnCode: true
+            });
+            printInfo(`Valgrind already installed: ${stdout.trim()} (${valgrindPath})`);
+        }
+        catch {
+            printInfo(`Valgrind already installed (${valgrindPath})`);
+        }
+    }
+    else {
+        try {
+            await installValgrind(valgrindVersion, valgrindStrategies, installBuildDeps, githubToken, valgrindUrl, valgrindShaUrl, valgrindConfigureArgs, valgrindMakeEnvs);
+            try {
+                const urls = external_fs_.readdirSync('/etc/debuginfod')
+                    .map((file) => {
+                    if (file.endsWith('.urls')) {
+                        return external_fs_.readFileSync(`/etc/debuginfod/${file}`, 'utf8')
+                            .replaceAll('\n', ' ')
+                            .trim();
+                    }
+                    else {
+                        return '';
+                    }
+                })
+                    .filter((url) => url.length > 0)
+                    .join(' ');
+                if (urls) {
+                    printInfo(`Setting DEBUGINFOD_URLS to '${urls}'`);
+                    core.exportVariable('DEBUGINFOD_URLS', urls);
+                }
+            }
+            catch {
+                printDebug(`debuginfod urls don't exist or are not readable`);
+            }
+        }
+        catch (error) {
+            bail(`Error installing Valgrind: ${error.message}`);
+        }
+    }
+    try {
+        await installRunner(runnerVersion, runnerStrategies, githubToken, runnerTarget);
+    }
+    catch (error) {
+        bail(`Error installing gungraun-runner: ${error.message}`);
+    }
+}
+run().catch((error) => {
+    core.setFailed(`Action failed: ${error.message}`);
+});
+//# sourceMappingURL=main.js.map

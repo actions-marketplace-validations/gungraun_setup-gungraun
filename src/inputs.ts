@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import { parse as parseShellArgs } from 'shell-quote';
-import { ResolvedVersion, Version } from './version';
-import { detectProjectVersion, detectTarget } from './detect';
-import { fetchRunnerVersions, fetchSortedValgrindVersions } from './resolve';
-import { splitOnce } from './utils';
+import { ResolvedVersion, Version } from './version.js';
+import { detectProjectVersion, detectTarget } from './detect.js';
+import { fetchRunnerVersions, fetchSortedValgrindVersions } from './resolve.js';
+import { splitOnce } from './utils.js';
 
 export type ValgrindStrategy = 'builder' | 'system' | 'source' | 'none';
 export type RunnerStrategy = 'binstall' | 'release' | 'source' | 'none';

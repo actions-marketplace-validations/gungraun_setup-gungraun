@@ -1,8 +1,8 @@
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
-import { getCargoBin, isDebug } from './utils';
-import { ResolvedVersion } from './version';
-import { Apk, AptGet, Dnf, PackageManager, Pacman, Yum, Zypper } from './platform';
+import { getCargoBin, isDebug } from './utils.js';
+import { ResolvedVersion } from './version.js';
+import { Apk, AptGet, Dnf, PackageManager, Pacman, Yum, Zypper } from './platform.js';
 
 /** Platform information detected from /etc/os-release. */
 export interface PlatformInfo {

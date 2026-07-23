@@ -1,42 +1,59 @@
-import * as utils from '../src/utils';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import type {
+    Apk as ApkType,
+    AptGet as AptGetType,
+    Dnf as DnfType,
+    MicroDnf as MicroDnfType,
+    PackageManagerVisitor,
+    Pacman as PacmanType,
+    Yum as YumType,
+    Zypper as ZypperType
+} from '../src/platform.js';
+import { ResolvedVersion } from '../src/version.js';
+
+const execPrivileged = jestRuntime.fn();
+const execPrivilegedWithOutput = jestRuntime.fn();
+
+jestRuntime.unstable_mockModule('../src/utils.js', () => ({
+    execPrivileged,
+    execPrivilegedWithOutput
+}));
+
+const utils = await import('../src/utils.js');
+const {
     Apk,
     AptGet,
     Dnf,
     Pacman,
-    PackageManagerVisitor,
     Yum,
     Zypper,
     FetchLatestPackageVersion,
     PackagesInstaller,
     MicroDnf
-} from '../src/platform';
-import { ResolvedVersion } from '../src/version';
+} = await import('../src/platform.js');
 
-jest.mock('../src/utils');
-
-afterEach(() => jest.resetAllMocks());
+afterEach(() => jestRuntime.resetAllMocks());
 
 class TestVisitor implements PackageManagerVisitor<string> {
-    visitApk(_pm: Apk): string {
+    visitApk(_pm: ApkType): string {
         return 'apk';
     }
-    visitAptGet(_pm: AptGet): string {
+    visitAptGet(_pm: AptGetType): string {
         return 'apt-get';
     }
-    visitDnf(_pm: Dnf): string {
+    visitDnf(_pm: DnfType): string {
         return 'dnf';
     }
-    visitMicroDnf(_pm: MicroDnf): string {
+    visitMicroDnf(_pm: MicroDnfType): string {
         return 'microdnf';
     }
-    visitPacman(_pm: Pacman): string {
+    visitPacman(_pm: PacmanType): string {
         return 'pacman';
     }
-    visitYum(_pm: Yum): string {
+    visitYum(_pm: YumType): string {
         return 'yum';
     }
-    visitZypper(_pm: Zypper): string {
+    visitZypper(_pm: ZypperType): string {
         return 'zypper';
     }
 }
@@ -245,7 +262,9 @@ describe('FetchLatestPackageVersion.getLatestVersion', () => {
 });
 
 describe('FetchLatestPackageVersion visitAptGet', () => {
-    const mockAptGet = { updateCache: jest.fn().mockResolvedValue(undefined) } as unknown as AptGet;
+    const mockAptGet = {
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as AptGetType;
 
     it('when there is a single version', async () => {
         (utils.execPrivilegedWithOutput as jest.Mock).mockResolvedValue(
@@ -298,7 +317,9 @@ describe('FetchLatestPackageVersion visitAptGet', () => {
 });
 
 describe('FetchLatestPackageVersion visitApk', () => {
-    const mockApk = { updateCache: jest.fn().mockResolvedValue(undefined) } as unknown as Apk;
+    const mockApk = {
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as ApkType;
 
     it('when there is a single version', async () => {
         (utils.execPrivilegedWithOutput as jest.Mock).mockResolvedValue(
@@ -457,7 +478,9 @@ valgrind-1:3.17.0-1.el10.x86_64`
 });
 
 describe('FetchLatestPackageVersion visitPacman', () => {
-    const mockPacman = { updateCache: jest.fn().mockResolvedValue(undefined) } as unknown as Pacman;
+    const mockPacman = {
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as PacmanType;
 
     it('when there is a single version', async () => {
         (utils.execPrivilegedWithOutput as jest.Mock).mockResolvedValue(
@@ -500,8 +523,8 @@ Version         : 3.15.2-0`);
 describe('FetchLatestPackageVersion visitYum', () => {
     it('when yum succeeds and there is a version', async () => {
         const mockYum = {
-            extractVersionStrings: jest.fn().mockReturnValue(['3.17.0-1.fc34'])
-        } as unknown as Yum;
+            extractVersionStrings: jestRuntime.fn().mockReturnValue(['3.17.0-1.fc34'])
+        } as unknown as YumType;
         const output = 'valgrind.x86_64   3.17.0-1.fc34   updates\n';
         (utils.execPrivilegedWithOutput as jest.Mock).mockResolvedValue(output);
 
@@ -594,8 +617,8 @@ describe('PackagesInstaller', () => {
 
 describe('PackagesInstaller visitAptGet', () => {
     const mockAptGet = {
-        updateCache: jest.fn().mockResolvedValue(undefined)
-    } as unknown as AptGet;
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as AptGetType;
 
     it('when no packages then skips installation', async () => {
         const installer = new PackagesInstaller();
@@ -620,7 +643,9 @@ describe('PackagesInstaller visitAptGet', () => {
 });
 
 describe('PackagesInstaller visitApk', () => {
-    const mockApk = { updateCache: jest.fn().mockResolvedValue(undefined) } as unknown as Apk;
+    const mockApk = {
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as ApkType;
 
     it('when no packages then skips installation', async () => {
         const installer = new PackagesInstaller();
@@ -709,8 +734,8 @@ describe('PackagesInstaller visitMicroDnf', () => {
 
 describe('PackagesInstaller visitPacman', () => {
     const mockPacman = {
-        updateCache: jest.fn().mockResolvedValue(undefined)
-    } as unknown as Pacman;
+        updateCache: jestRuntime.fn(async () => undefined)
+    } as unknown as PacmanType;
 
     it('when no packages then skips installation', async () => {
         const installer = new PackagesInstaller();

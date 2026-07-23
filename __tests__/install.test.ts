@@ -1,24 +1,89 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as fs from 'fs';
-import * as io from '@actions/io';
-import * as os from 'os';
-import { detectArch, detectPlatform, detectTarget } from '../src/detect';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import { ResolvedVersion, Version } from '../src/version.js';
+
+jestRuntime.unstable_mockModule('@actions/core', () =>
+    jestRuntime.createMockFromModule<typeof import('@actions/core')>('@actions/core')
+);
+jestRuntime.unstable_mockModule('@actions/exec', () =>
+    jestRuntime.createMockFromModule<typeof import('@actions/exec')>('@actions/exec')
+);
+jestRuntime.unstable_mockModule('@actions/io', () =>
+    jestRuntime.createMockFromModule<typeof import('@actions/io')>('@actions/io')
+);
+jestRuntime.unstable_mockModule('os', () =>
+    jestRuntime.createMockFromModule<typeof import('os')>('os')
+);
+
+const detectArch = jestRuntime.fn();
+const detectPlatform = jestRuntime.fn();
+const detectTarget = jestRuntime.fn();
+const downloadAndExtractRunner = jestRuntime.fn();
+const downloadAndExtractValgrind = jestRuntime.fn();
+const downloadAndExtractValgrindSource = jestRuntime.fn();
+const downloadAndExtractValgrindUrl = jestRuntime.fn();
+const resolveRunnerVersion = jestRuntime.fn();
+const resolveValgrindBuilderAssetName = jestRuntime.fn();
+const resolveValgrindVersion = jestRuntime.fn();
+const findBinary = jestRuntime.fn();
+const getCargoBin = jestRuntime.fn(() => 'cargo');
+const logInstalledVersion = jestRuntime.fn(async () => undefined);
+const printError = jestRuntime.fn();
+const printInfo = jestRuntime.fn();
+const printWarning = jestRuntime.fn();
+const withGroup = jestRuntime.fn((_name: string, fn: () => Promise<unknown>) => fn());
+
+jestRuntime.unstable_mockModule('../src/detect.js', () => ({
+    detectArch,
+    detectPlatform,
+    detectTarget
+}));
+jestRuntime.unstable_mockModule('../src/download.js', () => ({
     downloadAndExtractRunner,
     downloadAndExtractValgrind,
     downloadAndExtractValgrindSource,
     downloadAndExtractValgrindUrl
-} from '../src/download';
-import { PackagesInstaller } from '../src/platform';
-import {
+}));
+jestRuntime.unstable_mockModule('../src/resolve.js', () => ({
+    resolveRunnerVersion,
     resolveValgrindBuilderAssetName,
-    resolveValgrindVersion,
-    resolveRunnerVersion
-} from '../src/resolve';
-import { findBinary, logInstalledVersion, printError, printInfo, printWarning } from '../src/utils';
-import { ResolvedVersion, Version } from '../src/version';
-import {
+    resolveValgrindVersion
+}));
+
+const realFs = await import('fs');
+const actualUtils = await import('../src/utils.js');
+
+jestRuntime.unstable_mockModule('../src/utils.js', () => ({
+    findBinary,
+    getCargoBin,
+    logInstalledVersion,
+    printError,
+    printInfo,
+    printWarning,
+    withGroup,
+    execPrivileged: actualUtils.execPrivileged,
+    execPrivilegedWithOutput: actualUtils.execPrivilegedWithOutput,
+    isRoot: actualUtils.isRoot,
+    GUNGRAUN_REPO: 'gungraun/gungraun',
+    VALGRIND_BUILDER_REPO: 'gungraun/valgrind-builder',
+    VALGRIND_SOURCE_REPO: 'https://sourceware.org/git/valgrind.git'
+}));
+jestRuntime.unstable_mockModule('fs', () => ({
+    ...realFs,
+    existsSync: jestRuntime.fn(),
+    mkdirSync: jestRuntime.fn(),
+    promises: {
+        ...realFs.promises,
+        readdir: jestRuntime.fn()
+    }
+}));
+
+const core = await import('@actions/core');
+const exec = await import('@actions/exec');
+const fs = await import('fs');
+const io = await import('@actions/io');
+const os = await import('os');
+const { PackagesInstaller } = await import('../src/platform.js');
+const {
     getRunnerInstallDir,
     installDebugSymbols,
     installRunner,
@@ -30,93 +95,53 @@ import {
     installValgrindBuildDeps,
     installValgrindWithPackageManager,
     installValgrindFromSource
-} from '../src/install';
-
-jest.mock('@actions/core');
-jest.mock('@actions/exec');
-jest.mock('@actions/io');
-jest.mock('os');
-jest.mock('../src/detect');
-jest.mock('../src/download');
-jest.mock('../src/resolve');
-
-jest.mock('../src/utils', () => {
-    const actualUtils = jest.requireActual('../src/utils');
-    return {
-        findBinary: jest.fn(),
-        getCargoBin: jest.fn(() => 'cargo'),
-        logInstalledVersion: jest.fn().mockResolvedValue(undefined),
-        printError: jest.fn(),
-        printInfo: jest.fn(),
-        printWarning: jest.fn(),
-        withGroup: jest.fn((_name: string, fn: () => Promise<unknown>) => fn()),
-        execPrivileged: actualUtils.execPrivileged,
-        execPrivilegedWithOutput: actualUtils.execPrivilegedWithOutput,
-        isRoot: actualUtils.isRoot,
-        GUNGRAUN_REPO: 'gungraun/gungraun',
-        VALGRIND_BUILDER_REPO: 'gungraun/valgrind-builder',
-        VALGRIND_SOURCE_REPO: 'https://sourceware.org/git/valgrind.git'
-    };
-});
-
-jest.mock('fs', () => {
-    const realFs = jest.requireActual('fs');
-    return {
-        ...realFs,
-        existsSync: jest.fn(),
-        mkdirSync: jest.fn(),
-        promises: {
-            ...realFs.promises,
-            readdir: jest.fn()
-        }
-    };
-});
+} = await import('../src/install.js');
 
 afterEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
+    jestRuntime.clearAllMocks();
+    jestRuntime.restoreAllMocks();
 });
 
 beforeEach(() => {
-    jest.spyOn(process, 'getuid').mockReturnValue(1000);
+    jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
 });
 
 function createMockPackageManager() {
     return {
-        accept: jest.fn().mockResolvedValue(undefined),
-        getDebugInfoPackages: jest.fn(() => ['libc6-dbg']),
-        getValgrindBuildDeps: jest.fn(() => ['gcc', 'make', 'bzip2'])
+        accept: jestRuntime.fn<() => Promise<ResolvedVersion | null | void>>(async () => undefined),
+        getDebugInfoPackages: jestRuntime.fn(() => ['libc6-dbg']),
+        getValgrindBuildDeps: jestRuntime.fn(() => ['gcc', 'make', 'bzip2'])
     };
 }
 
 describe('getRunnerInstallDir', () => {
     it('when CARGO_INSTALL_ROOT is set then uses it', () => {
-        jest.replaceProperty(process, 'env', { CARGO_INSTALL_ROOT: '/custom' });
+        jestRuntime.replaceProperty(process, 'env', { CARGO_INSTALL_ROOT: '/custom' });
         expect(getRunnerInstallDir()).toEqual({ dir: '/custom/bin', needsExport: false });
     });
 
     it('when CARGO_HOME is set but no CARGO_INSTALL_ROOT then uses CARGO_HOME', () => {
-        jest.replaceProperty(process, 'env', { CARGO_HOME: '/cargo-home' });
+        jestRuntime.replaceProperty(process, 'env', { CARGO_HOME: '/cargo-home' });
         expect(getRunnerInstallDir()).toEqual({ dir: '/cargo-home/bin', needsExport: false });
     });
 
     it('when HOME is set but no cargo env vars then uses HOME/.cargo/bin', () => {
-        jest.replaceProperty(process, 'env', { HOME: '/home/user' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/user' });
         expect(getRunnerInstallDir()).toEqual({ dir: '/home/user/.cargo/bin', needsExport: true });
     });
 
     it('when RUNNER_TEMP is set but no other vars then uses RUNNER_TEMP/.cargo/bin', () => {
-        jest.replaceProperty(process, 'env', { RUNNER_TEMP: '/tmp/runner' });
+        jestRuntime.replaceProperty(process, 'env', { RUNNER_TEMP: '/tmp/runner' });
         expect(getRunnerInstallDir()).toEqual({ dir: '/tmp/runner/.cargo/bin', needsExport: true });
     });
 
     it('when no relevant env vars are set then returns null', () => {
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         expect(getRunnerInstallDir()).toBeNull();
     });
 
     it('when CARGO_INSTALL_ROOT is set then takes priority over CARGO_HOME', () => {
-        jest.replaceProperty(process, 'env', {
+        jestRuntime.replaceProperty(process, 'env', {
             CARGO_INSTALL_ROOT: '/custom',
             CARGO_HOME: '/cargo-home'
         });
@@ -187,7 +212,7 @@ describe('installRunner', () => {
         (io.which as jest.Mock).mockResolvedValueOnce('/usr/bin/cargo-binstall');
         (exec.exec as jest.Mock).mockResolvedValue(0);
         (io.which as jest.Mock).mockResolvedValueOnce('/usr/bin/gungraun-runner');
-        jest.replaceProperty(process, 'env', { HOME: '/home/test' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
 
         await installRunner(Version.latest(), ['binstall', 'release'], 'token', 'target');
 
@@ -204,7 +229,7 @@ describe('installRunner', () => {
     });
 
     it('when release succeeds then logs installed version', async () => {
-        jest.replaceProperty(process, 'env', { HOME: '/home/test' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(new ResolvedVersion(1, 2, 3));
         (downloadAndExtractRunner as jest.Mock).mockResolvedValue('/tmp/extract');
         (findBinary as jest.Mock).mockResolvedValue('/tmp/extract/gungraun-runner');
@@ -226,7 +251,7 @@ describe('installRunner', () => {
     });
 
     it('when all strategies fail then throws', async () => {
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         (findBinary as jest.Mock).mockResolvedValue(null);
 
         await expect(
@@ -239,7 +264,7 @@ describe('installRunner', () => {
     it('when a strategy fails and another remains then logs info', async () => {
         (io.which as jest.Mock).mockReset();
         (io.which as jest.Mock).mockResolvedValue('');
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         (findBinary as jest.Mock).mockResolvedValue(null);
 
         await expect(
@@ -255,7 +280,7 @@ describe('installRunnerFromRelease', () => {
     const resolvedVersion = new ResolvedVersion(1, 2, 3);
 
     it('when binary found then installs and returns true', async () => {
-        jest.replaceProperty(process, 'env', { HOME: '/home/test' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(resolvedVersion);
         (downloadAndExtractRunner as jest.Mock).mockResolvedValue('/tmp/extract');
         (findBinary as jest.Mock).mockResolvedValue('/tmp/extract/gungraun-runner');
@@ -283,7 +308,7 @@ describe('installRunnerFromRelease', () => {
     });
 
     it('when needsExport is false then does not add to PATH', async () => {
-        jest.replaceProperty(process, 'env', { CARGO_HOME: '/cargo-home' });
+        jestRuntime.replaceProperty(process, 'env', { CARGO_HOME: '/cargo-home' });
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(resolvedVersion);
         (downloadAndExtractRunner as jest.Mock).mockResolvedValue('/tmp/extract');
         (findBinary as jest.Mock).mockResolvedValue('/tmp/extract/gungraun-runner');
@@ -319,7 +344,7 @@ describe('installRunnerFromRelease', () => {
     });
 
     it('when no install directory then returns false', async () => {
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(resolvedVersion);
         (downloadAndExtractRunner as jest.Mock).mockResolvedValue('/tmp/extract');
         (findBinary as jest.Mock).mockResolvedValue('/tmp/extract/gungraun-runner');
@@ -338,7 +363,7 @@ describe('installRunnerFromRelease', () => {
     });
 
     it('when install dir does not exist then creates it', async () => {
-        jest.replaceProperty(process, 'env', { HOME: '/home/test' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(resolvedVersion);
         (downloadAndExtractRunner as jest.Mock).mockResolvedValue('/tmp/extract');
         (findBinary as jest.Mock).mockResolvedValue('/tmp/extract/gungraun-runner');
@@ -352,7 +377,7 @@ describe('installRunnerFromRelease', () => {
     });
 
     it('when exception thrown then returns false', async () => {
-        jest.replaceProperty(process, 'env', { HOME: '/home/test' });
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
         (resolveRunnerVersion as jest.Mock).mockRejectedValue(new Error('network error'));
 
         const result = await installRunnerFromRelease(
@@ -540,7 +565,7 @@ describe('installValgrind', () => {
     });
 
     it('when all strategies fail then throws', async () => {
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         (detectPlatform as jest.Mock).mockResolvedValue({
             id: 'unknown',
             versionId: null,
@@ -556,7 +581,7 @@ describe('installValgrind', () => {
     });
 
     it('when a strategy fails and another remains then logs info', async () => {
-        jest.replaceProperty(process, 'env', {});
+        jestRuntime.replaceProperty(process, 'env', {});
         (detectPlatform as jest.Mock).mockResolvedValue({
             id: 'unknown',
             versionId: null,

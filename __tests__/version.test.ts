@@ -1,4 +1,5 @@
-import { ResolvedVersion, Version } from '../src/version';
+import { jest as jestRuntime } from '@jest/globals';
+import { ResolvedVersion, Version } from '../src/version.js';
 
 describe('Version from a valgrind tag', () => {
     it('with ^{} suffix', () => {
@@ -304,7 +305,7 @@ describe('ResolvedVersion constructor', () => {
 
 describe('ResolvedVersion from a valgrind tag', () => {
     it('calls super function', () => {
-        const spy = jest.spyOn(Version, 'fromValgrindTag');
+        const spy = jestRuntime.spyOn(Version, 'fromValgrindTag');
 
         const version = ResolvedVersion.fromValgrindTag('VALGRIND_3_9_0');
 
@@ -316,7 +317,7 @@ describe('ResolvedVersion from a valgrind tag', () => {
 
 describe('ResolvedVersion from a string', () => {
     it('calls super function', () => {
-        const spy = jest.spyOn(Version, 'fromString');
+        const spy = jestRuntime.spyOn(Version, 'fromString');
 
         const version = ResolvedVersion.fromString('10.20.30');
 
@@ -326,7 +327,7 @@ describe('ResolvedVersion from a string', () => {
     });
 
     it('when latest then throws', () => {
-        const spy = jest.spyOn(Version, 'fromString');
+        const spy = jestRuntime.spyOn(Version, 'fromString');
 
         expect(() => ResolvedVersion.fromString('latest')).toThrow(
             "A resolved version cannot be 'latest' or 'auto'"
@@ -336,7 +337,7 @@ describe('ResolvedVersion from a string', () => {
     });
 
     it('when auto then throws', () => {
-        const spy = jest.spyOn(Version, 'fromString');
+        const spy = jestRuntime.spyOn(Version, 'fromString');
 
         expect(() => ResolvedVersion.fromString('auto')).toThrow(
             "A resolved version cannot be 'latest' or 'auto'"

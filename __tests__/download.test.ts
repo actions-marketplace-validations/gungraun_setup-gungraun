@@ -1,28 +1,33 @@
-import * as tc from '@actions/tool-cache';
+import { jest as jestRuntime } from '@jest/globals';
 import * as path from 'path';
-import { verifySha } from '../src/hash';
-import { fetchReleaseAssetData } from '../src/resolve';
-import {
+import { ResolvedVersion } from '../src/version.js';
+
+const downloadTool = jestRuntime.fn();
+const extractTar = jestRuntime.fn();
+const verifySha = jestRuntime.fn();
+const fetchReleaseAssetData = jestRuntime.fn();
+
+jestRuntime.unstable_mockModule('@actions/tool-cache', () => ({ downloadTool, extractTar }));
+jestRuntime.unstable_mockModule('../src/hash.js', () => ({ verifySha }));
+jestRuntime.unstable_mockModule('../src/resolve.js', () => ({ fetchReleaseAssetData }));
+jestRuntime.unstable_mockModule('../src/utils.js', () => ({
+    GUNGRAUN_REPO: 'gungraun/gungraun',
+    VALGRIND_BUILDER_REPO: 'gungraun/valgrind-builder',
+    retry: jestRuntime.fn((_n: number, fn: () => Promise<unknown>) => fn())
+}));
+
+const tc = await import('@actions/tool-cache');
+const {
     downloadAndExtractRelease,
     downloadAndExtractRunner,
     downloadAndExtractValgrindUrl,
     downloadAndExtractValgrindSource,
     downloadAndExtractValgrind
-} from '../src/download';
-import { ResolvedVersion } from '../src/version';
-
-jest.mock('@actions/tool-cache');
-jest.mock('../src/hash');
-jest.mock('../src/resolve');
-jest.mock('../src/utils', () => ({
-    GUNGRAUN_REPO: 'gungraun/gungraun',
-    VALGRIND_BUILDER_REPO: 'gungraun/valgrind-builder',
-    retry: jest.fn((_n: number, fn: () => Promise<unknown>) => fn())
-}));
+} = await import('../src/download.js');
 
 afterEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    jestRuntime.restoreAllMocks();
+    jestRuntime.clearAllMocks();
 });
 
 describe('downloadAndExtractRelease', () => {

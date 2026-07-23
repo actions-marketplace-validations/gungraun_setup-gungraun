@@ -246,8 +246,7 @@ jobs:
           # pacman
           - archlinux:latest
           # zypper
-          - opensuse/leap:latest
-          - opensuse/tumbleweed:latest
+          - registry.suse.com/bci/bci-base:16.0
         include:
           - install-build-deps: false
           - strategy: source
@@ -269,7 +268,7 @@ jobs:
           almalinux:* | fedora* | amazonlinux*)
             dnf install -y tar git
             ;;
-          opensuse*)
+          opensuse* | registry.suse.com/bci/bci-base:*)
             zypper --non-interactive install tar gzip awk git
             ;;
           alpine*)

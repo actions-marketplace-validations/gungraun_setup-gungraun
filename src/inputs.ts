@@ -87,7 +87,7 @@ export async function parseRunnerStrategies(): Promise<RunnerStrategy[]> {
             'runner'
         );
     } catch (error) {
-        throw new Error(`Invalid runner-strategy: ${(error as Error).message}`);
+        throw new Error(`Invalid runner-strategy: ${(error as Error).message}`, { cause: error });
     }
 }
 
@@ -107,7 +107,8 @@ export async function parseRunnerVersion(
             runnerVersion = await detectProjectVersion();
         } catch (error) {
             throw new Error(
-                `Unable to detect gungraun-runner version: ${(error as Error).message}`
+                `Unable to detect gungraun-runner version: ${(error as Error).message}`,
+                { cause: error }
             );
         }
     } else {
@@ -117,7 +118,8 @@ export async function parseRunnerVersion(
             runnerVersion = Version.fromString(runnerVersionInput);
         } catch (error) {
             throw new Error(
-                `Failed to fetch gungraun-runner versions: ${(error as Error).message}`
+                `Failed to fetch gungraun-runner versions: ${(error as Error).message}`,
+                { cause: error }
             );
         }
 
@@ -212,7 +214,7 @@ export async function parseValgrindStrategies(): Promise<ValgrindStrategy[]> {
             'valgrind'
         );
     } catch (error) {
-        throw new Error(`Invalid valgrind-strategy: ${(error as Error).message}`);
+        throw new Error(`Invalid valgrind-strategy: ${(error as Error).message}`, { cause: error });
     }
 }
 
@@ -225,7 +227,7 @@ export async function parseValgrindUrl(): Promise<URL | undefined> {
             return undefined;
         }
     } catch (error) {
-        throw new Error(`Invalid valgrind-url: ${(error as Error).message}`);
+        throw new Error(`Invalid valgrind-url: ${(error as Error).message}`, { cause: error });
     }
 }
 
@@ -238,7 +240,7 @@ export async function parseValgrindShaUrl(): Promise<URL | undefined> {
             return undefined;
         }
     } catch (error) {
-        throw new Error(`Invalid valgrind-sha-url: ${(error as Error).message}`);
+        throw new Error(`Invalid valgrind-sha-url: ${(error as Error).message}`, { cause: error });
     }
 }
 
@@ -250,7 +252,7 @@ export async function parseValgrindVersion(): Promise<Version> {
         valgrindVersionInput = core.getInput('valgrind-version') || 'auto';
         valgrindVersion = Version.fromString(valgrindVersionInput);
     } catch (error) {
-        throw new Error(`Invalid valgrind-version: ${(error as Error).message} `);
+        throw new Error(`Invalid valgrind-version: ${(error as Error).message} `, { cause: error });
     }
 
     if (!valgrindVersion.isAutoOrLatest()) {

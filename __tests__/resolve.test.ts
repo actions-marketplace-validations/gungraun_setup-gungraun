@@ -123,13 +123,17 @@ describe('fetchReleaseAssetData', () => {
     });
 
     it('when API error then throws with descriptive message', async () => {
+        const cause = new Error('not found');
         mockOctokit({
-            getLatestRelease: rejected(new Error('not found'))
+            getLatestRelease: rejected(cause)
         });
 
         await expect(
             fetchReleaseAssetData('owner/repo', Version.latest(), 'token', 0)
-        ).rejects.toThrow('Failed to fetch release assets: not found');
+        ).rejects.toMatchObject({
+            message: 'Failed to fetch release assets: not found',
+            cause
+        });
     });
 });
 
@@ -147,13 +151,15 @@ describe('fetchRunnerVersions', () => {
     });
 
     it('when API error then throws with descriptive message', async () => {
+        const cause = new Error('API rate limit');
         mockOctokit({
-            listReleases: rejected(new Error('API rate limit'))
+            listReleases: rejected(cause)
         });
 
-        await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
-            'Failed to fetch gungraun-runner versions: API rate limit'
-        );
+        await expect(fetchRunnerVersions('token', 0)).rejects.toMatchObject({
+            message: 'Failed to fetch gungraun-runner versions: API rate limit',
+            cause
+        });
     });
 
     it('when no releases then throws with descriptive message', async () => {
@@ -161,9 +167,11 @@ describe('fetchRunnerVersions', () => {
             listReleases: resolved({ data: [] })
         });
 
-        await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
-            'Failed to fetch gungraun-runner versions: At least one version should be present'
-        );
+        await expect(fetchRunnerVersions('token', 0)).rejects.toMatchObject({
+            message:
+                'Failed to fetch gungraun-runner versions: At least one version should be present',
+            cause: expect.objectContaining({ message: 'At least one version should be present' })
+        });
     });
 });
 
@@ -274,13 +282,15 @@ describe('resolveRunnerVersion', () => {
     });
 
     it('when API fails then throws with descriptive message', async () => {
+        const cause = new Error('not found');
         mockOctokit({
-            getLatestRelease: rejected(new Error('not found'))
+            getLatestRelease: rejected(cause)
         });
 
-        await expect(resolveRunnerVersion(Version.latest(), 'token', 0)).rejects.toThrow(
-            'Could not determine latest release version for gungraun-runner: not found'
-        );
+        await expect(resolveRunnerVersion(Version.latest(), 'token', 0)).rejects.toMatchObject({
+            message: 'Could not determine latest release version for gungraun-runner: not found',
+            cause
+        });
     });
 
     it('when API returns tag without v prefix', async () => {

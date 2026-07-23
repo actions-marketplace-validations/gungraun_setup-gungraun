@@ -141,7 +141,10 @@ describe('parseRunnerStrategies', () => {
 
     it('when invalid strategy then throws', async () => {
         (core.getInput as jest.Mock).mockReturnValue('invalid');
-        await expect(parseRunnerStrategies()).rejects.toThrow('Invalid runner-strategy:');
+        await expect(parseRunnerStrategies()).rejects.toMatchObject({
+            message: expect.stringContaining('Invalid runner-strategy:'),
+            cause: expect.any(Error)
+        });
     });
 });
 
@@ -166,12 +169,14 @@ describe('parseRunnerVersion', () => {
     });
 
     it('when auto-detect fails then throws', async () => {
+        const cause = new Error('no version found');
         (core.getInput as jest.Mock).mockReturnValue('auto');
-        (detectProjectVersion as jest.Mock).mockRejectedValue(new Error('no version found'));
+        (detectProjectVersion as jest.Mock).mockRejectedValue(cause);
 
-        await expect(parseRunnerVersion(false, 'token')).rejects.toThrow(
-            'Unable to detect gungraun-runner version:'
-        );
+        await expect(parseRunnerVersion(false, 'token')).rejects.toMatchObject({
+            message: expect.stringContaining('Unable to detect gungraun-runner version:'),
+            cause
+        });
     });
 
     it('when latest then returns Version.latest()', async () => {
@@ -204,12 +209,14 @@ describe('parseRunnerVersion', () => {
     });
 
     it('when fetching valid versions fails then throws', async () => {
+        const cause = new Error('network error');
         (core.getInput as jest.Mock).mockReturnValue('1.2.3');
-        (fetchRunnerVersions as jest.Mock).mockRejectedValue(new Error('network error'));
+        (fetchRunnerVersions as jest.Mock).mockRejectedValue(cause);
 
-        await expect(parseRunnerVersion(false, 'token')).rejects.toThrow(
-            'Failed to fetch gungraun-runner versions:'
-        );
+        await expect(parseRunnerVersion(false, 'token')).rejects.toMatchObject({
+            message: expect.stringContaining('Failed to fetch gungraun-runner versions:'),
+            cause
+        });
     });
 
     it('when runner strategy is none then returns auto', async () => {
@@ -226,7 +233,10 @@ describe('parseValgrindStrategies', () => {
 
     it('when invalid strategy then throws', async () => {
         (core.getInput as jest.Mock).mockReturnValue('invalid');
-        await expect(parseValgrindStrategies()).rejects.toThrow('Invalid valgrind-strategy:');
+        await expect(parseValgrindStrategies()).rejects.toMatchObject({
+            message: expect.stringContaining('Invalid valgrind-strategy:'),
+            cause: expect.any(Error)
+        });
     });
 });
 
@@ -245,7 +255,10 @@ describe('parseValgrindUrl', () => {
 
     it('when invalid url then throws', async () => {
         (core.getInput as jest.Mock).mockReturnValue('https////missing.colon.com');
-        await expect(parseValgrindUrl()).rejects.toThrow('Invalid valgrind-url:');
+        await expect(parseValgrindUrl()).rejects.toMatchObject({
+            message: expect.stringContaining('Invalid valgrind-url:'),
+            cause: expect.objectContaining({ name: 'TypeError' })
+        });
     });
 });
 
@@ -264,7 +277,10 @@ describe('parseValgrindShaUrl', () => {
 
     it('when invalid url then throws', async () => {
         (core.getInput as jest.Mock).mockReturnValue('https////missing.colon.com');
-        await expect(parseValgrindShaUrl()).rejects.toThrow('Invalid valgrind-sha-url:');
+        await expect(parseValgrindShaUrl()).rejects.toMatchObject({
+            message: expect.stringContaining('Invalid valgrind-sha-url:'),
+            cause: expect.objectContaining({ name: 'TypeError' })
+        });
     });
 });
 
@@ -295,7 +311,10 @@ describe('parseValgrindVersion', () => {
     it('when invalid version string then throws', async () => {
         (core.getInput as jest.Mock).mockReturnValue('not-a-version');
 
-        await expect(parseValgrindVersion()).rejects.toThrow('Invalid valgrind-version:');
+        await expect(parseValgrindVersion()).rejects.toMatchObject({
+            message: expect.stringContaining('Invalid valgrind-version:'),
+            cause: expect.any(Error)
+        });
     });
 
     it('when version not in valid list then throws', async () => {

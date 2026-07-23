@@ -58,7 +58,9 @@ export async function fetchReleaseAssetData(
             };
         });
     } catch (error) {
-        throw new Error(`Failed to fetch release assets: ${(error as Error).message}`);
+        throw new Error(`Failed to fetch release assets: ${(error as Error).message}`, {
+            cause: error
+        });
     }
 }
 
@@ -83,7 +85,9 @@ export async function fetchRunnerVersions(
             }
         });
     } catch (error) {
-        throw new Error(`Failed to fetch gungraun-runner versions: ${(error as Error).message}`);
+        throw new Error(`Failed to fetch gungraun-runner versions: ${(error as Error).message}`, {
+            cause: error
+        });
     }
 }
 
@@ -131,7 +135,7 @@ async function resolveLatestTag(
             return data.tag_name;
         });
     } catch (error) {
-        throw new Error(notFoundMessage + `: ${(error as Error).message}`);
+        throw new Error(notFoundMessage + `: ${(error as Error).message}`, { cause: error });
     }
 
     return ResolvedVersion.fromString(tag);

@@ -1,15 +1,15 @@
 import { jest as jestRuntime } from '@jest/globals';
 import { ResolvedVersion, Version } from '../src/version.js';
 
-jestRuntime.unstable_mockModule('@actions/core', () =>
-    jestRuntime.createMockFromModule<typeof import('@actions/core')>('@actions/core')
-);
-jestRuntime.unstable_mockModule('@actions/exec', () =>
-    jestRuntime.createMockFromModule<typeof import('@actions/exec')>('@actions/exec')
-);
-jestRuntime.unstable_mockModule('@actions/io', () =>
-    jestRuntime.createMockFromModule<typeof import('@actions/io')>('@actions/io')
-);
+const addPath = jestRuntime.fn();
+const exportVariable = jestRuntime.fn();
+const execCommand = jestRuntime.fn();
+const move = jestRuntime.fn();
+const which = jestRuntime.fn();
+
+jestRuntime.unstable_mockModule('@actions/core', () => ({ addPath, exportVariable }));
+jestRuntime.unstable_mockModule('@actions/exec', () => ({ exec: execCommand }));
+jestRuntime.unstable_mockModule('@actions/io', () => ({ mv: move, which }));
 jestRuntime.unstable_mockModule('os', () =>
     jestRuntime.createMockFromModule<typeof import('os')>('os')
 );

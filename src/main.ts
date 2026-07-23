@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
-import { installRunner, installValgrind } from './install';
-import { getCargoBin, bail, printInfo, isDebug, printDebug } from './utils';
-import { Inputs, parseInputs } from './inputs';
+import { installRunner, installValgrind } from './install.js';
+import { getCargoBin, bail, printInfo, isDebug, printDebug } from './utils.js';
+import { Inputs, parseInputs } from './inputs.js';
 import * as fs from 'fs';
 
 /** Main entry point: validates environment, detects versions, and installs gungraun-runner and valgrind. */

@@ -1,5 +1,5 @@
-import { ResolvedVersion } from './version';
-import { execPrivileged, execPrivilegedWithOutput } from './utils';
+import { ResolvedVersion } from './version.js';
+import { execPrivileged, execPrivilegedWithOutput } from './utils.js';
 
 export interface PackageManager {
     accept<T>(v: PackageManagerVisitor<T>): T;

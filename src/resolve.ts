@@ -6,8 +6,8 @@ import {
     retry,
     VALGRIND_BUILDER_REPO,
     VALGRIND_SOURCE_REPO
-} from './utils';
-import { ResolvedVersion, Version } from './version';
+} from './utils.js';
+import { ResolvedVersion, Version } from './version.js';
 
 interface ReleaseAsset {
     name: string;

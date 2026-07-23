@@ -1,19 +1,31 @@
-import * as exec from '@actions/exec';
-import { getOctokit } from '@actions/github';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import { ResolvedVersion, Version } from '../src/version.js';
+
+const getExecOutput = jestRuntime.fn();
+const getOctokit = jestRuntime.fn();
+
+function resolved<T>(value: T) {
+    return jestRuntime.fn<() => Promise<T>>().mockResolvedValue(value);
+}
+
+function rejected(error: Error) {
+    return jestRuntime.fn<() => Promise<never>>().mockRejectedValue(error);
+}
+
+jestRuntime.unstable_mockModule('@actions/exec', () => ({ getExecOutput }));
+jestRuntime.unstable_mockModule('@actions/github', () => ({ getOctokit }));
+
+const exec = await import('@actions/exec');
+const {
     fetchReleaseAssetData,
     fetchRunnerVersions,
     fetchSortedValgrindVersions,
     resolveRunnerVersion,
     resolveValgrindBuilderAssetName,
     resolveValgrindVersion
-} from '../src/resolve';
-import { ResolvedVersion, Version } from '../src/version';
+} = await import('../src/resolve.js');
 
-jest.mock('@actions/github');
-jest.mock('@actions/exec');
-
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 function mockOctokit(repos: {
     getLatestRelease?: jest.Mock;
@@ -29,14 +41,14 @@ function mockOctokit(repos: {
             }
         }
     };
-    (getOctokit as jest.Mock).mockReturnValue(octokit);
+    getOctokit.mockReturnValue(octokit);
     return octokit;
 }
 
 describe('fetchReleaseAssetData', () => {
     it('when version is latest', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: {
                     tag_name: 'v3.20.0',
                     assets: [
@@ -63,7 +75,7 @@ describe('fetchReleaseAssetData', () => {
     it('when version is specific', async () => {
         const version = new Version(3, 19, 0);
         mockOctokit({
-            getReleaseByTag: jest.fn().mockResolvedValue({
+            getReleaseByTag: resolved({
                 data: {
                     tag_name: 'v3.19.0',
                     assets: [
@@ -84,7 +96,7 @@ describe('fetchReleaseAssetData', () => {
 
     it('when empty assets array then return empty', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v1.0.0', assets: [] }
             })
         });
@@ -96,7 +108,7 @@ describe('fetchReleaseAssetData', () => {
 
     it('when specific version', async () => {
         const version = new Version(2, 5, 1);
-        const getReleaseByTag = jest.fn().mockResolvedValue({
+        const getReleaseByTag = resolved({
             data: { tag_name: 'v2.5.1', assets: [] }
         });
         mockOctokit({ getReleaseByTag });
@@ -112,7 +124,7 @@ describe('fetchReleaseAssetData', () => {
 
     it('when API error then throws with descriptive message', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockRejectedValue(new Error('not found'))
+            getLatestRelease: rejected(new Error('not found'))
         });
 
         await expect(
@@ -124,7 +136,7 @@ describe('fetchReleaseAssetData', () => {
 describe('fetchRunnerVersions', () => {
     it('when releases are fetched', async () => {
         mockOctokit({
-            listReleases: jest.fn().mockResolvedValue({
+            listReleases: resolved({
                 data: [{ tag_name: 'v1.0.0' }, { tag_name: 'v2.0.0' }]
             })
         });
@@ -136,7 +148,7 @@ describe('fetchRunnerVersions', () => {
 
     it('when API error then throws with descriptive message', async () => {
         mockOctokit({
-            listReleases: jest.fn().mockRejectedValue(new Error('API rate limit'))
+            listReleases: rejected(new Error('API rate limit'))
         });
 
         await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
@@ -146,7 +158,7 @@ describe('fetchRunnerVersions', () => {
 
     it('when no releases then throws with descriptive message', async () => {
         mockOctokit({
-            listReleases: jest.fn().mockResolvedValue({ data: [] })
+            listReleases: resolved({ data: [] })
         });
 
         await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
@@ -239,7 +251,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when version is latest', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v2.0.0' }
             })
         });
@@ -251,7 +263,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when version is auto', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v3.0.0' }
             })
         });
@@ -263,7 +275,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when API fails then throws with descriptive message', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockRejectedValue(new Error('not found'))
+            getLatestRelease: rejected(new Error('not found'))
         });
 
         await expect(resolveRunnerVersion(Version.latest(), 'token', 0)).rejects.toThrow(
@@ -273,7 +285,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when API returns tag without v prefix', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: '2.0.0' }
             })
         });
@@ -294,7 +306,7 @@ describe('resolveValgrindBuilderAssetName', () => {
 
     function mockReleaseWithAssets(assetsList: { name: string; browser_download_url: string }[]) {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v1.0.0', assets: assetsList }
             })
         });

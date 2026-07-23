@@ -4,18 +4,18 @@ import * as fs from 'fs';
 import * as io from '@actions/io';
 import * as path from 'path';
 import * as os from 'os';
-import { detectArch, detectPlatform, detectTarget } from './detect';
+import { detectArch, detectPlatform, detectTarget } from './detect.js';
 import {
     downloadAndExtractRunner,
     downloadAndExtractValgrind,
     downloadAndExtractValgrindSource,
     downloadAndExtractValgrindUrl
-} from './download';
+} from './download.js';
 import {
     resolveValgrindBuilderAssetName,
     resolveValgrindVersion,
     resolveRunnerVersion
-} from './resolve';
+} from './resolve.js';
 import {
     execPrivileged,
     findBinary,
@@ -25,10 +25,10 @@ import {
     printInfo,
     printWarning,
     withGroup
-} from './utils';
-import { Version } from './version';
-import { RunnerStrategy, ValgrindStrategy } from './inputs';
-import { PackagesInstaller, FetchLatestPackageVersion } from './platform';
+} from './utils.js';
+import { Version } from './version.js';
+import { RunnerStrategy, ValgrindStrategy } from './inputs.js';
+import { PackagesInstaller, FetchLatestPackageVersion } from './platform.js';
 import { quote } from 'shell-quote';
 
 export function getRunnerInstallDir(): { dir: string; needsExport: boolean } | null {

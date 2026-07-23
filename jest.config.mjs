@@ -1,10 +1,10 @@
 export default {
-    preset: 'ts-jest',
+    extensionsToTreatAsEsm: ['.ts'],
     transform: {
-        '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
+        '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json', useESM: true }]
     },
     moduleNameMapper: {
-        '^@actions/github$': '<rootDir>/__mocks__/@actions/github.ts'
+        '^(\\.{1,2}/.*)\\.js$': '$1'
     },
     testEnvironment: 'node',
     roots: ['<rootDir>/__tests__'],

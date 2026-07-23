@@ -1,7 +1,25 @@
-import * as core from '@actions/core';
-import { detectProjectVersion, detectTarget } from '../src/detect';
-import { fetchRunnerVersions, fetchSortedValgrindVersions } from '../src/resolve';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import { ResolvedVersion, Version } from '../src/version.js';
+
+const getInput = jestRuntime.fn();
+const getBooleanInput = jestRuntime.fn();
+const detectProjectVersion = jestRuntime.fn();
+const detectTarget = jestRuntime.fn();
+const fetchRunnerVersions = jestRuntime.fn();
+const fetchSortedValgrindVersions = jestRuntime.fn();
+
+jestRuntime.unstable_mockModule('@actions/core', () => ({ getBooleanInput, getInput }));
+jestRuntime.unstable_mockModule('../src/detect.js', () => ({
+    detectProjectVersion,
+    detectTarget
+}));
+jestRuntime.unstable_mockModule('../src/resolve.js', () => ({
+    fetchRunnerVersions,
+    fetchSortedValgrindVersions
+}));
+
+const core = await import('@actions/core');
+const {
     parseGithubToken,
     parseInstallBuildDeps,
     parseRunnerStrategies,
@@ -16,14 +34,9 @@ import {
     parseValgrindVersion,
     VALID_RUNNER_STRATEGIES,
     VALID_VALGRIND_STRATEGIES
-} from '../src/inputs';
-import { ResolvedVersion, Version } from '../src/version';
+} = await import('../src/inputs.js');
 
-jest.mock('@actions/core');
-jest.mock('../src/detect');
-jest.mock('../src/resolve');
-
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 describe('parseStrategies', () => {
     it('when single valid strategy then returns it', () => {

@@ -228,6 +228,33 @@ describe('installRunner', () => {
         expect(logInstalledVersion).toHaveBeenCalledWith('gungraun-runner', 'gungraun-runner');
     });
 
+    it('when binstall token is provided then passes it to cargo-binstall', async () => {
+        (io.which as jest.Mock).mockResolvedValueOnce('/usr/bin/cargo-binstall');
+        (exec.exec as jest.Mock).mockResolvedValue(0);
+        jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
+
+        await installRunner(Version.latest(), ['binstall'], 'token', 'target');
+
+        expect(exec.exec).toHaveBeenCalledWith(
+            'cargo',
+            [
+                'binstall',
+                '-y',
+                '--disable-strategies',
+                'compile',
+                '--targets',
+                'target',
+                'gungraun-runner'
+            ],
+            {
+                env: {
+                    HOME: '/home/test',
+                    GITHUB_TOKEN: 'token'
+                }
+            }
+        );
+    });
+
     it('when release succeeds then logs installed version', async () => {
         jestRuntime.replaceProperty(process, 'env', { HOME: '/home/test' });
         (resolveRunnerVersion as jest.Mock).mockResolvedValue(new ResolvedVersion(1, 2, 3));
@@ -498,6 +525,15 @@ describe('installRunnerWithBinstall', () => {
         const args = (exec.exec as jest.Mock).mock.calls[0][1];
         expect(args).toContain('--targets');
         expect(args).toContain('x86_64-unknown-linux-gnu');
+    });
+
+    it('when github token is absent then omits exec options', async () => {
+        (io.which as jest.Mock).mockResolvedValueOnce('/usr/bin/cargo-binstall');
+        (exec.exec as jest.Mock).mockResolvedValue(0);
+
+        await installRunnerWithBinstall(Version.latest());
+
+        expect((exec.exec as jest.Mock).mock.calls[0]).toHaveLength(2);
     });
 
     it('when binstall fails then returns false', async () => {

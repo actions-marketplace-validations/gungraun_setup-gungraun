@@ -41940,7 +41940,7 @@ async function installRunner(version, strategies, githubToken, target) {
         const strategy = strategies[index];
         switch (strategy) {
             case 'binstall': {
-                const result = await installRunnerWithBinstall(version, target);
+                const result = await installRunnerWithBinstall(version, target, githubToken);
                 if (result) {
                     await logInstalledVersion('gungraun-runner', 'gungraun-runner');
                     return;
@@ -42036,7 +42036,7 @@ async function installRunnerFromSource(version, target) {
     });
 }
 /** Installs gungraun-runner via cargo-binstall if available. */
-async function installRunnerWithBinstall(version, target) {
+async function installRunnerWithBinstall(version, target, githubToken = '') {
     if (!(await which('cargo-binstall', false))) {
         return false;
     }
@@ -42052,7 +42052,17 @@ async function installRunnerWithBinstall(version, target) {
             else {
                 args.push(`gungraun-runner@${version}`);
             }
-            await exec_exec(getCargoBin(), args);
+            if (githubToken) {
+                await exec_exec(getCargoBin(), args, {
+                    env: {
+                        ...process.env,
+                        GITHUB_TOKEN: githubToken
+                    }
+                });
+            }
+            else {
+                await exec_exec(getCargoBin(), args);
+            }
             return true;
         }
         catch (error) {

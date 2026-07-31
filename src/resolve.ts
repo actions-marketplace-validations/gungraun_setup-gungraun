@@ -97,9 +97,14 @@ export async function fetchSortedValgrindVersions(): Promise<ResolvedVersion[]> 
             'git',
             ['ls-remote', '--tags', VALGRIND_SOURCE_REPO],
             {
-                silent: !isDebug()
+                silent: !isDebug(),
+                ignoreReturnCode: true
             }
         );
+        if (typeof output.exitCode === 'number' && output.exitCode !== 0) {
+            const detail = output.stderr.trim() || `git exited with code ${output.exitCode}`;
+            throw new Error(`Failed to fetch valgrind tags from sourceware.org: ${detail}`);
+        }
         return output.stdout;
     });
 

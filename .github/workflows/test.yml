@@ -161,6 +161,10 @@ jobs:
         id: get_valgrind_version
         run: |
           version="$(./scripts/expected-valgrind-version.sh "${{ matrix.valgrind-strategy }}" "${{ matrix.valgrind-version }}")"
+          if [[ -z "$version" ]]; then
+            echo "Error in action tests: Expected valgrind version detection returned empty output" >&2
+            exit 1
+          fi
           echo "expected_version=${version}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ github.token }}
@@ -269,10 +273,10 @@ jobs:
             dnf install -y tar git
             ;;
           opensuse* | registry.suse.com/bci/bci-base:*)
-            zypper --non-interactive install tar gzip awk git
+            zypper --non-interactive install tar gzip awk git findutils
             ;;
           alpine*)
-            apk add git
+            apk add git ca-certificates
             ;;
           archlinux*)
             # source: https://hub.docker.com/_/archlinux
@@ -291,6 +295,9 @@ jobs:
                    "${{ matrix.strategy }}" "auto")"
           if [ "$version" = "none" ]; then
             echo "Error in action tests: The version should not be none"
+            exit 1
+          elif [ -z "$version" ]; then
+            echo "Error in action tests: Expected valgrind version detection returned empty output" >&2
             exit 1
           else
             echo "Detected version: '${version}'"

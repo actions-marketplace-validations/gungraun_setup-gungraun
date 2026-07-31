@@ -145,7 +145,7 @@ export class Yum extends Dnf implements PackageManager {
 export class Zypper implements PackageManager {
     // This package is part of the `--plus-content debug` repository
     private readonly debugInfoPackages: string[] = ['glibc-debuginfo'];
-    private readonly valgrindBuildDeps: string[] = ['gcc', 'make', 'bzip2'];
+    private readonly valgrindBuildDeps: string[] = ['gcc', 'make', 'bzip2', 'findutils'];
 
     accept<T>(v: PackageManagerVisitor<T>) {
         return v.visitZypper(this);

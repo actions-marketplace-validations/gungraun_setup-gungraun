@@ -224,6 +224,25 @@ def456\trefs/tags/VALGRIND_3_20_0`;
         await expect(fetchSortedValgrindVersions()).rejects.toThrow('Invalid Valgrind version tag');
     });
 
+    it('when git fails then includes stderr in the error', async () => {
+        jestRuntime.useFakeTimers();
+        (exec.getExecOutput as jest.Mock).mockResolvedValue({
+            exitCode: 128,
+            stdout: '',
+            stderr: 'fatal: unable to access sourceware'
+        });
+
+        try {
+            const result = expect(fetchSortedValgrindVersions()).rejects.toThrow(
+                'Failed to fetch valgrind tags from sourceware.org: fatal: unable to access sourceware'
+            );
+            await jestRuntime.runAllTimersAsync();
+            await result;
+        } finally {
+            jestRuntime.useRealTimers();
+        }
+    });
+
     it('when full format with hash prefix', async () => {
         const stdout = 'b1d97947cec771ad75372b682792b281a55d6cc2        refs/tags/VALGRIND_3_9_0';
         (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout });

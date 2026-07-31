@@ -35692,7 +35692,7 @@ class Yum extends Dnf {
 class Zypper {
     // This package is part of the `--plus-content debug` repository
     debugInfoPackages = ['glibc-debuginfo'];
-    valgrindBuildDeps = ['gcc', 'make', 'bzip2'];
+    valgrindBuildDeps = ['gcc', 'make', 'bzip2', 'findutils'];
     accept(v) {
         return v.visitZypper(this);
     }
@@ -41559,8 +41559,13 @@ async function fetchRunnerVersions(githubToken, retries) {
 async function fetchSortedValgrindVersions() {
     const stdout = await retry(5, async () => {
         const output = await getExecOutput('git', ['ls-remote', '--tags', VALGRIND_SOURCE_REPO], {
-            silent: !utils_isDebug()
+            silent: !utils_isDebug(),
+            ignoreReturnCode: true
         });
+        if (typeof output.exitCode === 'number' && output.exitCode !== 0) {
+            const detail = output.stderr.trim() || `git exited with code ${output.exitCode}`;
+            throw new Error(`Failed to fetch valgrind tags from sourceware.org: ${detail}`);
+        }
         return output.stdout;
     });
     const versions = stdout

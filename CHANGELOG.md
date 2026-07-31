@@ -17,6 +17,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-07-31
+
+### Fixed
+
+- ([#57]): Improve resilience and diagnostics when resolving Valgrind source
+  versions. Use git:// sourceware transport instead of https. Use random retry
+  delay.
+- ([#57]): Install findutils on zypper based distros
+
 ## [1.1.1] - 2026-07-23
 
 ### Changed

@@ -369,6 +369,28 @@ describe('printWarning', () => {
     });
 });
 
+describe('retry', () => {
+    it('when a retry delay is provided then uses it', async () => {
+        jestRuntime.useFakeTimers();
+        const failure = new Error('temporary failure');
+        const operation = jestRuntime
+            .fn<() => Promise<string>>()
+            .mockRejectedValueOnce(failure)
+            .mockResolvedValue('success');
+        const retryDelay = jestRuntime.fn(() => 30_000);
+
+        try {
+            const result = utils.retry(1, operation, retryDelay);
+            await jestRuntime.runAllTimersAsync();
+
+            await expect(result).resolves.toBe('success');
+            expect(retryDelay).toHaveBeenCalledWith(0, failure);
+        } finally {
+            jestRuntime.useRealTimers();
+        }
+    });
+});
+
 describe('splitOnce', () => {
     it('when separator is found then splits at first occurrence', () => {
         expect(utils.splitOnce('a:b', ':')).toEqual(['a', 'b']);

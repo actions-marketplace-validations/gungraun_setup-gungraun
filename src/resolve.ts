@@ -3,6 +3,7 @@ import { getOctokit } from '@actions/github';
 import {
     GUNGRAUN_REPO,
     isDebug,
+    randNumber,
     retry,
     VALGRIND_BUILDER_REPO,
     VALGRIND_SOURCE_REPO
@@ -92,16 +93,25 @@ export async function fetchRunnerVersions(
 }
 
 export async function fetchSortedValgrindVersions(): Promise<ResolvedVersion[]> {
-    const stdout = await retry(5, async () => {
-        const output = await exec.getExecOutput(
-            'git',
-            ['ls-remote', '--tags', VALGRIND_SOURCE_REPO],
-            {
-                silent: !isDebug()
+    const stdout = await retry(
+        5,
+        async () => {
+            const output = await exec.getExecOutput(
+                'git',
+                ['ls-remote', '--tags', VALGRIND_SOURCE_REPO],
+                {
+                    silent: !isDebug(),
+                    ignoreReturnCode: true
+                }
+            );
+            if (typeof output.exitCode === 'number' && output.exitCode !== 0) {
+                const detail = output.stderr.trim() || `git exited with code ${output.exitCode}`;
+                throw new Error(`Failed to fetch valgrind tags from sourceware.org: ${detail}`);
             }
-        );
-        return output.stdout;
-    });
+            return output.stdout;
+        },
+        (retryIndex) => randNumber(5000, Math.min(10_000 * 2 ** retryIndex, 120_000) + 1)
+    );
 
     const versions = stdout
         .trim()
@@ -218,14 +228,10 @@ export async function resolveValgrindBuilderAssetName(
 /** Resolves a valgrind version for building from source, using git ls-remote for "latest" and
  * "auto". */
 export async function resolveValgrindVersion(version: Version): Promise<ResolvedVersion> {
-    const versions = await fetchSortedValgrindVersions();
     if (!version.isAutoOrLatest()) {
-        if (versions.some((v) => v.equals(version))) {
-            return version;
-        } else {
-            throw new Error(`Invalid version ${version}`);
-        }
+        return ResolvedVersion.fromVersion(version);
     }
 
+    const versions = await fetchSortedValgrindVersions();
     return versions[versions.length - 1];
 }

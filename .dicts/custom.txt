@@ -44,3 +44,4 @@ showduplicates
 sourceware
 taiki
 trixie
+srand

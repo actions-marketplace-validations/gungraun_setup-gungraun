@@ -9,6 +9,15 @@ scripts_dir="$(dirname "${0}")"
 strategy="$1"
 valgrind_version="$2"
 
+latest_source_version() {
+    version="$("${scripts_dir}/source-valgrind-versions.sh" | tail -1)"
+    if [ -z "$version" ]; then
+        echo "Could not determine latest Valgrind source version" >&2
+        exit 1
+    fi
+    echo "$version"
+}
+
 case "$strategy" in
 system)
     system_version="$("${scripts_dir}/system-valgrind-version.sh")"
@@ -16,7 +25,7 @@ system)
     if [ -z "$valgrind_version" ] || [ "$valgrind_version" = "auto" ]; then
         echo "${system_version}"
     elif [ "$valgrind_version" = "latest" ]; then
-        latest_version="$("${scripts_dir}/source-valgrind-versions.sh" | tail -1)"
+        latest_version="$(latest_source_version)"
         if [ "$system_version" = "$latest_version" ]; then
             echo "${latest_version}"
         else
@@ -40,7 +49,7 @@ builder)
     ;;
 source)
     if [ "$valgrind_version" = "latest" ] || [ "$valgrind_version" = "auto" ]; then
-        latest_source_version="$("${scripts_dir}/source-valgrind-versions.sh" | tail -1)"
+        latest_source_version="$(latest_source_version)"
         echo "${latest_source_version}"
     elif "${scripts_dir}/source-valgrind-versions.sh" | grep -q "$valgrind_version"; then
         echo "${valgrind_version}"

@@ -225,7 +225,7 @@ describe('Zypper', () => {
     });
 
     it('when getting valgrind build deps', () => {
-        expect(pm.getValgrindBuildDeps()).toEqual(['gcc', 'make', 'bzip2']);
+        expect(pm.getValgrindBuildDeps()).toEqual(['gcc', 'make', 'bzip2', 'findutils']);
     });
 
     it('when accepting a visitor', () => {

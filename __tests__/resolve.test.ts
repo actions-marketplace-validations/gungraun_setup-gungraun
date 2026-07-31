@@ -190,6 +190,11 @@ ghi789\trefs/tags/VALGRIND_3_18_0`;
             new ResolvedVersion(3, 19, 0),
             new ResolvedVersion(3, 20, 0)
         ]);
+        expect(exec.getExecOutput).toHaveBeenCalledWith(
+            'git',
+            ['ls-remote', '--tags', 'git://sourceware.org/git/valgrind.git'],
+            expect.any(Object)
+        );
     });
 
     it('when ^{} refs present then filters them', async () => {
@@ -519,26 +524,13 @@ describe('resolveValgrindBuilderAssetName', () => {
 });
 
 describe('resolveValgrindVersion', () => {
-    it('when version is specific and exists', async () => {
-        const stdout = [
-            'abc123\trefs/tags/VALGRIND_3_19_0',
-            'def456\trefs/tags/VALGRIND_3_20_0'
-        ].join('\n');
-        (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout });
-
+    it('when version is specific then returns it without fetching tags', async () => {
+        getExecOutput.mockClear();
         const version = new Version(3, 19, 0);
         const result = await resolveValgrindVersion(version);
 
         expect(result).toEqual(new ResolvedVersion(3, 19, 0));
-    });
-
-    it('when version is specific and does not exist then throws', async () => {
-        const stdout = 'abc123\trefs/tags/VALGRIND_3_20_0';
-        (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout });
-
-        const version = new Version(3, 99, 0);
-
-        await expect(resolveValgrindVersion(version)).rejects.toThrow('Invalid version 3.99.0');
+        expect(exec.getExecOutput).not.toHaveBeenCalled();
     });
 
     it('when version is latest', async () => {

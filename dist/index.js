@@ -35329,7 +35329,7 @@ const GUNGRAUN_REPO = 'gungraun/gungraun';
 const LOG_PREFIX = 'setup-gungraun:';
 /** GitHub repository for valgrind-builder releases. */
 const VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
-const VALGRIND_SOURCE_REPO = 'https://sourceware.org/git/valgrind.git';
+const VALGRIND_SOURCE_REPO = 'git://sourceware.org/git/valgrind.git';
 function utils_isDebug() {
     return (!!process.env.GUNGRAUN_ACTION_DEBUG ||
         process.env.ACTIONS_STEP_DEBUG === 'true' ||
@@ -35422,14 +35422,14 @@ function printDebug(message) {
 function randNumber(min = 0, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
-async function retry(maxRetries, fn) {
+async function retry(maxRetries, fn, retryDelay = () => randNumber(5000, 20000)) {
     for (let index = 0;; index++) {
         try {
             return await fn();
         }
         catch (error) {
             if (index < maxRetries) {
-                await new Promise((r) => setTimeout(r, randNumber(5000, 20000)));
+                await new Promise((resolve) => setTimeout(resolve, retryDelay(index, error)));
                 continue;
             }
             else {
@@ -41567,7 +41567,7 @@ async function fetchSortedValgrindVersions() {
             throw new Error(`Failed to fetch valgrind tags from sourceware.org: ${detail}`);
         }
         return output.stdout;
-    });
+    }, (retryIndex) => randNumber(5000, Math.min(10_000 * 2 ** retryIndex, 120_000) + 1));
     const versions = stdout
         .trim()
         .split('\n')
@@ -41645,15 +41645,10 @@ async function resolveValgrindBuilderAssetName(version, arch, platform, githubTo
 /** Resolves a valgrind version for building from source, using git ls-remote for "latest" and
  * "auto". */
 async function resolveValgrindVersion(version) {
-    const versions = await fetchSortedValgrindVersions();
     if (!version.isAutoOrLatest()) {
-        if (versions.some((v) => v.equals(version))) {
-            return version;
-        }
-        else {
-            throw new Error(`Invalid version ${version}`);
-        }
+        return ResolvedVersion.fromVersion(version);
     }
+    const versions = await fetchSortedValgrindVersions();
     return versions[versions.length - 1];
 }
 //# sourceMappingURL=resolve.js.map

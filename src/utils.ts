@@ -11,7 +11,7 @@ export const LOG_PREFIX = 'setup-gungraun:';
 /** GitHub repository for valgrind-builder releases. */
 export const VALGRIND_BUILDER_REPO = 'gungraun/valgrind-builder';
 
-export const VALGRIND_SOURCE_REPO = 'https://sourceware.org/git/valgrind.git';
+export const VALGRIND_SOURCE_REPO = 'git://sourceware.org/git/valgrind.git';
 
 export function isDebug(): boolean {
     return (
@@ -129,13 +129,17 @@ export function randNumber(min: number = 0, max: number) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export async function retry<T>(maxRetries: number, fn: () => Promise<T>) {
+export async function retry<T>(
+    maxRetries: number,
+    fn: () => Promise<T>,
+    retryDelay: (retryIndex: number, error: unknown) => number = () => randNumber(5000, 20000)
+): Promise<T> {
     for (let index = 0; ; index++) {
         try {
             return await fn();
         } catch (error) {
             if (index < maxRetries) {
-                await new Promise<void>((r) => setTimeout(r, randNumber(5000, 20000)));
+                await new Promise<void>((resolve) => setTimeout(resolve, retryDelay(index, error)));
                 continue;
             } else {
                 throw error;

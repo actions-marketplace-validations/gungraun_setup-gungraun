@@ -45,3 +45,5 @@ sourceware
 taiki
 trixie
 srand
+distros
+findutils

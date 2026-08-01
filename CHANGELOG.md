@@ -17,6 +17,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-08-01
+
+### Fixed
+
+- ([#60]): Pass github token through to binstall installation strategy
+
+[#60]: https://github.com/gungraun/setup-gungraun/pull/60
+
 ## [1.1.2] - 2026-07-31
 
 ### Fixed
@@ -25,6 +33,8 @@ and this project adheres to
   versions. Use git:// sourceware transport instead of https. Use random retry
   delay.
 - ([#57]): Install findutils on zypper based distros
+
+[#57]: https://github.com/gungraun/setup-gungraun/pull/57
 
 ## [1.1.1] - 2026-07-23
 

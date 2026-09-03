@@ -1,19 +1,31 @@
-import * as exec from '@actions/exec';
-import { getOctokit } from '@actions/github';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import { ResolvedVersion, Version } from '../src/version.js';
+
+const getExecOutput = jestRuntime.fn();
+const getOctokit = jestRuntime.fn();
+
+function resolved<T>(value: T) {
+    return jestRuntime.fn<() => Promise<T>>().mockResolvedValue(value);
+}
+
+function rejected(error: Error) {
+    return jestRuntime.fn<() => Promise<never>>().mockRejectedValue(error);
+}
+
+jestRuntime.unstable_mockModule('@actions/exec', () => ({ getExecOutput }));
+jestRuntime.unstable_mockModule('@actions/github', () => ({ getOctokit }));
+
+const exec = await import('@actions/exec');
+const {
     fetchReleaseAssetData,
     fetchRunnerVersions,
     fetchSortedValgrindVersions,
     resolveRunnerVersion,
     resolveValgrindBuilderAssetName,
     resolveValgrindVersion
-} from '../src/resolve';
-import { ResolvedVersion, Version } from '../src/version';
+} = await import('../src/resolve.js');
 
-jest.mock('@actions/github');
-jest.mock('@actions/exec');
-
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 function mockOctokit(repos: {
     getLatestRelease?: jest.Mock;
@@ -29,14 +41,14 @@ function mockOctokit(repos: {
             }
         }
     };
-    (getOctokit as jest.Mock).mockReturnValue(octokit);
+    getOctokit.mockReturnValue(octokit);
     return octokit;
 }
 
 describe('fetchReleaseAssetData', () => {
     it('when version is latest', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: {
                     tag_name: 'v3.20.0',
                     assets: [
@@ -63,7 +75,7 @@ describe('fetchReleaseAssetData', () => {
     it('when version is specific', async () => {
         const version = new Version(3, 19, 0);
         mockOctokit({
-            getReleaseByTag: jest.fn().mockResolvedValue({
+            getReleaseByTag: resolved({
                 data: {
                     tag_name: 'v3.19.0',
                     assets: [
@@ -84,7 +96,7 @@ describe('fetchReleaseAssetData', () => {
 
     it('when empty assets array then return empty', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v1.0.0', assets: [] }
             })
         });
@@ -96,7 +108,7 @@ describe('fetchReleaseAssetData', () => {
 
     it('when specific version', async () => {
         const version = new Version(2, 5, 1);
-        const getReleaseByTag = jest.fn().mockResolvedValue({
+        const getReleaseByTag = resolved({
             data: { tag_name: 'v2.5.1', assets: [] }
         });
         mockOctokit({ getReleaseByTag });
@@ -111,20 +123,24 @@ describe('fetchReleaseAssetData', () => {
     });
 
     it('when API error then throws with descriptive message', async () => {
+        const cause = new Error('not found');
         mockOctokit({
-            getLatestRelease: jest.fn().mockRejectedValue(new Error('not found'))
+            getLatestRelease: rejected(cause)
         });
 
         await expect(
             fetchReleaseAssetData('owner/repo', Version.latest(), 'token', 0)
-        ).rejects.toThrow('Failed to fetch release assets: not found');
+        ).rejects.toMatchObject({
+            message: 'Failed to fetch release assets: not found',
+            cause
+        });
     });
 });
 
 describe('fetchRunnerVersions', () => {
     it('when releases are fetched', async () => {
         mockOctokit({
-            listReleases: jest.fn().mockResolvedValue({
+            listReleases: resolved({
                 data: [{ tag_name: 'v1.0.0' }, { tag_name: 'v2.0.0' }]
             })
         });
@@ -135,23 +151,27 @@ describe('fetchRunnerVersions', () => {
     });
 
     it('when API error then throws with descriptive message', async () => {
+        const cause = new Error('API rate limit');
         mockOctokit({
-            listReleases: jest.fn().mockRejectedValue(new Error('API rate limit'))
+            listReleases: rejected(cause)
         });
 
-        await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
-            'Failed to fetch gungraun-runner versions: API rate limit'
-        );
+        await expect(fetchRunnerVersions('token', 0)).rejects.toMatchObject({
+            message: 'Failed to fetch gungraun-runner versions: API rate limit',
+            cause
+        });
     });
 
     it('when no releases then throws with descriptive message', async () => {
         mockOctokit({
-            listReleases: jest.fn().mockResolvedValue({ data: [] })
+            listReleases: resolved({ data: [] })
         });
 
-        await expect(fetchRunnerVersions('token', 0)).rejects.toThrow(
-            'Failed to fetch gungraun-runner versions: At least one version should be present'
-        );
+        await expect(fetchRunnerVersions('token', 0)).rejects.toMatchObject({
+            message:
+                'Failed to fetch gungraun-runner versions: At least one version should be present',
+            cause: expect.objectContaining({ message: 'At least one version should be present' })
+        });
     });
 });
 
@@ -170,6 +190,11 @@ ghi789\trefs/tags/VALGRIND_3_18_0`;
             new ResolvedVersion(3, 19, 0),
             new ResolvedVersion(3, 20, 0)
         ]);
+        expect(exec.getExecOutput).toHaveBeenCalledWith(
+            'git',
+            ['ls-remote', '--tags', 'git://sourceware.org/git/valgrind.git'],
+            expect.any(Object)
+        );
     });
 
     it('when ^{} refs present then filters them', async () => {
@@ -202,6 +227,25 @@ def456\trefs/tags/VALGRIND_3_20_0`;
         (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout: '   \n  ' });
 
         await expect(fetchSortedValgrindVersions()).rejects.toThrow('Invalid Valgrind version tag');
+    });
+
+    it('when git fails then includes stderr in the error', async () => {
+        jestRuntime.useFakeTimers();
+        (exec.getExecOutput as jest.Mock).mockResolvedValue({
+            exitCode: 128,
+            stdout: '',
+            stderr: 'fatal: unable to access sourceware'
+        });
+
+        try {
+            const result = expect(fetchSortedValgrindVersions()).rejects.toThrow(
+                'Failed to fetch valgrind tags from sourceware.org: fatal: unable to access sourceware'
+            );
+            await jestRuntime.runAllTimersAsync();
+            await result;
+        } finally {
+            jestRuntime.useRealTimers();
+        }
     });
 
     it('when full format with hash prefix', async () => {
@@ -239,7 +283,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when version is latest', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v2.0.0' }
             })
         });
@@ -251,7 +295,7 @@ describe('resolveRunnerVersion', () => {
 
     it('when version is auto', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v3.0.0' }
             })
         });
@@ -262,18 +306,20 @@ describe('resolveRunnerVersion', () => {
     });
 
     it('when API fails then throws with descriptive message', async () => {
+        const cause = new Error('not found');
         mockOctokit({
-            getLatestRelease: jest.fn().mockRejectedValue(new Error('not found'))
+            getLatestRelease: rejected(cause)
         });
 
-        await expect(resolveRunnerVersion(Version.latest(), 'token', 0)).rejects.toThrow(
-            'Could not determine latest release version for gungraun-runner: not found'
-        );
+        await expect(resolveRunnerVersion(Version.latest(), 'token', 0)).rejects.toMatchObject({
+            message: 'Could not determine latest release version for gungraun-runner: not found',
+            cause
+        });
     });
 
     it('when API returns tag without v prefix', async () => {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: '2.0.0' }
             })
         });
@@ -294,7 +340,7 @@ describe('resolveValgrindBuilderAssetName', () => {
 
     function mockReleaseWithAssets(assetsList: { name: string; browser_download_url: string }[]) {
         mockOctokit({
-            getLatestRelease: jest.fn().mockResolvedValue({
+            getLatestRelease: resolved({
                 data: { tag_name: 'v1.0.0', assets: assetsList }
             })
         });
@@ -478,26 +524,13 @@ describe('resolveValgrindBuilderAssetName', () => {
 });
 
 describe('resolveValgrindVersion', () => {
-    it('when version is specific and exists', async () => {
-        const stdout = [
-            'abc123\trefs/tags/VALGRIND_3_19_0',
-            'def456\trefs/tags/VALGRIND_3_20_0'
-        ].join('\n');
-        (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout });
-
+    it('when version is specific then returns it without fetching tags', async () => {
+        getExecOutput.mockClear();
         const version = new Version(3, 19, 0);
         const result = await resolveValgrindVersion(version);
 
         expect(result).toEqual(new ResolvedVersion(3, 19, 0));
-    });
-
-    it('when version is specific and does not exist then throws', async () => {
-        const stdout = 'abc123\trefs/tags/VALGRIND_3_20_0';
-        (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout });
-
-        const version = new Version(3, 99, 0);
-
-        await expect(resolveValgrindVersion(version)).rejects.toThrow('Invalid version 3.99.0');
+        expect(exec.getExecOutput).not.toHaveBeenCalled();
     });
 
     it('when version is latest', async () => {

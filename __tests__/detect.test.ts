@@ -1,31 +1,35 @@
-import * as exec from '@actions/exec';
-import * as fs from 'fs';
-import { Apk, AptGet, Dnf, Pacman, Yum, Zypper } from '../src/platform';
-import {
+import { jest as jestRuntime } from '@jest/globals';
+import { Apk, AptGet, Dnf, Pacman, Yum, Zypper } from '../src/platform.js';
+
+const getExecOutput = jestRuntime.fn();
+const existsSync = jestRuntime.fn();
+const readFileSync = jestRuntime.fn();
+const realFs = await import('fs');
+
+jestRuntime.unstable_mockModule('@actions/exec', () => ({ getExecOutput }));
+jestRuntime.unstable_mockModule('../src/utils.js', () => ({
+    getCargoBin: jestRuntime.fn(() => 'cargo'),
+    isDebug: jestRuntime.fn(() => false)
+}));
+jestRuntime.unstable_mockModule('fs', () => ({
+    ...realFs,
+    existsSync,
+    readFileSync
+}));
+
+const exec = await import('@actions/exec');
+const fs = await import('fs');
+const {
     detectArch,
     detectPlatform,
     detectProjectVersion,
     detectShaVariant,
     detectTarget,
     resolvePackageManager
-} from '../src/detect';
-import { ResolvedVersion } from '../src/version';
+} = await import('../src/detect.js');
+import { ResolvedVersion } from '../src/version.js';
 
-jest.mock('@actions/exec');
-jest.mock('../src/utils', () => ({
-    getCargoBin: jest.fn(() => 'cargo'),
-    isDebug: jest.fn(() => false)
-}));
-jest.mock('fs', () => {
-    const realFs = jest.requireActual('fs');
-    return {
-        ...realFs,
-        existsSync: jest.fn(),
-        readFileSync: jest.fn()
-    };
-});
-
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 describe('detectArch', () => {
     it('extracts arch from regular x86_64 target triple', () => {
@@ -141,8 +145,8 @@ describe('detectPlatform', () => {
     const onlyId = ['ID="arch"'].join('\n');
 
     it('when all fields are present then detects platform', async () => {
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(allFields);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(allFields);
 
         const result = await detectPlatform();
 
@@ -154,8 +158,8 @@ describe('detectPlatform', () => {
     });
 
     it('when id with version then detects platform', async () => {
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(idWithVersion);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(idWithVersion);
 
         const result = await detectPlatform();
 
@@ -167,8 +171,8 @@ describe('detectPlatform', () => {
     });
 
     it('when no VERSION_ID then platform id is unknown', async () => {
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(onlyId);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(onlyId);
 
         const result = await detectPlatform();
 
@@ -182,8 +186,8 @@ describe('detectPlatform', () => {
     it('when os-release has unquoted values', async () => {
         const unquotedRelease = ['ID=ubuntu', 'VERSION_ID=22.04', 'ID_LIKE=debian'].join('\n');
 
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(unquotedRelease);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(unquotedRelease);
 
         const result = await detectPlatform();
 
@@ -195,7 +199,7 @@ describe('detectPlatform', () => {
     });
 
     it('when /etc/os-release missing then throws', async () => {
-        jest.spyOn(fs, 'existsSync').mockReturnValue(false);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(false);
 
         await expect(detectPlatform()).rejects.toThrow(
             'Cannot detect platform: /etc/os-release not found'
@@ -203,8 +207,8 @@ describe('detectPlatform', () => {
     });
 
     it('when ID field missing then throws', async () => {
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue('VERSION_ID="22.04"');
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue('VERSION_ID="22.04"');
 
         await expect(detectPlatform()).rejects.toThrow(
             'Cannot detect platform: ID missing from /etc/os-release'
@@ -214,8 +218,8 @@ describe('detectPlatform', () => {
     it('when unknown ID then packageManager is null', async () => {
         const unknownRelease = ['ID="unknown"', 'VERSION_ID="1.0"'].join('\n');
 
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(unknownRelease);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(unknownRelease);
 
         const result = await detectPlatform();
 
@@ -229,8 +233,8 @@ describe('detectPlatform', () => {
     it('when ID_LIKE has multiple space-separated values then splits them', async () => {
         const content = 'ID="manjaro-arm"\nVERSION_ID="23.02"\nID_LIKE="arch linux"';
 
-        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(content);
+        jestRuntime.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jestRuntime.spyOn(fs, 'readFileSync').mockReturnValue(content);
 
         const result = await detectPlatform();
 

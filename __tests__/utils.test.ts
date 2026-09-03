@@ -1,27 +1,48 @@
-import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as utils from '../src/utils';
-import * as fs from 'fs';
+import { jest as jestRuntime } from '@jest/globals';
 
-import { afterEach } from 'node:test';
+const setFailed = jestRuntime.fn();
+const debug = jestRuntime.fn();
+const endGroup = jestRuntime.fn();
+const error = jestRuntime.fn();
+const info = jestRuntime.fn();
+const isDebug = jestRuntime.fn();
+const startGroup = jestRuntime.fn();
+const warning = jestRuntime.fn();
+const execCommand = jestRuntime.fn();
+const getExecOutput = jestRuntime.fn();
+const realFs = await import('fs');
+const readdirSync = jestRuntime.fn(realFs.readdirSync);
 
-jest.mock('@actions/core');
-jest.mock('@actions/exec');
+jestRuntime.unstable_mockModule('@actions/core', () => ({
+    debug,
+    endGroup,
+    error,
+    info,
+    isDebug,
+    setFailed,
+    startGroup,
+    warning
+}));
+jestRuntime.unstable_mockModule('@actions/exec', () => ({
+    exec: execCommand,
+    getExecOutput
+}));
+jestRuntime.unstable_mockModule('fs', () => ({
+    ...realFs,
+    readdirSync,
+    promises: realFs.promises
+}));
 
-jest.mock('fs', () => {
-    const realFs = jest.requireActual('fs');
-    return {
-        ...realFs,
-        readdirSync: jest.fn(realFs.readdirSync),
-        promises: realFs.promises
-    };
-});
+const core = await import('@actions/core');
+const exec = await import('@actions/exec');
+const fs = await import('fs');
+const utils = await import('../src/utils.js');
 
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 describe('bail', () => {
     it('when called the action is set to failed and process exits with 1 and the message', () => {
-        const exitSpy = jest.spyOn(process, 'exit').mockImplementation((code) => {
+        const exitSpy = jestRuntime.spyOn(process, 'exit').mockImplementation((code) => {
             throw new Error(`process.exit: ${code}`); // stop execution and make the call observable
         }) as jest.SpyInstance;
 
@@ -34,40 +55,43 @@ describe('bail', () => {
 
 describe('isRoot', () => {
     it('when uid is 0 then returns true', () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         expect(utils.isRoot()).toBe(true);
     });
 
     it('when uid is non-zero then returns false', () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         expect(utils.isRoot()).toBe(false);
     });
 });
 
 describe('isDebug', () => {
     it('returns false when GUNGRAUN_ACTION_DEBUG is not set', () => {
-        jest.replaceProperty(process, 'env', { ...process.env });
+        jestRuntime.replaceProperty(process, 'env', { ...process.env });
         delete (process.env as Record<string, string | undefined>).GUNGRAUN_ACTION_DEBUG;
         expect(utils.isDebug()).toBe(false);
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 
     it('returns true when GUNGRAUN_ACTION_DEBUG is set to yes', () => {
-        jest.replaceProperty(process, 'env', { ...process.env, GUNGRAUN_ACTION_DEBUG: 'yes' });
+        jestRuntime.replaceProperty(process, 'env', {
+            ...process.env,
+            GUNGRAUN_ACTION_DEBUG: 'yes'
+        });
         expect(utils.isDebug()).toBe(true);
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 
     it('returns true when GUNGRAUN_ACTION_DEBUG is set to any non-empty string', () => {
-        jest.replaceProperty(process, 'env', { ...process.env, GUNGRAUN_ACTION_DEBUG: '1' });
+        jestRuntime.replaceProperty(process, 'env', { ...process.env, GUNGRAUN_ACTION_DEBUG: '1' });
         expect(utils.isDebug()).toBe(true);
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 });
 
 describe('execPrivilegedWithOutput', () => {
     it('calls exec.getExecOutput with sudo when not root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.getExecOutput as jest.Mock).mockResolvedValue({
             stdout: 'output'
         });
@@ -81,7 +105,7 @@ describe('execPrivilegedWithOutput', () => {
     });
 
     it('calls exec.getExecOutput without sudo when root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         (exec.getExecOutput as jest.Mock).mockResolvedValue({
             stdout: 'output'
         });
@@ -95,7 +119,7 @@ describe('execPrivilegedWithOutput', () => {
     });
 
     it('passes env option when provided and not root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.getExecOutput as jest.Mock).mockResolvedValue({
             stdout: 'output'
         });
@@ -115,7 +139,7 @@ describe('execPrivilegedWithOutput', () => {
     });
 
     it('passes env option when provided and root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         (exec.getExecOutput as jest.Mock).mockResolvedValue({
             stdout: 'output'
         });
@@ -131,8 +155,11 @@ describe('execPrivilegedWithOutput', () => {
     });
 
     it('sets silent to false when GUNGRAUN_ACTION_DEBUG is set', async () => {
-        jest.replaceProperty(process, 'env', { ...process.env, GUNGRAUN_ACTION_DEBUG: 'yes' });
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.replaceProperty(process, 'env', {
+            ...process.env,
+            GUNGRAUN_ACTION_DEBUG: 'yes'
+        });
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.getExecOutput as jest.Mock).mockResolvedValue({ stdout: 'out' });
 
         await utils.execPrivilegedWithOutput('cmd', ['arg']);
@@ -140,13 +167,13 @@ describe('execPrivilegedWithOutput', () => {
         expect(exec.getExecOutput).toHaveBeenCalledWith('sudo', ['cmd', 'arg'], {
             silent: false
         });
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 });
 
 describe('execPrivileged', () => {
     it('calls exec.exec with sudo when not root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('cmd', ['arg1', 'arg2']);
@@ -157,7 +184,7 @@ describe('execPrivileged', () => {
     });
 
     it('calls exec.exec without sudo when root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('cmd', ['arg1', 'arg2']);
@@ -168,7 +195,7 @@ describe('execPrivileged', () => {
     });
 
     it('passes cwd option when not root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('make', ['install'], { cwd: '/src' });
@@ -180,7 +207,7 @@ describe('execPrivileged', () => {
     });
 
     it('passes cwd option when root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('make', ['install'], { cwd: '/src' });
@@ -192,7 +219,7 @@ describe('execPrivileged', () => {
     });
 
     it('passes env option when not root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('apt-get', ['update'], {
@@ -206,7 +233,7 @@ describe('execPrivileged', () => {
     });
 
     it('passes env option when root', async () => {
-        jest.spyOn(process, 'getuid').mockReturnValue(0);
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(0);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('apt-get', ['update'], {
@@ -220,8 +247,11 @@ describe('execPrivileged', () => {
     });
 
     it('sets silent to false when GUNGRAUN_ACTION_DEBUG is set', async () => {
-        jest.replaceProperty(process, 'env', { ...process.env, GUNGRAUN_ACTION_DEBUG: 'yes' });
-        jest.spyOn(process, 'getuid').mockReturnValue(1000);
+        jestRuntime.replaceProperty(process, 'env', {
+            ...process.env,
+            GUNGRAUN_ACTION_DEBUG: 'yes'
+        });
+        jestRuntime.spyOn(process, 'getuid').mockReturnValue(1000);
         (exec.exec as jest.Mock).mockResolvedValue(0);
 
         await utils.execPrivileged('cmd', ['arg']);
@@ -229,7 +259,7 @@ describe('execPrivileged', () => {
         expect(exec.exec).toHaveBeenCalledWith('sudo', ['cmd', 'arg'], {
             silent: false
         });
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 });
 
@@ -240,7 +270,7 @@ describe('findBinary', () => {
             { name: 'target.txt', isFile: () => true, parentPath: '/root/b' }
         ];
 
-        jest.spyOn(fs, 'readdirSync').mockReturnValue(fakeDirents as any);
+        jestRuntime.spyOn(fs, 'readdirSync').mockReturnValue(fakeDirents as any);
 
         await expect(utils.findBinary('/root', 'target.txt')).resolves.toBe('/root/b/target.txt');
         expect(fs.readdirSync).toHaveBeenCalledWith('/root', {
@@ -251,7 +281,7 @@ describe('findBinary', () => {
 
     it('returns null when not found', async () => {
         const fakeDirents = [{ name: 'x', isFile: () => false }];
-        jest.spyOn(fs, 'readdirSync').mockReturnValue(fakeDirents as any);
+        jestRuntime.spyOn(fs, 'readdirSync').mockReturnValue(fakeDirents as any);
 
         await expect(utils.findBinary('/root', 'missing.txt')).resolves.toBeNull();
     });
@@ -259,15 +289,15 @@ describe('findBinary', () => {
 
 describe('getCargoBin', () => {
     it('uses CARGO when set', () => {
-        jest.replaceProperty(process, 'env', { ...process.env, CARGO: '/custom/cargo' });
+        jestRuntime.replaceProperty(process, 'env', { ...process.env, CARGO: '/custom/cargo' });
         expect(utils.getCargoBin()).toBe('/custom/cargo');
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 
     it('falls back when not set', () => {
-        jest.replaceProperty(process, 'env', { ...process.env }); // no CARGO
+        jestRuntime.replaceProperty(process, 'env', { ...process.env }); // no CARGO
         expect(utils.getCargoBin()).toBe('cargo');
-        jest.restoreAllMocks();
+        jestRuntime.restoreAllMocks();
     });
 });
 
@@ -339,6 +369,28 @@ describe('printWarning', () => {
     });
 });
 
+describe('retry', () => {
+    it('when a retry delay is provided then uses it', async () => {
+        jestRuntime.useFakeTimers();
+        const failure = new Error('temporary failure');
+        const operation = jestRuntime
+            .fn<() => Promise<string>>()
+            .mockRejectedValueOnce(failure)
+            .mockResolvedValue('success');
+        const retryDelay = jestRuntime.fn(() => 30_000);
+
+        try {
+            const result = utils.retry(1, operation, retryDelay);
+            await jestRuntime.runAllTimersAsync();
+
+            await expect(result).resolves.toBe('success');
+            expect(retryDelay).toHaveBeenCalledWith(0, failure);
+        } finally {
+            jestRuntime.useRealTimers();
+        }
+    });
+});
+
 describe('splitOnce', () => {
     it('when separator is found then splits at first occurrence', () => {
         expect(utils.splitOnce('a:b', ':')).toEqual(['a', 'b']);
@@ -375,7 +427,7 @@ describe('splitOnce', () => {
 
 describe('withGroup', () => {
     it('calls startGroup and endGroup around the function', async () => {
-        const mockFn = jest.fn().mockResolvedValue('result');
+        const mockFn = jestRuntime.fn(async () => 'result');
         const result = await utils.withGroup('my-group', mockFn);
 
         expect(result).toBe('result');
@@ -385,7 +437,9 @@ describe('withGroup', () => {
     });
 
     it('calls endGroup even if the function throws', async () => {
-        const mockFn = jest.fn().mockRejectedValue(new Error('boom'));
+        const mockFn = jestRuntime.fn(async () => {
+            throw new Error('boom');
+        });
 
         await expect(utils.withGroup('err-group', mockFn)).rejects.toThrow('boom');
         expect(core.startGroup).toHaveBeenCalledWith('err-group');

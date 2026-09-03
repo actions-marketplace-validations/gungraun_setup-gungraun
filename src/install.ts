@@ -4,18 +4,18 @@ import * as fs from 'fs';
 import * as io from '@actions/io';
 import * as path from 'path';
 import * as os from 'os';
-import { detectArch, detectPlatform, detectTarget } from './detect';
+import { detectArch, detectPlatform, detectTarget } from './detect.js';
 import {
     downloadAndExtractRunner,
     downloadAndExtractValgrind,
     downloadAndExtractValgrindSource,
     downloadAndExtractValgrindUrl
-} from './download';
+} from './download.js';
 import {
     resolveValgrindBuilderAssetName,
     resolveValgrindVersion,
     resolveRunnerVersion
-} from './resolve';
+} from './resolve.js';
 import {
     execPrivileged,
     findBinary,
@@ -25,10 +25,10 @@ import {
     printInfo,
     printWarning,
     withGroup
-} from './utils';
-import { Version } from './version';
-import { RunnerStrategy, ValgrindStrategy } from './inputs';
-import { PackagesInstaller, FetchLatestPackageVersion } from './platform';
+} from './utils.js';
+import { Version } from './version.js';
+import { RunnerStrategy, ValgrindStrategy } from './inputs.js';
+import { PackagesInstaller, FetchLatestPackageVersion } from './platform.js';
 import { quote } from 'shell-quote';
 
 export function getRunnerInstallDir(): { dir: string; needsExport: boolean } | null {
@@ -80,7 +80,7 @@ export async function installRunner(
         const strategy = strategies[index];
         switch (strategy) {
             case 'binstall': {
-                const result = await installRunnerWithBinstall(version, target);
+                const result = await installRunnerWithBinstall(version, target, githubToken);
                 if (result) {
                     await logInstalledVersion('gungraun-runner', 'gungraun-runner');
                     return;
@@ -199,7 +199,8 @@ export async function installRunnerFromSource(version: Version, target?: string)
 /** Installs gungraun-runner via cargo-binstall if available. */
 export async function installRunnerWithBinstall(
     version: Version,
-    target?: string
+    target?: string,
+    githubToken = ''
 ): Promise<boolean> {
     if (!(await io.which('cargo-binstall', false))) {
         return false;
@@ -217,7 +218,16 @@ export async function installRunnerWithBinstall(
                 args.push(`gungraun-runner@${version}`);
             }
 
-            await exec.exec(getCargoBin(), args);
+            if (githubToken) {
+                await exec.exec(getCargoBin(), args, {
+                    env: {
+                        ...(process.env as Record<string, string>),
+                        GITHUB_TOKEN: githubToken
+                    }
+                });
+            } else {
+                await exec.exec(getCargoBin(), args);
+            }
 
             return true;
         } catch (error) {

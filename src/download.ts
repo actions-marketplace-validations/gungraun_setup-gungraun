@@ -1,9 +1,9 @@
 import * as tc from '@actions/tool-cache';
-import { fetchReleaseAssetData } from './resolve';
-import { GUNGRAUN_REPO, retry, VALGRIND_BUILDER_REPO } from './utils';
-import { ResolvedVersion, Version } from './version';
+import { fetchReleaseAssetData } from './resolve.js';
+import { GUNGRAUN_REPO, retry, VALGRIND_BUILDER_REPO } from './utils.js';
+import { ResolvedVersion, Version } from './version.js';
 import path from 'path';
-import { verifySha } from './hash';
+import { verifySha } from './hash.js';
 
 /** Downloads and extracts the gungraun-runner release archive for a given tag and target. */
 export async function downloadAndExtractRunner(

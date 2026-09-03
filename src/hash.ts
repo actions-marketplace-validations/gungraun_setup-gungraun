@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import { detectShaVariant } from './detect';
+import { detectShaVariant } from './detect.js';
 import * as path from 'path';
-import { normalizePath, printInfo, splitOnce } from './utils';
+import { normalizePath, printInfo, splitOnce } from './utils.js';
 
 export function extractHash(filePath: string, expectedName: string): string | null {
     if (!filePath || !expectedName) {

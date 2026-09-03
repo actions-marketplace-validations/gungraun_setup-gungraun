@@ -1,29 +1,38 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
+import { jest as jestRuntime } from '@jest/globals';
 
-import { extractHash, verifySha } from '../src/hash';
-import { detectShaVariant } from '../src/detect';
-import { printInfo } from '../src/utils';
+const readFileSync = jestRuntime.fn();
+const createHash = jestRuntime.fn();
+const detectShaVariant = jestRuntime.fn();
+const printInfo = jestRuntime.fn();
+const realCrypto = await import('crypto');
+const realFs = await import('fs');
 
-jest.mock('fs', () => {
-    const realFs = jest.requireActual('fs');
-    return {
-        ...realFs,
-        readFileSync: jest.fn()
-    };
-});
+jestRuntime.unstable_mockModule('fs', () => ({
+    ...realFs,
+    readFileSync
+}));
+jestRuntime.unstable_mockModule('crypto', () => ({
+    ...realCrypto,
+    createHash
+}));
+jestRuntime.unstable_mockModule('../src/detect.js', () => ({ detectShaVariant }));
+jestRuntime.unstable_mockModule('../src/utils.js', () => ({
+    normalizePath: (value: string) => {
+        const trimmed = value.trim();
+        return trimmed.startsWith('./') ? trimmed.slice(2) : trimmed;
+    },
+    printInfo,
+    splitOnce: (value: string, separator: string) => {
+        const index = value.indexOf(separator);
+        return index === -1 ? [value, ''] : [value.slice(0, index), value.slice(index + 1)];
+    }
+}));
 
-jest.mock('crypto');
-jest.mock('../src/detect');
-jest.mock('../src/utils', () => {
-    const actual = jest.requireActual('../src/utils');
-    return {
-        ...actual,
-        printInfo: jest.fn()
-    };
-});
+const crypto = await import('crypto');
+const fs = await import('fs');
+const { extractHash, verifySha } = await import('../src/hash.js');
 
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => jestRuntime.restoreAllMocks());
 
 describe('extractHash', () => {
     function shaFile(content: string): string {
@@ -92,8 +101,8 @@ describe('verifySha', () => {
     }
 
     function mockCryptoDigest(hash: string): void {
-        const mockUpdate = { digest: jest.fn().mockReturnValue(hash) };
-        const mockHash = { update: jest.fn().mockReturnValue(mockUpdate) };
+        const mockUpdate = { digest: jestRuntime.fn().mockReturnValue(hash) };
+        const mockHash = { update: jestRuntime.fn().mockReturnValue(mockUpdate) };
         (crypto.createHash as jest.Mock).mockReturnValue(mockHash);
     }
 

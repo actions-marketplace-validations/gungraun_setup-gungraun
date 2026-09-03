@@ -17,6 +17,38 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-08-01
+
+### Fixed
+
+- ([#60]): Pass github token through to binstall installation strategy
+
+[#60]: https://github.com/gungraun/setup-gungraun/pull/60
+
+## [1.1.2] - 2026-07-31
+
+### Fixed
+
+- ([#57]): Improve resilience and diagnostics when resolving Valgrind source
+  versions. Use git:// sourceware transport instead of https. Use random retry
+  delay.
+- ([#57]): Install findutils on zypper based distros
+
+[#57]: https://github.com/gungraun/setup-gungraun/pull/57
+
+## [1.1.1] - 2026-07-23
+
+### Changed
+
+- ([#50], [#52]): Migrate from CJS to ESM
+- ([#52] and various other PRs): Update project dependencies: @actions/core,
+  @actions/exec, @actions/github, @actions/io, @actions/tool-cache, shell-quote,
+  @eslint/js, @types/node, @vercel/ncc, eslint, jest, prettier, ts-jest,
+  typescript-eslint
+
+[#50]: https://github.com/gungraun/setup-gungraun/pull/50
+[#52]: https://github.com/gungraun/setup-gungraun/pull/52
+
 ## [1.1.0] - 2026-06-11
 
 ### Changed

@@ -3,11 +3,12 @@ import { getOctokit } from '@actions/github';
 import {
     GUNGRAUN_REPO,
     isDebug,
+    randNumber,
     retry,
     VALGRIND_BUILDER_REPO,
     VALGRIND_SOURCE_REPO
-} from './utils';
-import { ResolvedVersion, Version } from './version';
+} from './utils.js';
+import { ResolvedVersion, Version } from './version.js';
 
 interface ReleaseAsset {
     name: string;
@@ -58,7 +59,9 @@ export async function fetchReleaseAssetData(
             };
         });
     } catch (error) {
-        throw new Error(`Failed to fetch release assets: ${(error as Error).message}`);
+        throw new Error(`Failed to fetch release assets: ${(error as Error).message}`, {
+            cause: error
+        });
     }
 }
 
@@ -83,21 +86,32 @@ export async function fetchRunnerVersions(
             }
         });
     } catch (error) {
-        throw new Error(`Failed to fetch gungraun-runner versions: ${(error as Error).message}`);
+        throw new Error(`Failed to fetch gungraun-runner versions: ${(error as Error).message}`, {
+            cause: error
+        });
     }
 }
 
 export async function fetchSortedValgrindVersions(): Promise<ResolvedVersion[]> {
-    const stdout = await retry(5, async () => {
-        const output = await exec.getExecOutput(
-            'git',
-            ['ls-remote', '--tags', VALGRIND_SOURCE_REPO],
-            {
-                silent: !isDebug()
+    const stdout = await retry(
+        5,
+        async () => {
+            const output = await exec.getExecOutput(
+                'git',
+                ['ls-remote', '--tags', VALGRIND_SOURCE_REPO],
+                {
+                    silent: !isDebug(),
+                    ignoreReturnCode: true
+                }
+            );
+            if (typeof output.exitCode === 'number' && output.exitCode !== 0) {
+                const detail = output.stderr.trim() || `git exited with code ${output.exitCode}`;
+                throw new Error(`Failed to fetch valgrind tags from sourceware.org: ${detail}`);
             }
-        );
-        return output.stdout;
-    });
+            return output.stdout;
+        },
+        (retryIndex) => randNumber(5000, Math.min(10_000 * 2 ** retryIndex, 120_000) + 1)
+    );
 
     const versions = stdout
         .trim()
@@ -131,7 +145,7 @@ async function resolveLatestTag(
             return data.tag_name;
         });
     } catch (error) {
-        throw new Error(notFoundMessage + `: ${(error as Error).message}`);
+        throw new Error(notFoundMessage + `: ${(error as Error).message}`, { cause: error });
     }
 
     return ResolvedVersion.fromString(tag);
@@ -214,14 +228,10 @@ export async function resolveValgrindBuilderAssetName(
 /** Resolves a valgrind version for building from source, using git ls-remote for "latest" and
  * "auto". */
 export async function resolveValgrindVersion(version: Version): Promise<ResolvedVersion> {
-    const versions = await fetchSortedValgrindVersions();
     if (!version.isAutoOrLatest()) {
-        if (versions.some((v) => v.equals(version))) {
-            return version;
-        } else {
-            throw new Error(`Invalid version ${version}`);
-        }
+        return ResolvedVersion.fromVersion(version);
     }
 
+    const versions = await fetchSortedValgrindVersions();
     return versions[versions.length - 1];
 }
